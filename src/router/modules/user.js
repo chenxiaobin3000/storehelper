@@ -7,6 +7,10 @@ const userRouter = {
     {
       path: 'getInfo', component: () => import('@/views/user/getInfo'),
       name: 'getInfo', meta: { title: '用户信息', roles: ['user'] }
+    },
+    {
+      path: 'getDetail', component: () => import('@/views/user/getDetail'),
+      name: 'getDetail', meta: { title: '用户详情', roles: ['user'] }
     }
   ]
 }

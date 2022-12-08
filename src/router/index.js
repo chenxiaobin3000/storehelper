@@ -7,6 +7,15 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 /* Router Modules */
+import agreementRouter from './modules/agreement'
+import commodityRouter from './modules/commodity'
+import financeRouter from './modules/finance'
+import marketRouter from './modules/market'
+import productRouter from './modules/product'
+import reportRouter from './modules/report'
+import storageRouter from './modules/storage'
+import supplierRouter from './modules/supplier'
+import systemRouter from './modules/system'
 import userRouter from './modules/user'
 
 /**
@@ -42,9 +51,9 @@ export const constantRoutes = [
   },
   {
     path: '/404',
-    component: () => import('@/views/error/404'),
+    component: () => import('@/views/error/index'),
     hidden: true
-  },
+  }
 ]
 
 /**
@@ -68,6 +77,15 @@ export const asyncRoutes = [
   },
 
   /** when your routing map is too long, you can split it into small modules **/
+  marketRouter,
+  productRouter,
+  storageRouter,
+  agreementRouter,
+  supplierRouter,
+  financeRouter,
+  reportRouter,
+  commodityRouter,
+  systemRouter,
   userRouter,
 
   // 404 page must be placed at the end !!!
