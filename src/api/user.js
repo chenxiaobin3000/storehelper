@@ -1,24 +1,10 @@
 import request from '@/utils/request'
+const path = '/api/user'
 
-export function login(data) {
+export function getInfo(data) {
   return request({
-    url: '/vue-element-admin/user/login',
+    url: `${path}/getInfo`,
     method: 'post',
     data
-  })
-}
-
-export function getInfo(token) {
-  return request({
-    url: '/vue-element-admin/user/info',
-    method: 'get',
-    params: { token }
-  })
-}
-
-export function logout() {
-  return request({
-    url: '/vue-element-admin/user/logout',
-    method: 'post'
   })
 }

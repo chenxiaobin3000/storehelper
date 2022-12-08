@@ -1,5 +1,5 @@
 module.exports = {
-  title: '商户管理后台',
+  title: '集数助手 - 管理后台',
 
   /**
    * @type {boolean} true | false

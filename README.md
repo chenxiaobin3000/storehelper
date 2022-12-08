@@ -135,7 +135,6 @@ Become a sponsor and get your logo on our README on GitHub with a link to your s
   - 快捷导航(标签页)
   - Svg Sprite 图标
   - 本地/后端 mock 数据
-  - Screenfull全屏
   - 自适应收缩侧边栏
 
 - 编辑器
@@ -155,20 +154,7 @@ Become a sponsor and get your logo on our README on GitHub with a link to your s
   - 内联编辑
 
 - 错误页面
-  - 401
   - 404
-
-- 組件
-  - 头像上传
-  - 返回顶部
-  - 拖拽Dialog
-  - 拖拽Select
-  - 拖拽看板
-  - 列表拖拽
-  - SplitPane
-  - Dropzone
-  - Sticky
-  - CountTo
 
 - 综合实例
 - 错误日志
