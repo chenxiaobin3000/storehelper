@@ -7,7 +7,7 @@ const userRouter = {
     {
       path: 'getInfo', component: () => import('@/views/user/getInfo'),
       name: 'getInfo', meta: { title: '用户信息', roles: ['user'] }
-    },
+    }
   ]
 }
 

@@ -64,7 +64,7 @@ const actions = {
 
           commit('SET_ROLES', roles)
           commit('SET_NAME', name)
-          resolve(data)
+          resolve(data.data)
         } else {
           reject(data.msg)
         }
