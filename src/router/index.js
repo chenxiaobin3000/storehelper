@@ -10,6 +10,7 @@ import Layout from '@/layout'
 import agreementRouter from './modules/agreement'
 import commodityRouter from './modules/commodity'
 import financeRouter from './modules/finance'
+import groupRouter from './modules/group'
 import marketRouter from './modules/market'
 import productRouter from './modules/product'
 import reportRouter from './modules/report'
@@ -64,16 +65,14 @@ export const asyncRoutes = [
   {
     path: '',
     component: Layout,
-    redirect: '',
+    redirect: '/home',
     meta: { roles: ['dashboard'] },
-    children: [
-      {
-        path: 'home',
-        component: () => import('@/views/dashboard/index'),
-        name: 'home',
-        meta: { title: '首页', noCache: true, roles: ['dashboard'] }
-      }
-    ]
+    children: [{
+      path: 'home',
+      component: () => import('@/views/dashboard/index'),
+      name: 'home',
+      meta: { title: '首页', noCache: true, roles: ['dashboard'] }
+    }]
   },
 
   /** when your routing map is too long, you can split it into small modules **/
@@ -87,6 +86,7 @@ export const asyncRoutes = [
   commodityRouter,
   systemRouter,
   userRouter,
+  groupRouter,
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
