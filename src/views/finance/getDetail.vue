@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-form>
-     <el-form-item label="Name">
+      <el-form-item label="Name">
         <el-input v-model.trim="user.name" />
       </el-form-item>
       <el-form-item label="Email">

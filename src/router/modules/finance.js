@@ -10,14 +10,14 @@ const financeRouter = {
     roles: ['finance']
   },
   children: [{
-      path: 'index', component: () => import('@/views/finance/index'),
-      name: 'index', meta: { title: '财务总览', roles: ['finance'] }
-    }, {
-      path: 'getInfo', component: () => import('@/views/finance/getInfo'),
-      name: 'getInfo', meta: { title: '财务信息', roles: ['finance'] }
-    }, {
-      path: 'getDetail', component: () => import('@/views/finance/getDetail'),
-      name: 'getDetail', meta: { title: '财务详情', roles: ['finance'] }
+    path: 'index', component: () => import('@/views/finance/index'),
+    name: 'index', meta: { title: '财务总览', roles: ['finance'] }
+  }, {
+    path: 'getInfo', component: () => import('@/views/finance/getInfo'),
+    name: 'getInfo', meta: { title: '财务信息', roles: ['finance'] }
+  }, {
+    path: 'getDetail', component: () => import('@/views/finance/getDetail'),
+    name: 'getDetail', meta: { title: '财务详情', roles: ['finance'] }
   }]
 }
 

@@ -10,14 +10,14 @@ const agreementRouter = {
     roles: ['agreement']
   },
   children: [{
-      path: 'index', component: () => import('@/views/agreement/index'),
-      name: 'index', meta: { title: '履约总览', roles: ['agreement'] }
-    }, {
-      path: 'getInfo', component: () => import('@/views/agreement/getInfo'),
-      name: 'getInfo', meta: { title: '履约信息', roles: ['agreement'] }
-    }, {
-      path: 'getDetail', component: () => import('@/views/agreement/getDetail'),
-      name: 'getDetail', meta: { title: '履约详情', roles: ['agreement'] }
+    path: 'index', component: () => import('@/views/agreement/index'),
+    name: 'index', meta: { title: '履约总览', roles: ['agreement'] }
+  }, {
+    path: 'getInfo', component: () => import('@/views/agreement/getInfo'),
+    name: 'getInfo', meta: { title: '履约信息', roles: ['agreement'] }
+  }, {
+    path: 'getDetail', component: () => import('@/views/agreement/getDetail'),
+    name: 'getDetail', meta: { title: '履约详情', roles: ['agreement'] }
   }]
 }
 

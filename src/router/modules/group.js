@@ -11,7 +11,7 @@ const groupRouter = {
   },
   children: [{
     path: 'index', component: () => import('@/views/group/index'),
-    name: 'index', meta: { title: '客户列表', roles: ['group'] }
+    name: 'index', meta: { title: '客户总览', roles: ['group'] }
   }, {
     path: 'getInfo', component: () => import('@/views/group/getInfo'),
     name: 'getInfo', meta: { title: '客户信息', roles: ['group'] }
