@@ -3,7 +3,6 @@ import Layout from '@/layout'
 const agreementRouter = {
   path: '/agreement',
   component: Layout,
-  redirect: '/agreement/index',
   name: 'agreement',
   meta: {
     title: '履约管理',

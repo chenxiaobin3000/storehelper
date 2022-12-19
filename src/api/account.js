@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const path = '/api/account'
+const path = '/account'
 
 export function login(data) {
   return request({

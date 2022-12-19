@@ -3,7 +3,6 @@ import Layout from '@/layout'
 const financeRouter = {
   path: '/finance',
   component: Layout,
-  redirect: '/finance/index',
   name: 'finance',
   meta: {
     title: '财务管理',

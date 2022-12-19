@@ -3,7 +3,6 @@ import Layout from '@/layout'
 const supplierRouter = {
   path: '/supplier',
   component: Layout,
-  redirect: '/supplier/index',
   name: 'supplier',
   meta: {
     title: '供应商管理',

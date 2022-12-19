@@ -3,7 +3,6 @@ import Layout from '@/layout'
 const reportRouter = {
   path: '/report',
   component: Layout,
-  redirect: '/report/index',
   name: 'report',
   meta: {
     title: '报表管理',

@@ -1,12 +1,11 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.title" placeholder="用户名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input v-model="listQuery.title" placeholder="手机号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.importance" placeholder="公司" clearable style="width: 90px" class="filter-item">
+      <el-input v-model="listQuery.title" placeholder="公司名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-select v-model="listQuery.importance" placeholder="省份" clearable style="width: 90px" class="filter-item">
         <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
       </el-select>
-      <el-select v-model="listQuery.type" placeholder="角色" clearable class="filter-item" style="width: 140px">
+      <el-select v-model="listQuery.type" placeholder="地区" clearable class="filter-item" style="width: 140px">
         <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
       </el-select>
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
@@ -31,30 +30,30 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="用户名称" width="150px" align="center">
+      <el-table-column label="公司名称" width="250px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="公司" min-width="180px" align="center">
+      <el-table-column label="省份" min-width="80px" align="center">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
           <el-tag>{{ row.type | typeFilter }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="手机号" min-width="150px" align="center">
+      <el-table-column label="地区" min-width="80px" align="center">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
           <el-tag>{{ row.type | typeFilter }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="角色" min-width="80px" align="center">
+      <el-table-column label="详细地址" min-width="250px" align="center">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
           <el-tag>{{ row.type | typeFilter }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="最后登陆时间" width="120px" align="center">
+      <el-table-column label="联系人" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.author }}</span>
         </template>
@@ -138,10 +137,10 @@ import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 const calendarTypeOptions = [
-  { key: '公司A', display_name: '管理员' },
-  { key: '公司A', display_name: '管理员' },
-  { key: '公司B', display_name: '管理员' },
-  { key: '公司C', display_name: '管理员' }
+  { key: '福建省', display_name: '福州' },
+  { key: '福建省', display_name: '厦门' },
+  { key: '广东省', display_name: '深圳' },
+  { key: '山东省', display_name: '济南' }
 ]
 
 // arr to obj, such as { CN : "China", US : "USA" }
@@ -180,7 +179,7 @@ export default {
         type: undefined,
         sort: '+id'
       },
-      importanceOptions: ['公司A', '公司B', '公司C'],
+      importanceOptions: ['福建省', '广东省', '山东省'],
       calendarTypeOptions,
       sortOptions: [{ label: '升序', key: '+id' }, { label: '降序', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],

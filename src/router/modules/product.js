@@ -3,7 +3,6 @@ import Layout from '@/layout'
 const productRouter = {
   path: '/product',
   component: Layout,
-  redirect: '/product/index',
   name: 'product',
   meta: {
     title: '生产管理',

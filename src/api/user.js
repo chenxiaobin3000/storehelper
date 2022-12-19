@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const path = '/api/user'
+const path = '/user'
 
 export function getInfo(data) {
   return request({

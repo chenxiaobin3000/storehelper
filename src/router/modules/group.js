@@ -3,21 +3,20 @@ import Layout from '@/layout'
 const groupRouter = {
   path: '/group',
   component: Layout,
-  redirect: '/group/index',
   name: 'group',
   meta: {
-    title: '客户管理',
-    roles: ['group']
+    title: '公司管理',
+    roles: ['group', 'my_group']
   },
   children: [{
-    path: 'index', component: () => import('@/views/group/index'),
-    name: 'index', meta: { title: '客户总览', roles: ['group'] }
+    path: 'getList', component: () => import('@/views/group/getList'),
+    name: 'getList', meta: { title: '公司总览', roles: ['group'] }
   }, {
     path: 'getInfo', component: () => import('@/views/group/getInfo'),
-    name: 'getInfo', meta: { title: '客户信息', roles: ['group'] }
+    name: 'getInfo', meta: { title: '我的公司', roles: ['group', 'my_group'] }
   }, {
     path: 'getDetail', component: () => import('@/views/group/getDetail'),
-    name: 'getDetail', meta: { title: '客户详情', roles: ['group'] }
+    name: 'getDetail', meta: { title: '充值记录', roles: ['group', 'my_group'] }
   }]
 }
 

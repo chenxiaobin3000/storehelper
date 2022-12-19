@@ -3,21 +3,26 @@ import Layout from '@/layout'
 const commodityRouter = {
   path: '/commodity',
   component: Layout,
-  redirect: '/commodity/index',
   name: 'commodity',
   meta: {
     title: '商品管理',
-    roles: ['commodity']
+    roles: ['commodity', 'my_commodity']
   },
   children: [{
+    path: 'report', component: () => import('@/views/commodity/report'),
+    name: 'report', meta: { title: '销售数据', roles: ['commodity', 'my_commodity'] }
+  }, {
     path: 'index', component: () => import('@/views/commodity/index'),
     name: 'index', meta: { title: '商品总览', roles: ['commodity'] }
   }, {
-    path: 'getInfo', component: () => import('@/views/commodity/getInfo'),
-    name: 'getInfo', meta: { title: '商品信息', roles: ['commodity'] }
+    path: 'getList', component: () => import('@/views/commodity/getList'),
+    name: 'getList', meta: { title: '商品总览', roles: ['my_commodity'] }
   }, {
-    path: 'getDetail', component: () => import('@/views/commodity/getDetail'),
-    name: 'getDetail', meta: { title: '商品详情', roles: ['commodity'] }
+    path: 'myFocus', component: () => import('@/views/commodity/myFocus'),
+    name: 'myFocus', meta: { title: '我的关注', roles: ['commodity', 'my_commodity'] }
+  }, {
+    path: 'getType', component: () => import('@/views/commodity/getType'),
+    name: 'getType', meta: { title: '品类设置', roles: ['commodity', 'my_commodity'] }
   }]
 }
 

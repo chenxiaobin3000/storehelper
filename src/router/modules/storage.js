@@ -3,7 +3,6 @@ import Layout from '@/layout'
 const storageRouter = {
   path: '/storage',
   component: Layout,
-  redirect: '/storage/index',
   name: 'storage',
   meta: {
     title: '库存管理',
