@@ -43,8 +43,8 @@ service.interceptors.response.use(
   response => {
     const res = response.data
     if (res.code === -1) {
-      MessageBox.confirm('账号在其他地方登录，请重新登录', '提示', {
-        confirmButtonText: '重新登录',
+      MessageBox.confirm(res.msg, '出错啦', {
+        confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {

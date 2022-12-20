@@ -66,12 +66,17 @@ export const asyncRoutes = [
     path: '',
     component: Layout,
     redirect: '/home',
-    meta: { roles: ['dashboard'] },
+    meta: { roles: ['dashboard', 'my_dashboard'] },
     children: [{
       path: 'home',
       component: () => import('@/views/dashboard/index'),
       name: 'home',
-      meta: { title: '首页', noCache: true, roles: ['dashboard'] }
+      meta: { title: '单日报表', noCache: true, roles: ['dashboard'] }
+    }, {
+      path: 'home',
+      component: () => import('@/views/dashboard/user'),
+      name: 'home',
+      meta: { title: '个人信息', noCache: true, roles: ['my_dashboard'] }
     }]
   },
 

@@ -1,40 +1,58 @@
 <template>
   <div class="app-container">
-    <el-form>
-      <el-form-item label="Name">
-        <el-input v-model.trim="user.name" />
-      </el-form-item>
-      <el-form-item label="Email">
-        <el-input v-model.trim="user.email" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submit">Update</el-button>
-      </el-form-item>
-    </el-form>
+    <el-row :gutter="32">
+      <el-col :xs="24" :sm="24" :lg="8">
+        <div class="chart-wrapper">
+          <bar-chart />
+        </div>
+      </el-col>
+      <el-col :xs="24" :sm="24" :lg="8">
+        <div class="chart-wrapper">
+          <bar-chart />
+        </div>
+      </el-col>
+      <el-col :xs="24" :sm="24" :lg="8">
+        <div class="chart-wrapper">
+          <bar-chart />
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
+import BarChart from './components/BarChart'
+
 export default {
-  props: {
-    user: {
-      type: Object,
-      default: () => {
-        return {
-          name: '',
-          email: ''
-        }
-      }
+  name: 'ComplexTable',
+  components: { BarChart },
+  data() {
+    return {
     }
   },
   methods: {
-    submit() {
-      // this.$message({
-      //   message: 'User information has been updated successfully',
-      //   type: 'success',
-      //   duration: 5 * 1000
-      // })
+    handleSetLineChartData(type) {
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.app-container {
+  padding: 32px;
+  background-color: rgb(240, 242, 245);
+  position: relative;
+
+  .chart-wrapper {
+    background: #fff;
+    padding: 16px 16px 0;
+    margin-bottom: 32px;
+  }
+}
+
+@media (max-width:1024px) {
+  .chart-wrapper {
+    padding: 8px;
+  }
+}
+</style>
