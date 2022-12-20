@@ -9,14 +9,20 @@ const productRouter = {
     roles: ['product']
   },
   children: [{
+    path: 'alarm', component: () => import('@/views/product/alarm'),
+    name: 'alarm', meta: { title: '损耗预警', roles: ['product'] }
+  }, {
     path: 'index', component: () => import('@/views/product/index'),
     name: 'index', meta: { title: '生产总览', roles: ['product'] }
   }, {
-    path: 'getInfo', component: () => import('@/views/product/getInfo'),
-    name: 'getInfo', meta: { title: '生产信息', roles: ['product'] }
+    path: 'getList', component: () => import('@/views/product/getList'),
+    name: 'getList', meta: { title: '生产记录', roles: ['product'] }
   }, {
-    path: 'getDetail', component: () => import('@/views/product/getDetail'),
-    name: 'getDetail', meta: { title: '生产详情', roles: ['product'] }
+    path: 'rawOrder', component: () => import('@/views/product/rawOrder'),
+    name: 'rawOrder', meta: { title: '原料出入库', roles: ['product'] }
+  }, {
+    path: 'productOrder', component: () => import('@/views/product/productOrder'),
+    name: 'productOrder', meta: { title: '成品出入库', roles: ['product'] }
   }]
 }
 

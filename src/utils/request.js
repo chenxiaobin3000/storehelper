@@ -58,11 +58,10 @@ service.interceptors.response.use(
     }
   },
   error => {
-    console.log(error)
     Message({
-      message: error.message,
+      message: '网络异常，请联系官方客服。', // error.message,
       type: 'error',
-      duration: 5 * 1000
+      duration: 2 * 1000
     })
     return Promise.reject(error)
   }

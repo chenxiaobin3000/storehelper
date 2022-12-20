@@ -12,11 +12,14 @@ const agreementRouter = {
     path: 'index', component: () => import('@/views/agreement/index'),
     name: 'index', meta: { title: '履约总览', roles: ['agreement'] }
   }, {
-    path: 'getInfo', component: () => import('@/views/agreement/getInfo'),
-    name: 'getInfo', meta: { title: '履约信息', roles: ['agreement'] }
+    path: 'report', component: () => import('@/views/agreement/report'),
+    name: 'report', meta: { title: '损耗报表', roles: ['agreement'] }
   }, {
-    path: 'getDetail', component: () => import('@/views/agreement/getDetail'),
-    name: 'getDetail', meta: { title: '履约详情', roles: ['agreement'] }
+    path: 'sendOut', component: () => import('@/views/agreement/sendOut'),
+    name: 'sendOut', meta: { title: '出库实收', roles: ['agreement'] }
+  }, {
+    path: 'goBack', component: () => import('@/views/agreement/goBack'),
+    name: 'goBack', meta: { title: '应退实退', roles: ['agreement'] }
   }]
 }
 

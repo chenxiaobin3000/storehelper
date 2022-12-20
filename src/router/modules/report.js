@@ -9,14 +9,17 @@ const reportRouter = {
     roles: ['report']
   },
   children: [{
-    path: 'index', component: () => import('@/views/report/index'),
-    name: 'index', meta: { title: '报表总览', roles: ['report'] }
+    path: 'day', component: () => import('@/views/report/day'),
+    name: 'day', meta: { title: '日报表', roles: ['report'] }
   }, {
-    path: 'getInfo', component: () => import('@/views/report/getInfo'),
-    name: 'getInfo', meta: { title: '报表信息', roles: ['report'] }
+    path: 'week', component: () => import('@/views/report/week'),
+    name: 'week', meta: { title: '周报表', roles: ['report'] }
   }, {
-    path: 'getDetail', component: () => import('@/views/report/getDetail'),
-    name: 'getDetail', meta: { title: '报表详情', roles: ['report'] }
+    path: 'month', component: () => import('@/views/report/month'),
+    name: 'month', meta: { title: '月度报表', roles: ['report'] }
+  }, {
+    path: 'year', component: () => import('@/views/report/year'),
+    name: 'year', meta: { title: '年度报表', roles: ['report'] }
   }]
 }
 

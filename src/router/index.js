@@ -10,7 +10,6 @@ import Layout from '@/layout'
 import agreementRouter from './modules/agreement'
 import commodityRouter from './modules/commodity'
 import financeRouter from './modules/finance'
-import groupRouter from './modules/group'
 import marketRouter from './modules/market'
 import productRouter from './modules/product'
 import reportRouter from './modules/report'
@@ -66,17 +65,16 @@ export const asyncRoutes = [
     path: '',
     component: Layout,
     redirect: '/home',
-    meta: { roles: ['dashboard', 'my_dashboard'] },
+    meta: { roles: ['dashboard_report', 'dashboard_userInfo', 'dashboard_admin'] },
     children: [{
-      path: 'home',
-      component: () => import('@/views/dashboard/index'),
-      name: 'home',
-      meta: { title: '单日报表', noCache: true, roles: ['dashboard'] }
+      path: 'home', component: () => import('@/views/dashboard/userInfo'),
+      name: 'home', meta: { title: '个人信息', noCache: true, roles: ['dashboard_userInfo'] }
     }, {
-      path: 'home',
-      component: () => import('@/views/dashboard/user'),
-      name: 'home',
-      meta: { title: '个人信息', noCache: true, roles: ['my_dashboard'] }
+      path: 'home', component: () => import('@/views/dashboard/report'),
+      name: 'home', meta: { title: '单日报表', noCache: true, roles: ['dashboard_report'] }
+    }, {
+      path: 'home', component: () => import('@/views/dashboard/super'),
+      name: 'home', meta: { title: '平台报表', noCache: true, roles: ['dashboard_admin'] }
     }]
   },
 
@@ -89,9 +87,8 @@ export const asyncRoutes = [
   financeRouter,
   reportRouter,
   commodityRouter,
-  systemRouter,
   userRouter,
-  groupRouter,
+  systemRouter,
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

@@ -9,14 +9,11 @@ const supplierRouter = {
     roles: ['supplier']
   },
   children: [{
-    path: 'index', component: () => import('@/views/supplier/index'),
-    name: 'index', meta: { title: '供应商总览', roles: ['supplier'] }
+    path: 'getList', component: () => import('@/views/supplier/getList'),
+    name: 'getList', meta: { title: '供应商列表', roles: ['supplier'] }
   }, {
-    path: 'getInfo', component: () => import('@/views/supplier/getInfo'),
-    name: 'getInfo', meta: { title: '供应商信息', roles: ['supplier'] }
-  }, {
-    path: 'getDetail', component: () => import('@/views/supplier/getDetail'),
-    name: 'getDetail', meta: { title: '供应商详情', roles: ['supplier'] }
+    path: 'keepBook', component: () => import('@/views/supplier/keepBook'),
+    name: 'keepBook', meta: { title: '账款记录', roles: ['supplier'] }
   }]
 }
 
