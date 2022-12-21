@@ -37,53 +37,45 @@
             @blur="capsTooltip = false"
             @keyup.enter.native="handleLogin"
           />
-          <!--<span class="show-pwd" @click="showPwd">
+          <span class="show-pwd" @click="showPwd">
             <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-          </span>-->
+          </span>
         </el-form-item>
       </el-tooltip>
 
-      <!--<div style="padding-bottom: 20px;">
-        <el-checkbox style='color: #999999;' v-model="checked">记住密码</el-checkbox>
-      </div>-->
+      <div style="padding-bottom: 20px;">
+        <el-checkbox v-model="checked" class="login-check">记住密码</el-checkbox>
+      </div>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:40px;font-size:12pt;" @click.native.prevent="handleLogin">
+      <el-button :loading="loading" class="login-btn" @click.native.prevent="handleLogin">
         登  陆
       </el-button>
 
       <div style="position:relative">
         <div class="tips">
-          <span>注册账号以后，请尽快设置公司信息</span>
+          <span>新注册账号请尽快修改默认密码，以免导致信息泄露。</span>
         </div>
-        <div class="tips">
-          <span>没有公司信息的账号，会被定期清除</span>
-        </div>
-
-        <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
-          注册
-        </el-button>
       </div>
     </el-form>
-
-    <el-dialog title="Register" :visible.sync="showDialog">
-      Can not be simulated on local, so please combine you own business simulation! ! !
-      <br>
-      <br>
-      <social-sign />
-    </el-dialog>
   </div>
 </template>
 
 <script>
+import { getAccount, setAccount, removeAccount, getPassword, setPassword, removePassword } from '@/utils/cache'
+
 export default {
   name: 'Login',
   data() {
     const validateAccount = (rule, value, callback) => {
-      callback()
+      if (value.length < 4) {
+        callback(new Error('账号不能少于4个字符'))
+      } else {
+        callback()
+      }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(new Error('密码不能少于6个字符'))
       } else {
         callback()
       }
@@ -99,8 +91,8 @@ export default {
       },
       passwordType: 'password',
       capsTooltip: false,
+      checked: false,
       loading: false,
-      showDialog: false,
       redirect: undefined,
       otherQuery: {}
     }
@@ -117,18 +109,20 @@ export default {
       immediate: true
     }
   },
-  created() {
-    // window.addEventListener('storage', this.afterQRScan)
-  },
   mounted() {
-    if (this.loginForm.account === '') {
+    // 如果之前有选择记住密码
+    const account = getAccount()
+    const password = getPassword()
+    this.loginForm.account = account
+    this.loginForm.password = password
+    if (account === '') {
       this.$refs.account.focus()
-    } else if (this.loginForm.password === '') {
+    } else if (password === '') {
       this.$refs.password.focus()
     }
-  },
-  destroyed() {
-    // window.removeEventListener('storage', this.afterQRScan)
+    if (account && account.length > 3 && password && password.length > 5) {
+      this.checked = true
+    }
   },
   methods: {
     checkCapslock(e) {
@@ -146,6 +140,13 @@ export default {
       })
     },
     handleLogin() {
+      if (this.checked === true) {
+        setAccount(this.loginForm.account)
+        setPassword(this.loginForm.password)
+      } else {
+        removeAccount()
+        removePassword()
+      }
       this.loading = true
       this.$store.dispatch('account/login', this.loginForm).then(() => {
         this.$router.push({ path: '/' })
@@ -167,8 +168,8 @@ export default {
 </script>
 
 <style lang="scss">
-$bg:#283443;
-$light_gray:#fff;
+$bg:#a8e08c;
+$light_gray:#303030;
 $cursor: #fff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
@@ -191,7 +192,7 @@ $cursor: #fff;
       border-radius: 0px;
       padding: 12px 5px 12px 15px;
       color: $light_gray;
-      height: 47px;
+      height: 48px;
       caret-color: $cursor;
 
       &:-webkit-autofill {
@@ -211,9 +212,8 @@ $cursor: #fff;
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+$bg:#a8e08c;
+$dark_gray:#303030;
 
 .login-container {
   min-height: 100%;
@@ -230,9 +230,19 @@ $light_gray:#eee;
     overflow: hidden;
   }
 
+  .login-check {
+    color: $dark_gray;
+  }
+
+  .login-btn {
+    width: 100%;
+    margin-bottom: 20px;
+    font-size: 18px;
+  }
+
   .tips {
     font-size: 14px;
-    color: #fff;
+    color: #303030;
     margin-bottom: 10px;
 
     span {
@@ -255,7 +265,7 @@ $light_gray:#eee;
 
     .title {
       font-size: 26px;
-      color: $light_gray;
+      color: $dark_gray;
       margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;

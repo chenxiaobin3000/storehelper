@@ -1,29 +1,54 @@
 import Cookies from 'js-cookie'
 
-const CacheKey = 'storeCache'
+const CacheToken = 'store_token'
+const CacheUserId = 'store_id'
+const CacheAccount = 'store_account'
+const CachePassword = 'store_pwd'
 
 export function getToken() {
-  const cache = Cookies.get(CacheKey)
-  if (cache && cache.length > 0) {
-    const data = JSON.parse(cache)
-    return data.token
-  }
-  return ''
+  return Cookies.get(CacheToken)
+}
+
+export function setToken(token) {
+  Cookies.set(CacheToken, token)
+}
+
+export function removeToken() {
+  Cookies.remove(CacheToken)
 }
 
 export function getUserId() {
-  const cache = Cookies.get(CacheKey)
-  if (cache && cache.length > 0) {
-    const data = JSON.parse(cache)
-    return data.id
-  }
-  return 0
+  return Cookies.get(CacheUserId)
 }
 
-export function setCache(id, token) {
-  return Cookies.set(CacheKey, { id: id, token: token })
+export function setUserId(id) {
+  Cookies.set(CacheUserId, id)
 }
 
-export function removeCache() {
-  return Cookies.remove(CacheKey)
+export function removeUserId() {
+  Cookies.remove(CacheUserId)
+}
+
+export function getAccount() {
+  return Cookies.get(CacheAccount)
+}
+
+export function setAccount(account) {
+  Cookies.set(CacheAccount, account)
+}
+
+export function removeAccount() {
+  Cookies.remove(CacheAccount)
+}
+
+export function getPassword() {
+  return Cookies.get(CachePassword)
+}
+
+export function setPassword(password) {
+  Cookies.set(CachePassword, password)
+}
+
+export function removePassword() {
+  Cookies.remove(CachePassword)
 }

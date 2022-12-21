@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    超级账号
     <el-form>
       <el-form-item label="Name">
         <el-input v-model.trim="user.name" />

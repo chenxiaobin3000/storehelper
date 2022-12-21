@@ -14,6 +14,7 @@ import marketRouter from './modules/market'
 import productRouter from './modules/product'
 import reportRouter from './modules/report'
 import storageRouter from './modules/storage'
+import superRouter from './modules/super'
 import supplierRouter from './modules/supplier'
 import systemRouter from './modules/system'
 import userRouter from './modules/user'
@@ -43,18 +44,13 @@ import userRouter from './modules/user'
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
-export const constantRoutes = [
-  {
-    path: '/login',
-    component: () => import('@/views/login/index'),
-    hidden: true
-  },
-  {
-    path: '/404',
-    component: () => import('@/views/error/index'),
-    hidden: true
-  }
-]
+export const constantRoutes = [{
+  path: '/login', hidden: true,
+  component: () => import('@/views/home/login')
+}, {
+  path: '/404', hidden: true,
+  component: () => import('@/views/error/index')
+}]
 
 /**
  * asyncRoutes
@@ -62,19 +58,12 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   {
-    path: '',
+    path: '/',
     component: Layout,
     redirect: '/home',
-    meta: { roles: ['dashboard_report', 'dashboard_userInfo', 'dashboard_admin'] },
     children: [{
-      path: 'home', component: () => import('@/views/dashboard/userInfo'),
-      name: 'home', meta: { title: '个人信息', noCache: true, roles: ['dashboard_userInfo'] }
-    }, {
-      path: 'home', component: () => import('@/views/dashboard/report'),
-      name: 'home', meta: { title: '单日报表', noCache: true, roles: ['dashboard_report'] }
-    }, {
-      path: 'home', component: () => import('@/views/dashboard/super'),
-      name: 'home', meta: { title: '平台报表', noCache: true, roles: ['dashboard_admin'] }
+      path: 'home', component: () => import('@/views/home/index'),
+      name: 'home', meta: { title: '首页' }
     }]
   },
 
@@ -84,11 +73,12 @@ export const asyncRoutes = [
   storageRouter,
   agreementRouter,
   supplierRouter,
-  financeRouter,
   reportRouter,
   commodityRouter,
+  financeRouter,
   userRouter,
   systemRouter,
+  superRouter,
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

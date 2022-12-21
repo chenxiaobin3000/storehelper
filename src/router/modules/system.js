@@ -10,19 +10,19 @@ const systemRouter = {
   },
   children: [{
     path: 'notify', component: () => import('@/views/system/notify'),
-    name: 'notify', meta: { title: '系统通知', roles: ['system'] }
+    name: 'system_notify', meta: { title: '系统通知', roles: ['system'] }
   }, {
     path: 'groupInfo', component: () => import('@/views/system/groupInfo'),
-    name: 'groupInfo', meta: { title: '公司信息', roles: ['system'] }
+    name: 'system_groupInfo', meta: { title: '公司信息', roles: ['system'] }
   }, {
     path: 'getRole', component: () => import('@/views/system/getRole'),
-    name: 'getRole', meta: { title: '角色管理', roles: ['system'] }
+    name: 'system_getRole', meta: { title: '角色管理', roles: ['system'] }
   }, {
     path: 'setting', component: () => import('@/views/system/setting'),
-    name: 'setting', meta: { title: '系统设置', roles: ['system'] }
+    name: 'system_setting', meta: { title: '系统设置', roles: ['system'] }
   }, {
     path: 'charge', component: () => import('@/views/system/charge'),
-    name: 'charge', meta: { title: '充值记录', roles: ['system'] }
+    name: 'system_charge', meta: { title: '充值记录', roles: ['system'] }
   }]
 }
 

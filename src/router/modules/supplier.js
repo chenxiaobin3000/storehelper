@@ -10,10 +10,10 @@ const supplierRouter = {
   },
   children: [{
     path: 'getList', component: () => import('@/views/supplier/getList'),
-    name: 'getList', meta: { title: '供应商列表', roles: ['supplier'] }
+    name: 'supplier_getList', meta: { title: '供应商列表', roles: ['supplier'] }
   }, {
     path: 'keepBook', component: () => import('@/views/supplier/keepBook'),
-    name: 'keepBook', meta: { title: '账款记录', roles: ['supplier'] }
+    name: 'supplier_keepBook', meta: { title: '账款记录', roles: ['supplier'] }
   }]
 }
 

@@ -10,16 +10,16 @@ const reportRouter = {
   },
   children: [{
     path: 'day', component: () => import('@/views/report/day'),
-    name: 'day', meta: { title: '日报表', roles: ['report'] }
+    name: 'report_day', meta: { title: '日报表', roles: ['report'] }
   }, {
     path: 'week', component: () => import('@/views/report/week'),
-    name: 'week', meta: { title: '周报表', roles: ['report'] }
+    name: 'report_week', meta: { title: '周报表', roles: ['report'] }
   }, {
     path: 'month', component: () => import('@/views/report/month'),
-    name: 'month', meta: { title: '月度报表', roles: ['report'] }
+    name: 'report_month', meta: { title: '月度报表', roles: ['report'] }
   }, {
     path: 'year', component: () => import('@/views/report/year'),
-    name: 'year', meta: { title: '年度报表', roles: ['report'] }
+    name: 'report_year', meta: { title: '年度报表', roles: ['report'] }
   }]
 }
 

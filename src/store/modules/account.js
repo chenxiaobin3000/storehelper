@@ -1,6 +1,6 @@
 import { login, logout } from '@/api/account'
 import { getInfo } from '@/api/user'
-import { getToken, getUserId, setCache, removeCache } from '@/utils/cache'
+import { setToken, getToken, removeToken, setUserId, getUserId, removeUserId } from '@/utils/cache'
 import { resetRouter } from '@/router'
 import md5 from 'js-md5'
 
@@ -39,7 +39,8 @@ const actions = {
           commit('SET_ID', id)
           commit('SET_ROLES', [])
           commit('SET_NAME', '')
-          setCache(id, token)
+          setUserId(id)
+          setToken(token)
           resolve(response)
         } else {
           reject(data.msg)
@@ -77,12 +78,13 @@ const actions = {
   // user logout
   logout({ commit, state, dispatch }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
+      logout({ id: state.id }).then(() => {
         commit('SET_TOKEN', '')
         commit('SET_ID', 0)
         commit('SET_NAME', '')
         commit('SET_ROLES', [])
-        removeCache()
+        removeToken()
+        removeUserId()
         resetRouter()
 
         // reset visited views and cached views
@@ -102,7 +104,8 @@ const actions = {
       commit('SET_ID', 0)
       commit('SET_NAME', '')
       commit('SET_ROLES', [])
-      removeCache()
+      removeToken()
+      removeUserId()
       resolve()
     })
   }
