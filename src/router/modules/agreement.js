@@ -9,8 +9,8 @@ const agreementRouter = {
     roles: ['agreement']
   },
   children: [{
-    path: 'index', component: () => import('@/views/agreement/index'),
-    name: 'agreement_index', meta: { title: '履约总览', roles: ['agreement'] }
+    path: 'getList', component: () => import('@/views/agreement/getList'),
+    name: 'agreement_getList', meta: { title: '履约总览', roles: ['agreement'] }
   }, {
     path: 'report', component: () => import('@/views/agreement/report'),
     name: 'agreement_report', meta: { title: '损耗报表', roles: ['agreement'] }

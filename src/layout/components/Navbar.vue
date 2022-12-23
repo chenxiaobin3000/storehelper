@@ -4,9 +4,11 @@
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
 
     <div class="right-menu">
+      <search id="header-search" class="right-menu-item" />
+
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
-          <svg-icon icon-class="user" />
+          <svg-icon icon-class="user" class="user-avatar" />
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
@@ -23,11 +25,13 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import Search from '@/components/HeaderSearch'
 
 export default {
   components: {
     Breadcrumb,
-    Hamburger
+    Hamburger,
+    Search
   },
   computed: {
     ...mapGetters([
@@ -105,25 +109,31 @@ export default {
     }
 
     .avatar-container {
-      margin-right: 30px;
+      margin-right: 24px;
 
       .avatar-wrapper {
-        margin-top: 5px;
         position: relative;
 
         .user-avatar {
-          cursor: pointer;
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
+          vertical-align: middle;
+          margin-top: 4px;
+          font-size: 21px;
+        }
+
+        .user-avatar:hover {
+          color: #1086e0;
         }
 
         .el-icon-caret-bottom {
           cursor: pointer;
           position: absolute;
-          right: -20px;
-          top: 25px;
-          font-size: 12px;
+          right: -16px;
+          top: 28px;
+          font-size: 16px;
+        }
+
+        .el-icon-caret-bottom:hover {
+          color: #1086e0;
         }
       }
     }

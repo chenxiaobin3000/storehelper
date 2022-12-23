@@ -12,9 +12,6 @@ const commodityRouter = {
     path: 'report', component: () => import('@/views/commodity/report'),
     name: 'commodity_report', meta: { title: '销售数据', roles: ['commodity'] }
   }, {
-    path: 'index', component: () => import('@/views/commodity/index'),
-    name: 'commodity_index', meta: { title: '商品总览', roles: ['commodity'] }
-  }, {
     path: 'getList', component: () => import('@/views/commodity/getList'),
     name: 'commodity_getList', meta: { title: '商品列表', roles: ['commodity'] }
   }, {

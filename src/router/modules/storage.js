@@ -12,8 +12,8 @@ const storageRouter = {
     path: 'alarm', component: () => import('@/views/storage/alarm'),
     name: 'storage_alarm', meta: { title: '到期提醒', roles: ['storage'] }
   }, {
-    path: 'index', component: () => import('@/views/storage/index'),
-    name: 'storage_index', meta: { title: '库存总览', roles: ['storage'] }
+    path: 'report', component: () => import('@/views/storage/report'),
+    name: 'storage_report', meta: { title: '库存总览', roles: ['storage'] }
   }, {
     path: 'getList', component: () => import('@/views/storage/getList'),
     name: 'storage_getList', meta: { title: '库存信息', roles: ['storage'] }

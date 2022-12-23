@@ -1,21 +1,5 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-input v-model="listQuery.title" placeholder="用户名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input v-model="listQuery.title" placeholder="手机号" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.importance" placeholder="公司" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
-      </el-select>
-      <el-select v-model="listQuery.type" placeholder="角色" clearable class="filter-item" style="width: 140px">
-        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
-      </el-select>
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
-      </el-select>
-      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查找</el-button>
-      <el-button class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate">新增</el-button>
-    </div>
-
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -134,11 +118,10 @@
 </template>
 
 <script>
-import { parseTime } from '@/utils'
+import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 const calendarTypeOptions = [
-  { key: '公司A', display_name: '管理员' },
   { key: '公司A', display_name: '管理员' },
   { key: '公司B', display_name: '管理员' },
   { key: '公司C', display_name: '管理员' }
@@ -180,11 +163,9 @@ export default {
         type: undefined,
         sort: '+id'
       },
-      importanceOptions: ['公司A', '公司B', '公司C'],
       calendarTypeOptions,
       sortOptions: [{ label: '升序', key: '+id' }, { label: '降序', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
-      showReviewer: false,
       temp: {
         id: undefined,
         importance: 1,
@@ -208,6 +189,22 @@ export default {
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
       downloadLoading: false
+    }
+  },
+  computed: {
+    ...mapState({
+      search: state => state.header.search,
+      create: state => state.header.create
+    })
+  },
+  watch: {
+    search(newVal, oldVal) {
+      if (newVal) {
+        console.log('user:' + newVal)
+      }
+    },
+    create() {
+      console.log('user new')
     }
   },
   created() {
@@ -330,29 +327,6 @@ export default {
         this.pvData = response.data.pvData
         this.dialogPvVisible = true
       })*/
-    },
-    handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-        const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
-        const data = this.formatJson(filterVal)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: 'table-list'
-        })
-        this.downloadLoading = false
-      })
-    },
-    formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
     },
     getSortClass: function(key) {
       const sort = this.listQuery.sort
