@@ -1,5 +1,5 @@
 import { login, logout } from '@/api/account'
-import { getInfo } from '@/api/user'
+import { getUserInfo } from '@/api/user'
 import { setToken, getToken, removeToken, setUserId, getUserId, removeUserId } from '@/utils/cache'
 import { resetRouter } from '@/router'
 import md5 from 'js-md5'
@@ -7,8 +7,8 @@ import md5 from 'js-md5'
 const state = {
   token: getToken(),
   id: getUserId(),
-  name: '',
-  roles: []
+  roles: [],
+  userdata: {}
 }
 
 const mutations = {
@@ -18,11 +18,11 @@ const mutations = {
   SET_ID: (state, id) => {
     state.id = id
   },
-  SET_NAME: (state, name) => {
-    state.name = name
-  },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  SET_USERDATA: (state, userdata) => {
+    state.userdata = userdata
   }
 }
 
@@ -38,7 +38,7 @@ const actions = {
           commit('SET_TOKEN', token)
           commit('SET_ID', id)
           commit('SET_ROLES', [])
-          commit('SET_NAME', '')
+          commit('SET_USERDATA', {})
           setUserId(id)
           setToken(token)
           resolve(response)
@@ -54,18 +54,24 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo({ id: state.id }).then(response => {
+      getUserInfo({ id: state.id }).then(response => {
         const data = response.data
         if (data.code === 0) {
-          const { roles, name } = data.data
+          const { user, group, permissions } = data.data
           // roles must be a non-empty array
-          if (!roles || roles.length <= 0) {
+          if (!permissions || permissions.length <= 0) {
             reject('getInfo: roles must be a non-null array!')
           }
 
-          commit('SET_ROLES', roles)
-          commit('SET_NAME', name)
-          resolve(data.data)
+          commit('SET_ROLES', permissions)
+          commit('SET_USERDATA', {
+            user: user,
+            group: group
+          })
+          resolve({
+            name: user.name,
+            roles: permissions,
+          })
         } else {
           reject(data.msg)
         }
@@ -81,8 +87,8 @@ const actions = {
       logout({ id: state.id }).then(() => {
         commit('SET_TOKEN', '')
         commit('SET_ID', 0)
-        commit('SET_NAME', '')
         commit('SET_ROLES', [])
+        commit('SET_USERDATA', {})
         removeToken()
         removeUserId()
         resetRouter()
@@ -102,8 +108,8 @@ const actions = {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
       commit('SET_ID', 0)
-      commit('SET_NAME', '')
       commit('SET_ROLES', [])
+      commit('SET_USERDATA', {})
       removeToken()
       removeUserId()
       resolve()

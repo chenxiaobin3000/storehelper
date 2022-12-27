@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 const path = '/user'
 
-export function getInfo(data) {
+export function getUserInfo(data) {
   return request({
-    url: `${path}/getInfo`,
+    url: `${path}/getUserInfo`,
     method: 'post',
     data
   })

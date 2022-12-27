@@ -199,9 +199,11 @@ export default {
   },
   watch: {
     search(newVal, oldVal) {
-      if (newVal) {
-        console.log('user:' + newVal)
-      }
+      Message({
+        message: '暂时不支持搜索功能。',
+        type: 'error',
+        duration: 2 * 1000
+      })
     },
     create() {
       console.log('user new')

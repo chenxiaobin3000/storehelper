@@ -6,14 +6,14 @@ const supplierRouter = {
   name: 'supplier',
   meta: {
     title: '供应商管理',
-    roles: ['supplier']
+    roles: [900]
   },
   children: [{
     path: 'getList', component: () => import('@/views/supplier/getList'),
-    name: 'supplier_getList', meta: { title: '供应商列表', roles: ['supplier'] }
+    name: 'supplier_getList', meta: { title: '供应商列表', roles: [901] }
   }, {
     path: 'keepBook', component: () => import('@/views/supplier/keepBook'),
-    name: 'supplier_keepBook', meta: { title: '账款记录', roles: ['supplier'] }
+    name: 'supplier_keepBook', meta: { title: '账款记录', roles: [902] }
   }]
 }
 
