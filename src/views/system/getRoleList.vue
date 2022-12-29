@@ -31,6 +31,7 @@
             type="textarea"
           />
         </el-form-item>
+        <div style="width: 100%;margin-bottom:10px;">提示：首页是所有账号的基本权限，未勾选"首页"系统会自动添加。</div>
         <el-form-item label="权限">
           <el-tree
             ref="tree"
@@ -54,22 +55,21 @@
 <script>
 import path from 'path'
 import { mapState } from 'vuex'
-import { Message } from 'element-ui'
 import { deepClone } from '@/utils'
-import { getUserId } from '@/utils/cache'
-import { getRoleList, addRole, delRole, setRole } from '@/api/role'
+import { getRoleList, addRole, delRole, setRole, getRole } from '@/api/role'
 
 const defaultRole = {
+  id: 0,
   name: '',
-  desc: '',
+  description: '',
   routes: []
 }
 
 export default {
   data() {
     return {
-      id: 0,
       role: Object.assign({}, defaultRole),
+      userdata: {},
       routes: [],
       rolesList: [],
       dialogVisible: false,
@@ -92,7 +92,7 @@ export default {
   },
   watch: {
     search(newVal, oldVal) {
-      Message({
+      this.$message({
         message: '暂时不支持搜索功能。',
         type: 'error',
         duration: 2 * 1000
@@ -103,33 +103,27 @@ export default {
     }
   },
   created() {
-    this.id = getUserId();
-    this.getRoutes()
+    this.userdata = this.$store.getters.userdata
+    this.routes = this.generateRoutes(this.$store.getters.routes)
     this.getRoles()
   },
   methods: {
-    getRoutes() {
-      this.serviceRoutes = this.$store.getters.roles
-      console.log(this.serviceRoutes)
-      //this.routes = this.generateRoutes(this.serviceRoutes)
-    },
     getRoles() {
-      const userdata = this.$store.getters.userdata
-      this.loading = true;
+      this.loading = true
       getRoleList({
-        id: userdata.user.id,
-        gid: userdata.group
+        id: this.userdata.user.id,
+        gid: this.userdata.group.id
       }).then(response => {
-        const data = response.data
-        if (data.code === 0) {
-          const { roles } = data.data
-          this.rolesList = roles
-        }
-        this.loading = false;
+        this.rolesList = response.data.data.roles
+        this.rolesList.forEach(role => {
+          role.routes = null
+        })
+        this.loading = false
+      }).catch(error => {
+        this.loading = false
+        Promise.reject(error)
       })
     },
-
-    // Reshape the routes structure so that it looks the same as the sidebar
     generateRoutes(routes, basePath = '/') {
       const res = []
       for (let route of routes) {
@@ -144,10 +138,8 @@ export default {
         const data = {
           path: path.resolve(basePath, route.path),
           title: route.meta && route.meta.title
-
         }
 
-        // recursive child routes
         if (route.children) {
           data.children = this.generateRoutes(route.children, data.path)
         }
@@ -155,12 +147,16 @@ export default {
       }
       return res
     },
-    generateArr(routes) {
+    generateArr(routes, basePath = '/') {
       let data = []
       routes.forEach(route => {
-        data.push(route)
+        const fullPath = path.resolve(basePath, route.path)
+        data.push({
+          path: fullPath,
+          title: route.meta && route.meta.title
+        })
         if (route.children) {
-          const temp = this.generateArr(route.children)
+          const temp = this.generateArr(route.children, fullPath)
           if (temp.length > 0) {
             data = [...data, ...temp]
           }
@@ -179,82 +175,120 @@ export default {
     handleEdit(scope) {
       this.dialogType = 'edit'
       this.dialogVisible = true
-      this.checkStrictly = true
       this.role = deepClone(scope.row)
-      this.$nextTick(() => {
-        const routes = this.generateRoutes(this.role.routes)
-        this.$refs.tree.setCheckedNodes(this.generateArr(routes))
-        // set checked state of a node not affects its father and child nodes
-        this.checkStrictly = false
-      })
+      if (this.role.routes) {
+        this.checkStrictly = true // 保护父子节点不相互影响
+        this.$nextTick(() => {
+          const routes = this.filterAsyncRoutes(this.$store.getters.routes, this.role.routes)
+          this.$refs.tree.setCheckedNodes(this.generateArr(routes))
+          this.checkStrictly = false
+        })
+      } else {
+        this.loading = true
+        getRole({
+          id: this.userdata.user.id,
+          rid: this.role.id
+        }).then(response => {
+          this.role.routes = response.data.data.permissions
+          scope.row.routes = this.role.routes
+          this.checkStrictly = true // 保护父子节点不相互影响
+          this.$nextTick(() => {
+            const routes = this.filterAsyncRoutes(this.$store.getters.routes, this.role.routes)
+            this.$refs.tree.setCheckedNodes(this.generateArr(routes))
+            this.checkStrictly = false
+          })
+          this.loading = false
+        }).catch(error => {
+          this.loading = false
+          Promise.reject(error)
+        })
+      }
     },
     handleDelete({ $index, row }) {
       this.$confirm('确定要删除该角色吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      })
-        .then(async() => {
-          delRole(row.id)
-          this.rolesList.splice($index, 1)
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+      }).then(() => {
+        delRole({
+          id: this.userdata.user.id,
+          rid: row.id
+        }).then(response => {
+          this.$message({ type: 'success', message: '删除成功!' })
+          this.getRoles()
+        }).catch(error => {
+          this.$message({ type: 'error', message: '删除失败!' })
+          Promise.reject(error)
         })
-        .catch(err => { console.error(err) })
+      })
     },
     generateTree(routes, basePath = '/', checkedKeys) {
       const res = []
-
       for (const route of routes) {
         const routePath = path.resolve(basePath, route.path)
-
-        // recursive child routes
+        let sub = false
         if (route.children) {
-          route.children = this.generateTree(route.children, routePath, checkedKeys)
+          const children = this.generateTree(route.children, routePath, checkedKeys)
+          if (children && children.length > 0) {
+            children.forEach(role => {
+              res.push(role)
+            })
+            sub = true
+          }
         }
-
-        if (checkedKeys.includes(routePath) || (route.children && route.children.length >= 1)) {
-          res.push(route)
+        if (sub || checkedKeys.includes(routePath)) {
+          if (route.meta && route.meta.roles) {
+            route.meta.roles.forEach(role => {
+              res.push(role)
+            })
+          }
         }
       }
       return res
     },
     confirmRole() {
       const isEdit = this.dialogType === 'edit'
-
       const checkedKeys = this.$refs.tree.getCheckedKeys()
-      this.role.routes = this.generateTree(deepClone(this.serviceRoutes), '/', checkedKeys)
-
+      this.role.routes = this.generateTree(this.$store.getters.routes, '/', checkedKeys)
       if (isEdit) {
-        setRole(this.role.key, this.role)
-        for (let index = 0; index < this.rolesList.length; index++) {
-          if (this.rolesList[index].key === this.role.key) {
-            this.rolesList.splice(index, 1, Object.assign({}, this.role))
-            break
+        setRole({
+          id: this.userdata.user.id,
+          rid: this.role.id,
+          gid: this.userdata.group.id,
+          name: this.role.name,
+          desc: this.role.description,
+          permissions: this.role.routes
+        }).then(response => {
+          this.$message({ type: 'success', message: '修改成功!' })
+          this.getRoles()
+        }).catch(error => {
+          this.$message({ type: 'error', message: '修改失败!' })
+          Promise.reject(error)
+        })
+        // 清除缓存路由，下次展示直接从服务器获取数据
+        this.rolesList.forEach(role => {
+          if (role.id === this.role.id) {
+            role.routes = null
           }
-        }
+        })
       } else {
-        const { data } = addRole(this.role)
-        this.role.key = data.key
-        this.rolesList.push(this.role)
+        addRole({
+          id: this.userdata.user.id,
+          gid: this.userdata.group.id,
+          name: this.role.name,
+          desc: this.role.description,
+          permissions: this.role.routes
+        }).then(response => {
+          this.$message({ type: 'success', message: '添加成功!' })
+          this.getRoles()
+        }).catch(error => {
+          this.$message({ type: 'error', message: '添加失败!' })
+          Promise.reject(error)
+        })
       }
-
-      const { description, key, name } = this.role
       this.dialogVisible = false
-      this.$notify({
-        title: 'Success',
-        dangerouslyUseHTMLString: true,
-        message: `
-            <div>Role Key: ${key}</div>
-            <div>Role Name: ${name}</div>
-            <div>Description: ${description}</div>
-          `,
-        type: 'success'
-      })
     },
-    // reference: src/view/layout/components/Sidebar/SidebarItem.vue
+    // 若节点只存在一个子节点，就用子节点代替父节点
     onlyOneShowingChild(children = [], parent) {
       let onlyOneChild = null
       const showingChildren = children.filter(item => !item.hidden)
@@ -271,8 +305,28 @@ export default {
         onlyOneChild = { ... parent, path: '', noShowingChildren: true }
         return onlyOneChild
       }
-
       return false
+    },
+    // 以下是从store/permision拷贝过来
+    hasPermission(roles, route) {
+      if (route.meta && route.meta.roles) {
+        return roles.some(role => route.meta.roles.includes(role))
+      } else {
+        return true
+      }
+    },
+    filterAsyncRoutes(routes, roles) {
+      const res = []
+      routes.forEach(route => {
+        const tmp = { ...route }
+        if (this.hasPermission(roles, tmp)) {
+          if (tmp.children) {
+            tmp.children = this.filterAsyncRoutes(tmp.children, roles)
+          }
+          res.push(tmp)
+        }
+      })
+      return res
     }
   }
 }

@@ -32,19 +32,14 @@ const actions = {
     const { account, password } = userInfo
     return new Promise((resolve, reject) => {
       login({ account: account.trim(), password: md5(password) }).then(response => {
-        const data = response.data
-        if (data.code === 0) {
-          const { id, token } = data.data
-          commit('SET_TOKEN', token)
-          commit('SET_ID', id)
-          commit('SET_ROLES', [])
-          commit('SET_USERDATA', {})
-          setUserId(id)
-          setToken(token)
-          resolve(response)
-        } else {
-          reject(data.msg)
-        }
+        const { id, token } = response.data.data
+        commit('SET_TOKEN', token)
+        commit('SET_ID', id)
+        commit('SET_ROLES', [])
+        commit('SET_USERDATA', {})
+        setUserId(id)
+        setToken(token)
+        resolve(response)
       }).catch(error => {
         reject(error)
       })
@@ -55,26 +50,20 @@ const actions = {
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getUserInfo({ id: state.id }).then(response => {
-        const data = response.data
-        if (data.code === 0) {
-          const { user, group, permissions } = data.data
-          // roles must be a non-empty array
-          if (!permissions || permissions.length <= 0) {
-            reject('getInfo: roles must be a non-null array!')
-          }
-
-          commit('SET_ROLES', permissions)
-          commit('SET_USERDATA', {
-            user: user,
-            group: group
-          })
-          resolve({
-            name: user.name,
-            roles: permissions,
-          })
-        } else {
-          reject(data.msg)
+        const { user, group, permissions } = response.data.data
+        // roles must be a non-empty array
+        if (!permissions || permissions.length <= 0) {
+          reject('getInfo: roles must be a non-null array!')
         }
+        commit('SET_ROLES', permissions)
+        commit('SET_USERDATA', {
+          user: user,
+          group: group
+        })
+        resolve({
+          name: user.name,
+          roles: permissions
+        })
       }).catch(error => {
         reject(error)
       })

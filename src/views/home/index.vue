@@ -21,9 +21,9 @@ export default {
     ])
   },
   created() {
-    if (this.roles.includes('dashboard_report')) {
+    if (this.roles.includes(100)) {
       this.currentRole = 'reportPage'
-    } else if (this.roles.includes('dashboard_admin')) {
+    } else if (this.roles.includes(101)) {
       this.currentRole = 'superPage'
     }
   }
