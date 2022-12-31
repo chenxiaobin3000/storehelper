@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
+    <el-table v-loading="loading" :data="rolesList" style="width: 100%;" border highlight-current-row>
       <el-table-column align="center" label="角色名称" width="220">
         <template slot-scope="scope">
           {{ scope.row.name }}
@@ -11,7 +11,7 @@
           {{ scope.row.description }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作">
+      <el-table-column align="center" label="操作" width="220">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleEdit(scope)">编辑</el-button>
           <el-button type="danger" size="small" @click="handleDelete(scope)">删除</el-button>
@@ -72,6 +72,7 @@ export default {
       userdata: {},
       routes: [],
       rolesList: [],
+      loading: false,
       dialogVisible: false,
       dialogType: 'new',
       checkStrictly: false,
@@ -184,7 +185,6 @@ export default {
           this.checkStrictly = false
         })
       } else {
-        this.loading = true
         getRole({
           id: this.userdata.user.id,
           rid: this.role.id
@@ -197,15 +197,11 @@ export default {
             this.$refs.tree.setCheckedNodes(this.generateArr(routes))
             this.checkStrictly = false
           })
-          this.loading = false
-        }).catch(error => {
-          this.loading = false
-          Promise.reject(error)
         })
       }
     },
     handleDelete({ $index, row }) {
-      this.$confirm('确定要删除该角色吗?', '提示', {
+      this.$confirm('确定要删除吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -216,9 +212,6 @@ export default {
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
           this.getRoles()
-        }).catch(error => {
-          this.$message({ type: 'error', message: '删除失败!' })
-          Promise.reject(error)
         })
       })
     },
@@ -261,9 +254,7 @@ export default {
         }).then(response => {
           this.$message({ type: 'success', message: '修改成功!' })
           this.getRoles()
-        }).catch(error => {
-          this.$message({ type: 'error', message: '修改失败!' })
-          Promise.reject(error)
+          this.dialogVisible = false
         })
         // 清除缓存路由，下次展示直接从服务器获取数据
         this.rolesList.forEach(role => {
@@ -279,14 +270,11 @@ export default {
           desc: this.role.description,
           permissions: this.role.routes
         }).then(response => {
-          this.$message({ type: 'success', message: '添加成功!' })
+          this.$message({ type: 'success', message: '新增成功!' })
           this.getRoles()
-        }).catch(error => {
-          this.$message({ type: 'error', message: '添加失败!' })
-          Promise.reject(error)
+          this.dialogVisible = false
         })
       }
-      this.dialogVisible = false
     },
     // 若节点只存在一个子节点，就用子节点代替父节点
     onlyOneShowingChild(children = [], parent) {

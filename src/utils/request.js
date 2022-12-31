@@ -45,11 +45,20 @@ service.interceptors.response.use(
     }
   },
   error => {
-    Message({
-      message: '网络异常，请联系官方客服。', // error.message,
-      type: 'error',
-      duration: 2 * 1000
-    })
+    const status = error.response.status
+    if (status === 400) {
+      Message({
+        message: error.response.data.msg,
+        type: 'error',
+        duration: 2 * 1000
+      })
+    } else {
+      Message({
+        message: '网络异常，请联系客服',
+        type: 'error',
+        duration: 2 * 1000
+      })
+    }
     return Promise.reject(error)
   }
 )

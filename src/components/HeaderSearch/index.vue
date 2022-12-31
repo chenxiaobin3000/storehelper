@@ -18,11 +18,9 @@ export default {
   },
   methods: {
     handleSearch() {
-      console.log('submit' + this.search)
       this.$store.dispatch('header/search', this.search)
     },
     handleCreate() {
-      console.log('new')
       this.$store.dispatch('header/create')
     }
   }

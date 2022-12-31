@@ -8,3 +8,11 @@ export function getUserInfo(data) {
     data
   })
 }
+
+export function getUserInfoByPhone(data) {
+  return request({
+    url: `${path}/getUserInfoByPhone`,
+    method: 'post',
+    data
+  })
+}

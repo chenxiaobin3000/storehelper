@@ -17,10 +17,10 @@
       </el-table-column>
       <el-table-column label="用户名称" width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.author }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="公司" min-width="180px" align="center">
+      <el-table-column label="角色" min-width="180px" align="center">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
           <el-tag>{{ row.type | typeFilter }}</el-tag>
@@ -40,7 +40,7 @@
       </el-table-column>
       <el-table-column label="最后登陆时间" width="120px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.author }}</span>
+          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" class-name="status-col" width="80px" align="center">
@@ -199,14 +199,13 @@ export default {
   },
   watch: {
     search(newVal, oldVal) {
-      Message({
+      this.$message({
         message: '暂时不支持搜索功能。',
         type: 'error',
         duration: 2 * 1000
       })
     },
     create() {
-      console.log('user new')
     }
   },
   created() {
