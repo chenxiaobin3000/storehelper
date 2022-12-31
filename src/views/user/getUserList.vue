@@ -8,22 +8,22 @@
       fit
       highlight-current-row
     >
-      <el-table-column label="公司名称" width="200px" align="center">
+      <el-table-column label="用户名称" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="联系人" width="100px" align="center">
+      <el-table-column label="手机号" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.contact.name }}</span>
+          <span>{{ contacts[row.contact].name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="联系电话" width="140px" align="center">
+      <el-table-column label="角色" width="140px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.contact.phone }}</span>
+          <span>{{ contacts[row.contact].phone }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="地址" align="center">
+      <el-table-column label="备注" align="center">
         <template slot-scope="{row}">
           <span>{{ row.address }}</span>
         </template>
@@ -48,11 +48,11 @@
           <el-input v-model="temp.name" />
         </el-form-item>
         <el-form-item label="联系电话" prop="phone">
-          <el-input v-model="temp.contact.phone" />
+          <el-input v-model="temp.contactPhone" />
         </el-form-item>
         <div style="width: 100%;margin-bottom:10px;">提示：请填写联系人手机，系统会自动查询联系人信息。</div>
         <el-form-item label="联系人" prop="contact">
-          <el-input v-model="temp.contact.name" :disabled="true" />
+          <el-input v-model="temp.contactName" :disabled="true" />
         </el-form-item>
         <el-form-item label="公司地址" prop="address">
           <el-input v-model="temp.address" />
@@ -73,17 +73,16 @@
 <script>
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
-import { getGroupList, addGroup, delGroup, setGroup } from '@/api/group'
-import { getUserInfoByPhone } from '@/api/user'
+import { getUserList, setUser } from '@/api/user'
 
 export default {
   components: { Pagination },
   data() {
     return {
       list: null,
+      contacts: null, // 联系人列表
       total: 0,
       loading: false, // 改为不加载
-      oldPhone: '', // 保存修改界面的旧手机号
       listQuery: {
         id: 0,
         page: 1,
@@ -94,11 +93,9 @@ export default {
         id: 0,
         name: '',
         address: '',
-        contact: {
-          id: 0,
-          name: '',
-          phone: ''
-        }
+        contactId: 0,
+        contactName: '',
+        contactPhone: ''
       },
       dialogVisible: false,
       dialogStatus: '',
@@ -137,6 +134,7 @@ export default {
       ).then(response => {
         this.list = response.data.data.list
         this.total = response.data.data.total
+        this.contacts = response.data.data.contacts
         this.loading = false
       }).catch(error => {
         this.loading = false
@@ -148,22 +146,20 @@ export default {
         id: 0,
         name: '',
         address: '',
-        contact: {
-          id: 0,
-          name: '',
-          phone: ''
-        }
+        contactId: 0,
+        contactName: '',
+        contactPhone: ''
       }
     },
     createData() {
       // 先从手机号获取联系人信息
       getUserInfoByPhone({
         id: this.listQuery.id,
-        phone: this.temp.contact.phone
+        phone: this.temp.contactPhone
       }).then(response => {
         // 正式新增
         addGroup({
-          id: this.listQuery.id,
+          //id: this.listQuery.id,
           contact: response.data.data.id,
           name: this.temp.name,
           address: this.temp.address
@@ -176,22 +172,24 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
-      this.oldPhone = this.temp.contact.phone
+      this.temp.contactId = this.contacts[row.contact].id
+      this.temp.contactName = this.contacts[row.contact].name
+      this.$set(this.temp, 'contactPhone', this.contacts[row.contact].phone)
       this.dialogStatus = 'update'
       this.dialogVisible = true
     },
     updateData() {
       // 先判断手机号有没改
-      if (this.temp.contact.phone !== this.oldPhone) {
+      if (this.temp.contactPhone !== this.contacts[this.temp.contactId].phone) {
         // 先从手机号获取联系人信息
         getUserInfoByPhone({
           id: this.listQuery.id,
-          phone: this.temp.contact.Phone
+          phone: this.temp.contactPhone
         }).then(response => {
           this.setGroup(response.data.data.id)
         })
       } else {
-        this.setGroup(this.temp.contact.id)
+        this.setGroup(this.temp.contactId)
       }
     },
     setGroup(id) {

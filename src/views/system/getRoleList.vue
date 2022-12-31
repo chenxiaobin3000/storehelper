@@ -57,7 +57,6 @@ import path from 'path'
 import { mapState } from 'vuex'
 import { deepClone } from '@/utils'
 import { getRoleList, addRole, delRole, setRole, getRole } from '@/api/role'
-import { get } from 'http'
 
 const defaultRole = {
   id: 0,

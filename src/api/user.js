@@ -16,3 +16,11 @@ export function getUserInfoByPhone(data) {
     data
   })
 }
+
+export function getUserList(data) {
+  return request({
+    url: `${path}/getUserList`,
+    method: 'post',
+    data
+  })
+}
