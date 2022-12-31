@@ -57,6 +57,7 @@ import path from 'path'
 import { mapState } from 'vuex'
 import { deepClone } from '@/utils'
 import { getRoleList, addRole, delRole, setRole, getRole } from '@/api/role'
+import { get } from 'http'
 
 const defaultRole = {
   id: 0,
@@ -73,6 +74,7 @@ export default {
       routes: [],
       rolesList: [],
       loading: false,
+      searchword: null,
       dialogVisible: false,
       dialogType: 'new',
       checkStrictly: false,
@@ -93,11 +95,9 @@ export default {
   },
   watch: {
     search(newVal, oldVal) {
-      this.$message({
-        message: '暂时不支持搜索功能。',
-        type: 'error',
-        duration: 2 * 1000
-      })
+      console.log(newVal)
+      this.searchword = newVal
+      this.getRoles()
     },
     create() {
       this.handleAddRole()
@@ -113,7 +113,8 @@ export default {
       this.loading = true
       getRoleList({
         id: this.userdata.user.id,
-        gid: this.userdata.group.id
+        gid: this.userdata.group.id,
+        search: this.searchword
       }).then(response => {
         this.rolesList = response.data.data.roles
         this.rolesList.forEach(role => {
