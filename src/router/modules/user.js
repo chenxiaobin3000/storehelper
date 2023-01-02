@@ -14,6 +14,9 @@ const userRouter = {
   }, {
     path: 'resetPwd', component: () => import('@/views/user/resetPwd'),
     name: 'user_resetPwd', meta: { title: '重置密码', roles: [1003] }
+  }, {
+    path: 'setPassword', component: () => import('@/views/user/setPassword'),
+    name: 'user_setPassword', meta: { title: '修改密码', roles: [1001] }
   }]
 }
 
