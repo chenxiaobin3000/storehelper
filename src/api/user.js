@@ -1,17 +1,41 @@
 import request from '@/utils/request'
 const path = '/user'
 
-export function getUserInfo(data) {
+export function addUser(data) {
   return request({
-    url: `${path}/getUserInfo`,
+    url: `${path}/addUser`,
     method: 'post',
     data
   })
 }
 
-export function getUserInfoByPhone(data) {
+export function setUser(data) {
   return request({
-    url: `${path}/getUserInfoByPhone`,
+    url: `${path}/setUser`,
+    method: 'post',
+    data
+  })
+}
+
+export function delUser(data) {
+  return request({
+    url: `${path}/delUser`,
+    method: 'post',
+    data
+  })
+}
+
+export function getUser(data) {
+  return request({
+    url: `${path}/getUser`,
+    method: 'post',
+    data
+  })
+}
+
+export function getUserByPhone(data) {
+  return request({
+    url: `${path}/getUserByPhone`,
     method: 'post',
     data
   })

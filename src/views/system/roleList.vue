@@ -31,7 +31,9 @@
             type="textarea"
           />
         </el-form-item>
-        <div style="width: 100%;margin-bottom:10px;">提示：首页是所有账号的基本权限，未勾选"首页"系统会自动添加。</div>
+        <el-form-item label="提示">
+          <div style="width: 220px">系统会自动添加"首页"权限。</div>
+        </el-form-item>
         <el-form-item label="权限">
           <el-tree
             ref="tree"
@@ -94,7 +96,6 @@ export default {
   },
   watch: {
     search(newVal, oldVal) {
-      console.log(newVal)
       this.searchword = newVal
       this.getRoles()
     },

@@ -15,8 +15,8 @@ const systemRouter = {
     path: 'groupInfo', component: () => import('@/views/system/groupInfo'),
     name: 'system_groupInfo', meta: { title: '公司信息', roles: [1103] }
   }, {
-    path: 'getRoleList', component: () => import('@/views/system/getRoleList'),
-    name: 'system_getRole', meta: { title: '角色管理', roles: [1102] }
+    path: 'roleList', component: () => import('@/views/system/roleList'),
+    name: 'system_roleList', meta: { title: '角色管理', roles: [1102] }
   }, {
     path: 'setting', component: () => import('@/views/system/setting'),
     name: 'system_setting', meta: { title: '系统设置', roles: [1105] }

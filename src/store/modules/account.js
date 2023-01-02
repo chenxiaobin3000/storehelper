@@ -1,5 +1,5 @@
 import { login, logout } from '@/api/account'
-import { getUserInfo } from '@/api/user'
+import { getUser } from '@/api/user'
 import { setToken, getToken, removeToken, setUserId, getUserId, removeUserId } from '@/utils/cache'
 import { resetRouter } from '@/router'
 import md5 from 'js-md5'
@@ -49,11 +49,11 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getUserInfo({ id: state.id }).then(response => {
+      getUser({ id: state.id }).then(response => {
         const { user, group, permissions } = response.data.data
         // roles must be a non-empty array
         if (!permissions || permissions.length <= 0) {
-          reject('getInfo: roles must be a non-null array!')
+          reject('账号权限被移除，无法登录，请联系系统管理员')
         }
         commit('SET_ROLES', permissions)
         commit('SET_USERDATA', {

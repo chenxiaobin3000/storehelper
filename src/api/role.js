@@ -64,3 +64,11 @@ export function setUserRoleAdmin(data) {
     data
   })
 }
+
+export function getGroupRole(data) {
+  return request({
+    url: `${path}/getGroupRole`,
+    method: 'post',
+    data
+  })
+}

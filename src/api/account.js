@@ -1,6 +1,14 @@
 import request from '@/utils/request'
 const path = '/account'
 
+export function register(data) {
+  return request({
+    url: `${path}/register`,
+    method: 'post',
+    data
+  })
+}
+
 export function login(data) {
   return request({
     url: `${path}/login`,
@@ -17,9 +25,17 @@ export function logout(data) {
   })
 }
 
-export function register(data) {
+export function setPassword(data) {
   return request({
-    url: `${path}/register`,
+    url: `${path}/setPassword`,
+    method: 'post',
+    data
+  })
+}
+
+export function resetPwd(data) {
+  return request({
+    url: `${path}/resetPwd`,
     method: 'post',
     data
   })

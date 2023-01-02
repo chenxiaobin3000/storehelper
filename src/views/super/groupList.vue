@@ -29,11 +29,11 @@
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="220" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
+        <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
           </el-button>
-          <el-button type="danger" size="mini" @click="handleDelete(row,$index)">
+          <el-button type="danger" size="mini" @click="handleDelete(row)">
             删除
           </el-button>
         </template>
@@ -50,7 +50,9 @@
         <el-form-item label="联系电话" prop="phone">
           <el-input v-model="temp.contact.phone" />
         </el-form-item>
-        <div style="width: 100%;margin-bottom:10px;">提示：请填写联系人手机，系统会自动查询联系人信息。</div>
+        <el-form-item label="提示" prop="msg">
+          <div style="width: 240px">系统会自动查询手机号关联的联系人。</div>
+        </el-form-item>
         <el-form-item label="联系人" prop="contact">
           <el-input v-model="temp.contact.name" :disabled="true" />
         </el-form-item>
@@ -73,8 +75,8 @@
 <script>
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
-import { getGroupList, addGroup, delGroup, setGroup } from '@/api/group'
-import { getUserInfoByPhone } from '@/api/user'
+import { getGroupList, addGroup, setGroup, delGroup } from '@/api/group'
+import { getUserByPhone } from '@/api/user'
 
 export default {
   components: { Pagination },
@@ -135,8 +137,8 @@ export default {
       getGroupList(
         this.listQuery
       ).then(response => {
-        this.list = response.data.data.list
         this.total = response.data.data.total
+        this.list = response.data.data.list
         this.loading = false
       }).catch(error => {
         this.loading = false
@@ -157,7 +159,7 @@ export default {
     },
     createData() {
       // 先从手机号获取联系人信息
-      getUserInfoByPhone({
+      getUserByPhone({
         id: this.listQuery.id,
         phone: this.temp.contact.phone
       }).then(response => {
@@ -175,7 +177,7 @@ export default {
       })
     },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
+      this.temp = Object.assign({}, row)
       this.oldPhone = this.temp.contact.phone
       this.dialogStatus = 'update'
       this.dialogVisible = true
@@ -184,7 +186,7 @@ export default {
       // 先判断手机号有没改
       if (this.temp.contact.phone !== this.oldPhone) {
         // 先从手机号获取联系人信息
-        getUserInfoByPhone({
+        getUserByPhone({
           id: this.listQuery.id,
           phone: this.temp.contact.Phone
         }).then(response => {
@@ -204,10 +206,10 @@ export default {
       }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
         this.getGroupList()
+        this.dialogVisible = false
       })
-      this.dialogVisible = false
     },
-    handleDelete(row, index) {
+    handleDelete(row) {
       this.$confirm('确定要删除吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -221,7 +223,6 @@ export default {
           this.getGroupList()
         })
       })
-      this.dialogVisible = false
     }
   }
 }
