@@ -37,6 +37,7 @@
 
 <script>
 import md5 from 'js-md5'
+import { mapState } from 'vuex'
 import { setPassword } from '@/api/account'
 
 export default {
@@ -48,6 +49,20 @@ export default {
       newPwdType: 'password',
       newPwd2: '',
       newPwd2Type: 'password'
+    }
+  },
+  computed: {
+    ...mapState({
+      search: state => state.header.search,
+      create: state => state.header.create
+    })
+  },
+  watch: {
+    search(newVal, oldVal) {
+      this.$message({ type: 'error', message: '该页面不支持搜索操作!' })
+    },
+    create() {
+      this.$message({ type: 'error', message: '该页面不支持新增操作!' })
     }
   },
   methods: {
