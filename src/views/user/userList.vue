@@ -1,13 +1,6 @@
 <template>
   <div class="app-container">
-    <el-table
-      v-loading="loading"
-      :data="list"
-      style="width: 100%;"
-      border
-      fit
-      highlight-current-row
-    >
+    <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="用户名称" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>

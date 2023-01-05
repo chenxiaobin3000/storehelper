@@ -1,13 +1,6 @@
 <template>
   <div class="app-container">
-    <el-table
-      v-loading="loading"
-      :data="list"
-      style="width: 100%;"
-      border
-      fit
-      highlight-current-row
-    >
+    <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="用户名称" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
@@ -29,7 +22,7 @@
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="220" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
+        <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleResetPwd(row)">
             重置密码
           </el-button>

@@ -17,6 +17,9 @@ const commodityRouter = {
   }, {
     path: 'setCategory', component: () => import('@/views/commodity/setCategory'),
     name: 'commodity_setCategory', meta: { title: '品类设置', roles: [302] }
+  }, {
+    path: 'attributeList', component: () => import('@/views/system/attributeList'),
+    name: 'system_attributeList', meta: { title: '属性管理', roles: [303] }
   }]
 }
 

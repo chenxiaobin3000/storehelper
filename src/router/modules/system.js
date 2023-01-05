@@ -18,9 +18,6 @@ const systemRouter = {
     path: 'roleList', component: () => import('@/views/system/roleList'),
     name: 'system_roleList', meta: { title: '角色管理', roles: [1102] }
   }, {
-    path: 'setting', component: () => import('@/views/system/setting'),
-    name: 'system_setting', meta: { title: '系统设置', roles: [1105] }
-  }, {
     path: 'charge', component: () => import('@/views/system/charge'),
     name: 'system_charge', meta: { title: '充值记录', roles: [1101] }
   }]
