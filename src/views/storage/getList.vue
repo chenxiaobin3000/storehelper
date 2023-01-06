@@ -160,7 +160,7 @@ export default {
       tableKey: 0,
       list: null,
       total: 0,
-      listLoading: false, // 改为不加载
+      listLoading: false,
       listQuery: {
         page: 1,
         limit: 20,
@@ -174,15 +174,7 @@ export default {
       sortOptions: [{ label: '升序', key: '+id' }, { label: '降序', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
-      temp: {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
-      },
+      temp: {},
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
@@ -203,6 +195,17 @@ export default {
     this.getList()
   },
   methods: {
+    resetTemp() {
+      this.temp = {
+        id: undefined,
+        importance: 1,
+        remark: '',
+        timestamp: new Date(),
+        title: '',
+        status: 'published',
+        type: ''
+      }
+    },
     getList() {
       // this.listLoading = true
       /* fetchList(this.listQuery).then(response => {
@@ -239,17 +242,6 @@ export default {
         this.listQuery.sort = '-id'
       }
       this.handleFilter()
-    },
-    resetTemp() {
-      this.temp = {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        status: 'published',
-        type: ''
-      }
     },
     handleCreate() {
       this.resetTemp()

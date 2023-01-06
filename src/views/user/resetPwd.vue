@@ -46,7 +46,7 @@ export default {
     return {
       list: null,
       total: 0,
-      loading: false, // 改为不加载
+      loading: false,
       listQuery: {
         id: 0,
         page: 1,

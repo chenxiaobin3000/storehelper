@@ -81,6 +81,7 @@ export default {
   components: { ElDragSelect },
   data() {
     return {
+      userdata: {},
       attrList: [],
       attrTempList1: [],
       attrTempList2: [],
@@ -89,10 +90,7 @@ export default {
       attrTempList5: [],
       attrOptions: [],
       loading: false,
-      temp: {
-        id: 0,
-        name: ''
-      },
+      temp: {},
       dialogVisible: false,
       dialogStatus: '',
       textMap: {
@@ -123,6 +121,12 @@ export default {
     this.getGroupAttr()
   },
   methods: {
+    resetTemp() {
+      this.temp = {
+        id: 0,
+        name: ''
+      }
+    },
     getGroupAttr() {
       this.attrList = []
       this.attrOptions = []
@@ -154,12 +158,6 @@ export default {
         this.attrTempList4 = response.data.data.list4
         this.attrTempList5 = response.data.data.list5
       })
-    },
-    resetTemp() {
-      this.temp = {
-        id: 0,
-        name: ''
-      }
     },
     createData() {
       addAttr({

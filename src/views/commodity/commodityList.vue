@@ -1,354 +1,274 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-input v-model="listQuery.title" placeholder="公司名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.importance" placeholder="省份" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
-      </el-select>
-      <el-select v-model="listQuery.type" placeholder="地区" clearable class="filter-item" style="width: 140px">
-        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
-      </el-select>
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
-      </el-select>
-      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查找</el-button>
-      <el-button class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate">新增</el-button>
-    </div>
-
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-    >
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="60" :class-name="getSortClass('id')">
+    <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
+      <el-table-column label="商品编号" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
+          <span>{{ row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="商品名称" width="250px" align="center">
+      <el-table-column label="商品名称" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="品类" min-width="80px" align="center">
+      <el-table-column label="品类" width="100px" align="center">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
+          <span>{{ row.category }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="地区" min-width="80px" align="center">
+      <el-table-column label="属性" width="160px" align="center">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
+          <span>{{ row.attribute }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="详细地址" min-width="250px" align="center">
+      <el-table-column label="价格" width="110px" align="center">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
+          <span>{{ row.price }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="联系人" width="80px" align="center">
+      <el-table-column label="备注" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.author }}</span>
+          <span>{{ row.remark }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" class-name="status-col" width="80px" align="center">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="220" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            Edit
+            编辑
           </el-button>
-          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
-            Publish
-          </el-button>
-          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
-            Draft
-          </el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row)">
-            Delete
+          <el-button type="danger" size="mini" @click="handleDelete(row)">
+            删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="Type" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
+      <el-form :model="temp" label-position="left" label-width="70px" style="width: 500px; margin-left:50px;">
+        <el-form-item label="商品编号" prop="code">
+          <el-input v-model="temp.code" />
+        </el-form-item>
+        <el-form-item label="商品名称" prop="name">
+          <el-input v-model="temp.name" />
+        </el-form-item>
+        <el-form-item label="商品品类" prop="category">
+          <el-select v-model="temp.category" class="filter-item" style="width: 38%" placeholder="请选择品类">
+            <el-option v-for="item in categoryList" :key="item.id" :label="item.label" :value="item.id" />
+          </el-select>
+          <el-select v-model="temp.template" class="filter-item" style="width: 60%; margin-left: 2%;" placeholder="请选择属性模板" @change="changeTemplate">
+            <el-option v-for="item in templateList" :key="item.id" :label="item.label" :value="item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Date" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
+        <el-form-item v-if="temp.attributes && temp.attributes.length > 0" label="商品属性" prop="attribute1">
+          <el-input v-if="temp.attributes && temp.attributes.length > 0" v-model="temp.attributes[0]" style="width: 49%" :placeholder="temp.holders[0]" />
+          <el-input v-if="temp.attributes && temp.attributes.length > 1" v-model="temp.attributes[1]" style="width: 49%; margin-left: 2%;" :placeholder="temp.holders[1]" />
         </el-form-item>
-        <el-form-item label="Title" prop="title">
-          <el-input v-model="temp.title" />
+        <el-form-item v-if="temp.attributes && temp.attributes.length > 2" label="" prop="attribute2">
+          <el-input v-if="temp.attributes && temp.attributes.length > 2" v-model="temp.attributes[2]" style="width: 49%" :placeholder="temp.holders[2]" />
+          <el-input v-if="temp.attributes && temp.attributes.length > 3" v-model="temp.attributes[3]" style="width: 49%; margin-left: 2%;" :placeholder="temp.holders[3]" />
         </el-form-item>
-        <el-form-item label="Status">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
+        <el-form-item v-if="temp.attributes && temp.attributes.length > 4" label="" prop="attribute3">
+          <el-input v-if="temp.attributes && temp.attributes.length > 4" v-model="temp.attributes[4]" style="width: 49%" :placeholder="temp.holders[4]" />
+          <el-input v-if="temp.attributes && temp.attributes.length > 5" v-model="temp.attributes[5]" style="width: 49%; margin-left: 2%;" :placeholder="temp.holders[5]" />
         </el-form-item>
-        <el-form-item label="Imp">
-          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />
+        <el-form-item v-if="temp.attributes && temp.attributes.length > 6" label="" prop="attribute4">
+          <el-input v-if="temp.attributes && temp.attributes.length > 6" v-model="temp.attributes[6]" style="width: 49%" :placeholder="temp.holders[6]" />
+          <el-input v-if="temp.attributes && temp.attributes.length > 7" v-model="temp.attributes[7]" style="width: 49%; margin-left: 2%;" :placeholder="temp.holders[7]" />
         </el-form-item>
-        <el-form-item label="Remark">
-          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
+        <el-form-item label="商品价格" prop="price">
+          <el-input-number v-model="temp.price" :precision="2" />
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="temp.remark" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          Cancel
+        <el-button @click="dialogVisible = false">
+          取消
         </el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          Confirm
+          确定
         </el-button>
       </div>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-
-const calendarTypeOptions = [
-  { key: '福建省', display_name: '福州' },
-  { key: '福建省', display_name: '厦门' },
-  { key: '广东省', display_name: '深圳' },
-  { key: '山东省', display_name: '济南' }
-]
-
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
+import { mapState } from 'vuex'
+import Pagination from '@/components/Pagination'
+import { showPrice } from '@/utils/utils'
+import { getGroupCommodity, addCommodity, setCommodity, delCommodity } from '@/api/commodity'
+import { getGroupCategory } from '@/api/category'
+import { getGroupAttrTemp } from '@/api/attribute'
 
 export default {
-  name: 'ComplexTable',
   components: { Pagination },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
-    }
-  },
   data() {
     return {
-      tableKey: 0,
+      userdata: {},
       list: null,
       total: 0,
-      listLoading: false, // 改为不加载
+      categoryList: [],
+      templateList: [],
+      loading: false,
       listQuery: {
+        id: 0,
         page: 1,
         limit: 20,
-        importance: undefined,
-        title: undefined,
-        type: undefined,
-        sort: '+id'
+        search: null
       },
-      importanceOptions: ['福建省', '广东省', '山东省'],
-      calendarTypeOptions,
-      sortOptions: [{ label: '升序', key: '+id' }, { label: '降序', key: '-id' }],
-      statusOptions: ['published', 'draft', 'deleted'],
-      showReviewer: false,
-      temp: {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
-      },
-      dialogFormVisible: false,
+      temp: {},
+      dialogVisible: false,
       dialogStatus: '',
       textMap: {
-        update: 'Edit',
-        create: 'Create'
-      },
-      dialogPvVisible: false,
-      pvData: [],
-      rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
-      },
-      downloadLoading: false
+        update: '修改商品信息',
+        create: '新增商品'
+      }
+    }
+  },
+  computed: {
+    ...mapState({
+      search: state => state.header.search,
+      create: state => state.header.create
+    })
+  },
+  watch: {
+    search(newVal, oldVal) {
+      this.listQuery.search = newVal
+      this.getCommodityList()
+    },
+    create() {
+      this.resetTemp()
+      this.dialogStatus = 'create'
+      this.dialogVisible = true
     }
   },
   created() {
-    this.getList()
+    this.userdata = this.$store.getters.userdata
+    this.listQuery.id = this.userdata.user.id
+    this.getCategoryList()
+    this.getGroupAttrTemp()
+    this.getCommodityList()
   },
   methods: {
-    getList() {
-      // this.listLoading = true
-      /* fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
-
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
-      })*/
-    },
-    handleFilter() {
-      this.listQuery.page = 1
-      this.getList()
-    },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作Success',
-        type: 'success'
+    getCommodityList() {
+      this.loading = true
+      getGroupCommodity(
+        this.listQuery
+      ).then(response => {
+        this.total = response.data.data.total
+        this.list = response.data.data.list
+        this.loading = false
+      }).catch(error => {
+        this.loading = false
+        Promise.reject(error)
       })
-      row.status = status
     },
-    sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'id') {
-        this.sortByID(order)
-      }
+    getCategoryList() {
+      getGroupCategory({
+        id: this.userdata.user.id
+      }).then(response => {
+        this.generator(response.data.data.list)
+      })
     },
-    sortByID(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+id'
-      } else {
-        this.listQuery.sort = '-id'
-      }
-      this.handleFilter()
+    generator(tree) {
+      tree.forEach(v => {
+        this.categoryList.push(v)
+        if (v.children != null) {
+          this.generator(v.children)
+        }
+      })
+    },
+    getGroupAttrTemp() {
+      getGroupAttrTemp({
+        id: this.userdata.user.id
+      }).then(response => {
+        if (response.data.data.list1 && response.data.data.list1.length > 0) {
+          this.templateList.push({ id: 1, label: response.data.data.list1.join('/'), value: response.data.data.list1 })
+        }
+        if (response.data.data.list2 && response.data.data.list2.length > 0) {
+          this.templateList.push({ id: 2, label: response.data.data.list2.join('/'), value: response.data.data.list2 })
+        }
+        if (response.data.data.list3 && response.data.data.list3.length > 0) {
+          this.templateList.push({ id: 3, label: response.data.data.list3.join('/'), value: response.data.data.list3 })
+        }
+        if (response.data.data.list4 && response.data.data.list4.length > 0) {
+          this.templateList.push({ id: 4, label: response.data.data.list4.join('/'), value: response.data.data.list4 })
+        }
+        if (response.data.data.list5 && response.data.data.list5.length > 0) {
+          this.templateList.push({ id: 5, label: response.data.data.list5.join('/'), value: response.data.data.list5 })
+        }
+      })
     },
     resetTemp() {
       this.temp = {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        status: 'published',
-        type: ''
+        id: 0,
+        code: '',
+        name: '',
+        category: null,
+        template: null,
+        attributes: [],
+        holders: [],
+        price: 0,
+        remark: ''
       }
     },
-    handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+    changeTemplate(id) {
+      this.temp.attributes = []
+      this.temp.holders = []
+      this.templateList[id - 1].value.forEach(v => {
+        this.temp.attributes.push('')
+        this.temp.holders.push(v)
       })
     },
     createData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
-          /* createArticle(this.temp).then(() => {
-            this.list.unshift(this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })*/
-        }
+      addCommodity({
+        id: this.userdata.user.id,
+        gid: this.userdata.group.id,
+        code: this.temp.code,
+        name: this.temp.name,
+        atid: this.temp.template,
+        cid: this.temp.category,
+        price: this.temp.price,
+        remark: this.temp.remark,
+        attrs: this.temp.attributes
+      }).then(response => {
+        this.$message({ type: 'success', message: '新增成功!' })
+        this.getCommodityList()
+        this.dialogVisible = false
       })
     },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
+      this.temp = Object.assign({}, row)
       this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
+      this.dialogVisible = true
     },
     updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          /* (tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Update Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })*/
-        }
+      setCommodity({
+        id: this.userdata.user.id
+      }).then(response => {
+        this.$message({ type: 'success', message: '修改成功!' })
+        this.getCommodityList()
+        this.dialogVisible = false
       })
     },
     handleDelete(row) {
-    },
-    handleFetchPv(pv) {
-      /* fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })*/
-    },
-    handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-        const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
-        const data = this.formatJson(filterVal)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: 'table-list'
+      this.$confirm('确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delCommodity({
+          id: this.userdata.user.id,
+          cid: row.id
+        }).then(response => {
+          this.$message({ type: 'success', message: '删除成功!' })
+          this.getCommodityList()
         })
-        this.downloadLoading = false
       })
-    },
-    formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
-    },
-    getSortClass: function(key) {
-      const sort = this.listQuery.sort
-      return sort === `+${key}` ? 'ascending' : 'descending'
     }
   }
 }

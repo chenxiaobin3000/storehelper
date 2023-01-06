@@ -9,9 +9,6 @@ const systemRouter = {
     roles: [1100]
   },
   children: [{
-    path: 'notify', component: () => import('@/views/system/notify'),
-    name: 'system_notify', meta: { title: '系统通知', roles: [1104] }
-  }, {
     path: 'groupInfo', component: () => import('@/views/system/groupInfo'),
     name: 'system_groupInfo', meta: { title: '公司信息', roles: [1103] }
   }, {

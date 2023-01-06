@@ -77,7 +77,7 @@ export default {
     return {
       list: null,
       total: 0,
-      loading: false, // 改为不加载
+      loading: false,
       oldPhone: '', // 保存修改界面的旧手机号
       listQuery: {
         id: 0,
@@ -85,16 +85,7 @@ export default {
         limit: 20,
         search: null
       },
-      temp: {
-        id: 0,
-        name: '',
-        address: '',
-        contact: {
-          id: 0,
-          name: '',
-          phone: ''
-        }
-      },
+      temp: {},
       dialogVisible: false,
       dialogStatus: '',
       textMap: {
@@ -125,6 +116,18 @@ export default {
     this.getGroupList()
   },
   methods: {
+    resetTemp() {
+      this.temp = {
+        id: 0,
+        name: '',
+        address: '',
+        contact: {
+          id: 0,
+          name: '',
+          phone: ''
+        }
+      }
+    },
     getGroupList() {
       this.loading = true
       getGroupList(
@@ -137,18 +140,6 @@ export default {
         this.loading = false
         Promise.reject(error)
       })
-    },
-    resetTemp() {
-      this.temp = {
-        id: 0,
-        name: '',
-        address: '',
-        contact: {
-          id: 0,
-          name: '',
-          phone: ''
-        }
-      }
     },
     createData() {
       // 先从手机号获取联系人信息

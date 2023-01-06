@@ -83,7 +83,7 @@ export default {
       grouproles: null, // 本公司所有角色列表
       list: null,
       total: 0,
-      loading: false, // 改为不加载
+      loading: false,
       oldRole: '', // 保存修改界面的旧角色id
       listQuery: {
         id: 0,
@@ -91,13 +91,7 @@ export default {
         limit: 20,
         search: null
       },
-      temp: {
-        id: 0,
-        name: '',
-        phone: '',
-        part: { name: '' },
-        role: { id: null, name: '' }
-      },
+      temp: {},
       dialogVisible: false,
       dialogStatus: '',
       textMap: {
@@ -133,6 +127,15 @@ export default {
     })
   },
   methods: {
+    resetTemp() {
+      this.temp = {
+        id: 0,
+        name: '',
+        phone: '',
+        part: { name: '' },
+        role: { id: null, name: '' }
+      }
+    },
     getUserList() {
       this.loading = true
       getUserList(
@@ -158,15 +161,6 @@ export default {
         this.loading = false
         Promise.reject(error)
       })
-    },
-    resetTemp() {
-      this.temp = {
-        id: 0,
-        name: '',
-        phone: '',
-        part: { name: '' },
-        role: { id: null, name: '' }
-      }
     },
     createData() {
       addUser({

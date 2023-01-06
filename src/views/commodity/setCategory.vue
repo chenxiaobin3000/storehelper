@@ -58,12 +58,7 @@ export default {
       userdata: {},
       categoryTree: null,
       categoryList: null,
-      temp: {
-        id: 0,
-        label: '',
-        parent: 0,
-        level: 1
-      },
+      temp: {},
       defaultParent: '根节点',
       dialogVisible: false,
       dialogStatus: '',
@@ -96,6 +91,14 @@ export default {
     this.getCategoryList()
   },
   methods: {
+    resetTemp() {
+      this.temp = {
+        id: 0,
+        label: '',
+        parent: 0,
+        level: 1
+      }
+    },
     getCategoryList() {
       this.loading = true
       getGroupCategory({
@@ -124,14 +127,6 @@ export default {
     filterTree(value, data) {
       if (!value) return true
       return data.label.includes(value)
-    },
-    resetTemp() {
-      this.temp = {
-        id: 0,
-        label: '',
-        parent: 0,
-        level: 1
-      }
     },
     createData() {
       addCategory({
