@@ -113,6 +113,7 @@ export default {
   },
   created() {
     this.listQuery.id = this.$store.getters.userdata.user.id
+    this.resetTemp()
     this.getGroupList()
   },
   methods: {

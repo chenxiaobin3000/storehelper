@@ -88,6 +88,7 @@ export default {
   },
   created() {
     this.userdata = this.$store.getters.userdata
+    this.resetTemp()
     this.getCategoryList()
   },
   methods: {

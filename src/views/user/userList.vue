@@ -119,6 +119,7 @@ export default {
   },
   created() {
     this.listQuery.id = this.$store.getters.userdata.user.id
+    this.resetTemp()
     this.getUserList()
     getGroupRole({
       id: this.listQuery.id
