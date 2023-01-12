@@ -37,8 +37,9 @@ module.exports = {
       errors: true
     },
     proxy: {
-      '/api': {
-        'target': 'http://localhost:8080'}
+      '/api': { 'target': 'http://localhost:8080' },
+      '/upload': { 'target': 'http://localhost:8080' },
+      '/s': { 'target': 'http://localhost:8080' }
     }
   },
   configureWebpack: {

@@ -6,6 +6,11 @@
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="地区" width="140px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.area }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="联系人" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.contact.name }}</span>
@@ -49,6 +54,9 @@
         <el-form-item label="联系人" prop="contact">
           <el-input v-model="temp.contact.name" :disabled="true" />
         </el-form-item>
+        <el-form-item label="仓库地区" prop="code">
+          <el-cascader v-model="temp.region" size="large" :options="regionOptions" />
+        </el-form-item>
         <el-form-item label="公司地址" prop="address">
           <el-input v-model="temp.address" />
         </el-form-item>
@@ -67,6 +75,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { regionData } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
 import { getGroupList, addGroup, setGroup, delGroup } from '@/api/group'
 import { getUserByPhone } from '@/api/user'
@@ -86,6 +95,7 @@ export default {
         search: null
       },
       temp: {},
+      regionOptions: regionData,
       dialogVisible: false,
       dialogStatus: '',
       textMap: {
@@ -121,6 +131,7 @@ export default {
       this.temp = {
         id: 0,
         name: '',
+        region: [],
         address: '',
         contact: {
           id: 0,
@@ -136,6 +147,7 @@ export default {
       ).then(response => {
         this.total = response.data.data.total
         this.list = response.data.data.list
+        // 处理地区码
         this.loading = false
       }).catch(error => {
         this.loading = false
@@ -151,6 +163,7 @@ export default {
         // 正式新增
         addGroup({
           id: this.listQuery.id,
+          area: this.temp.region.join(''),
           contact: response.data.data.id,
           name: this.temp.name,
           address: this.temp.address
@@ -185,6 +198,7 @@ export default {
       setGroup({
         id: this.listQuery.id,
         gid: this.temp.id,
+        area: this.temp.region.join(''),
         contact: id,
         name: this.temp.name,
         address: this.temp.address
