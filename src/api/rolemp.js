@@ -57,14 +57,6 @@ export function setUserRoleMp(data) {
   })
 }
 
-export function setUserRoleMpAdmin(data) {
-  return request({
-    url: `${path}/setUserRoleMpAdmin`,
-    method: 'post',
-    data
-  })
-}
-
 export function getGroupRoleMp(data) {
   return request({
     url: `${path}/getGroupRoleMp`,

@@ -57,14 +57,6 @@ export function setUserRole(data) {
   })
 }
 
-export function setUserRoleAdmin(data) {
-  return request({
-    url: `${path}/setUserRoleAdmin`,
-    method: 'post',
-    data
-  })
-}
-
 export function getGroupRole(data) {
   return request({
     url: `${path}/getGroupRole`,
