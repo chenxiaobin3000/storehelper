@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
     <el-table v-loading="loading" :data="rolesList" style="width: 100%;" border highlight-current-row>
-      <el-table-column align="center" label="角色名称" width="220">
+      <el-table-column align="center" label="微信角色名称" width="220">
         <template slot-scope="scope">
           {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="角色描述">
+      <el-table-column align="center" label="微信角色描述">
         <template slot-scope="scope">
           {{ scope.row.description }}
         </template>
@@ -19,7 +19,7 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog :visible.sync="dialogVisible" :title="dialogType==='edit'?'修改角色信息':'新建角色'">
+    <el-dialog :visible.sync="dialogVisible" :title="dialogType==='edit'?'修改微信角色信息':'新建微信角色'">
       <el-form :model="role" label-width="80px" label-position="left">
         <el-form-item label="角色名称">
           <el-input v-model="role.name" />
@@ -30,9 +30,6 @@
             :autosize="{ minRows: 2, maxRows: 4}"
             type="textarea"
           />
-        </el-form-item>
-        <el-form-item label="提示">
-          <div style="width: 220px">系统会自动添加"首页"权限。</div>
         </el-form-item>
         <el-form-item label="权限">
           <el-tree
@@ -48,7 +45,7 @@
       </el-form>
       <div style="text-align:right;">
         <el-button type="danger" @click="dialogVisible=false">取消</el-button>
-        <el-button type="primary" @click="confirmRole">确定</el-button>
+        <el-button type="primary" @click="confirmRoleMp">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -58,7 +55,7 @@
 import path from 'path'
 import { mapState } from 'vuex'
 import { deepClone } from '@/utils'
-import { getRoleList, addRole, delRole, setRole, getRole } from '@/api/role'
+import { getRoleMpList, addRoleMp, delRoleMp, setRoleMp, getRoleMp } from '@/api/rolemp'
 
 const defaultRole = {
   id: 0,
@@ -82,7 +79,16 @@ export default {
       defaultProps: {
         children: 'children',
         label: 'title'
-      }
+      },
+      asyncRoutes: [{
+        meta: { title: '报表', roles: [10] }, path: '/report'
+      }, {
+        meta: { title: '生产', roles: [11] }, path: '/product'
+      }, {
+        meta: { title: '仓储', roles: [12] }, path: '/storage'
+      }, {
+        meta: { title: '履约', roles: [13] }, path: '/agreement'
+      }]
     }
   },
   computed: {
@@ -94,21 +100,21 @@ export default {
   watch: {
     search(newVal, oldVal) {
       this.searchword = newVal
-      this.getRoles()
+      this.getRoleMps()
     },
     create() {
-      this.handleAddRole()
+      this.handleAddRoleMp()
     }
   },
   created() {
     this.userdata = this.$store.getters.userdata
-    this.routes = this.generateRoutes(this.$store.getters.routes)
-    this.getRoles()
+    this.routes = this.generateRoutes(this.asyncRoutes)
+    this.getRoleMps()
   },
   methods: {
-    getRoles() {
+    getRoleMps() {
       this.loading = true
-      getRoleList({
+      getRoleMpList({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
         search: this.searchword
@@ -164,7 +170,7 @@ export default {
       })
       return data
     },
-    handleAddRole() {
+    handleAddRoleMp() {
       this.role = Object.assign({}, defaultRole)
       if (this.$refs.tree) {
         this.$refs.tree.setCheckedNodes([])
@@ -179,12 +185,12 @@ export default {
       if (this.role.routes) {
         this.checkStrictly = true // 保护父子节点不相互影响
         this.$nextTick(() => {
-          const routes = this.filterAsyncRoutes(this.$store.getters.routes, this.role.routes)
+          const routes = this.filterAsyncRoutes(this.asyncRoutes, this.role.routes)
           this.$refs.tree.setCheckedNodes(this.generateArr(routes))
           this.checkStrictly = false
         })
       } else {
-        getRole({
+        getRoleMp({
           id: this.userdata.user.id,
           rid: this.role.id
         }).then(response => {
@@ -192,7 +198,7 @@ export default {
           scope.row.routes = this.role.routes
           this.checkStrictly = true // 保护父子节点不相互影响
           this.$nextTick(() => {
-            const routes = this.filterAsyncRoutes(this.$store.getters.routes, this.role.routes)
+            const routes = this.filterAsyncRoutes(this.asyncRoutes, this.role.routes)
             this.$refs.tree.setCheckedNodes(this.generateArr(routes))
             this.checkStrictly = false
           })
@@ -205,12 +211,12 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delRole({
+        delRoleMp({
           id: this.userdata.user.id,
           rid: row.id
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
-          this.getRoles()
+          this.getRoleMps()
         })
       })
     },
@@ -238,12 +244,13 @@ export default {
       }
       return res
     },
-    confirmRole() {
+    confirmRoleMp() {
       const isEdit = this.dialogType === 'edit'
       const checkedKeys = this.$refs.tree.getCheckedKeys()
-      this.role.routes = this.generateTree(this.$store.getters.routes, '/', checkedKeys)
+      this.role.routes = this.generateTree(this.asyncRoutes, '/', checkedKeys)
+      console.log(this.role.routes)
       if (isEdit) {
-        setRole({
+        setRoleMp({
           id: this.userdata.user.id,
           rid: this.role.id,
           gid: this.userdata.group.id,
@@ -252,7 +259,7 @@ export default {
           permissions: this.role.routes
         }).then(response => {
           this.$message({ type: 'success', message: '修改成功!' })
-          this.getRoles()
+          this.getRoleMps()
           this.dialogVisible = false
         })
         // 清除缓存路由，下次展示直接从服务器获取数据
@@ -262,7 +269,7 @@ export default {
           }
         })
       } else {
-        addRole({
+        addRoleMp({
           id: this.userdata.user.id,
           gid: this.userdata.group.id,
           name: this.role.name,
@@ -270,7 +277,7 @@ export default {
           permissions: this.role.routes
         }).then(response => {
           this.$message({ type: 'success', message: '新增成功!' })
-          this.getRoles()
+          this.getRoleMps()
           this.dialogVisible = false
         })
       }
