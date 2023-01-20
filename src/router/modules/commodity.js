@@ -15,14 +15,23 @@ const commodityRouter = {
     path: 'commodityList', component: () => import('@/views/commodity/commodityList'),
     name: 'commodity_commodityList', meta: { title: '商品列表', roles: [302] }
   }, {
+    path: 'halfgoodList', component: () => import('@/views/commodity/halfgoodList'),
+    name: 'commodity_halfgoodList', meta: { title: '半成品列表', roles: [303] }
+  }, {
     path: 'originalList', component: () => import('@/views/commodity/originalList'),
-    name: 'commodity_originalList', meta: { title: '原料列表', roles: [303] }
+    name: 'commodity_originalList', meta: { title: '原料列表', roles: [304] }
+  }, {
+    path: 'standardList', component: () => import('@/views/commodity/standardList'),
+    name: 'commodity_standardList', meta: { title: '标品列表', roles: [305] }
+  }, {
+    path: 'destroyList', component: () => import('@/views/commodity/destroyList'),
+    name: 'commodity_destroyList', meta: { title: '废料列表', roles: [306] }
   }, {
     path: 'setCategory', component: () => import('@/views/commodity/setCategory'),
-    name: 'commodity_setCategory', meta: { title: '品类设置', roles: [304] }
+    name: 'commodity_setCategory', meta: { title: '品类设置', roles: [307] }
   }, {
     path: 'attributeList', component: () => import('@/views/commodity/attributeList'),
-    name: 'system_attributeList', meta: { title: '属性管理', roles: [305] }
+    name: 'system_attributeList', meta: { title: '属性管理', roles: [308] }
   }]
 }
 

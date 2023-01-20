@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="原料编号" width="100px" align="center">
+      <el-table-column label="标品编号" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="原料名称" width="200px" align="center">
+      <el-table-column label="标品名称" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
@@ -43,17 +43,17 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getOriginalList" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getStandardList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="100px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="原料编号" prop="code">
+        <el-form-item label="标品编号" prop="code">
           <el-input v-model="temp.code" />
         </el-form-item>
-        <el-form-item label="原料名称" prop="name">
+        <el-form-item label="标品名称" prop="name">
           <el-input v-model="temp.name" />
         </el-form-item>
-        <el-form-item label="原料品类" prop="category">
+        <el-form-item label="标品品类" prop="category">
           <el-select v-model="temp.category" class="filter-item" style="width: 38%" placeholder="请选择品类">
             <el-option v-for="item in categoryList" :key="item.id" :label="item.label" :value="item.id" />
           </el-select>
@@ -61,7 +61,7 @@
             <el-option v-for="item in templateList" :key="item.id" :label="item.label" :value="item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item v-if="temp.attributes && temp.attributes.length > 0" label="原料属性" prop="attribute1">
+        <el-form-item v-if="temp.attributes && temp.attributes.length > 0" label="标品属性" prop="attribute1">
           <el-input v-if="temp.attributes && temp.attributes.length > 0" v-model="temp.attributes[0]" style="width: 49%" :placeholder="temp.holders[0]" />
           <el-input v-if="temp.attributes && temp.attributes.length > 1" v-model="temp.attributes[1]" style="width: 49%; margin-left: 2%;" :placeholder="temp.holders[1]" />
         </el-form-item>
@@ -77,7 +77,7 @@
           <el-input v-if="temp.attributes && temp.attributes.length > 6" v-model="temp.attributes[6]" style="width: 49%" :placeholder="temp.holders[6]" />
           <el-input v-if="temp.attributes && temp.attributes.length > 7" v-model="temp.attributes[7]" style="width: 49%; margin-left: 2%;" :placeholder="temp.holders[7]" />
         </el-form-item>
-        <el-form-item label="原料价格" prop="price">
+        <el-form-item label="标品价格" prop="price">
           <el-input-number v-model="temp.price" :precision="2" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -99,7 +99,7 @@
 <script>
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
-import { getGroupOriginal, addOriginal, setOriginal, delOriginal } from '@/api/original'
+import { getGroupStandard, addStandard, setStandard, delStandard } from '@/api/standard'
 import { getGroupCategory } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 
@@ -123,8 +123,8 @@ export default {
       dialogVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '修改原料信息',
-        create: '新增原料'
+        update: '修改标品信息',
+        create: '新增标品'
       }
     }
   },
@@ -137,7 +137,7 @@ export default {
   watch: {
     search(newVal, oldVal) {
       this.listQuery.search = newVal
-      this.getOriginalList()
+      this.getStandardList()
     },
     create() {
       this.resetTemp()
@@ -151,7 +151,7 @@ export default {
     this.resetTemp()
     this.getCategoryList()
     this.getGroupAttrTemp()
-    this.getOriginalList()
+    this.getStandardList()
   },
   methods: {
     resetTemp() {
@@ -167,9 +167,9 @@ export default {
         remark: ''
       }
     },
-    getOriginalList() {
+    getStandardList() {
       this.loading = true
-      getGroupOriginal(
+      getGroupStandard(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total
@@ -241,7 +241,7 @@ export default {
       })
     },
     createData() {
-      addOriginal({
+      addStandard({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
         code: this.temp.code,
@@ -253,7 +253,7 @@ export default {
         attrs: this.temp.attributes
       }).then(response => {
         this.$message({ type: 'success', message: '新增成功!' })
-        this.getOriginalList()
+        this.getStandardList()
         this.dialogVisible = false
       })
     },
@@ -278,7 +278,7 @@ export default {
       this.dialogVisible = true
     },
     updateData() {
-      setOriginal({
+      setStandard({
         id: this.userdata.user.id,
         commid: this.temp.id,
         gid: this.userdata.group.id,
@@ -291,7 +291,7 @@ export default {
         attrs: this.temp.attributes
       }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
-        this.getOriginalList()
+        this.getStandardList()
         this.dialogVisible = false
       })
     },
@@ -301,12 +301,12 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delOriginal({
+        delStandard({
           id: this.userdata.user.id,
           cid: row.id
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
-          this.getOriginalList()
+          this.getStandardList()
         })
       })
     }
