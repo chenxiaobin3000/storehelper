@@ -11,6 +11,14 @@
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="原料" width="160px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.oname }} </span>
+          <el-button @click="handleSelectOriginal(row)">
+            修改
+          </el-button>
+        </template>
+      </el-table-column>
       <el-table-column label="品类" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.categoryName }}</span>
@@ -98,13 +106,38 @@
         </el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="设置关联原料" :visible.sync="dialogOriVisible">
+      <el-form :model="tempOri" label-position="left" label-width="60px" style="width: 100%; padding: 0 4% 0 4%;">
+        <el-form-item label="编号" prop="code">
+          <el-input v-model="tempOri.code" />
+        </el-form-item>
+        <el-form-item label="名称" prop="name">
+          <el-input v-model="tempOri.name" />
+        </el-form-item>
+        <el-form-item label="原料" prop="original">
+          <el-select v-model="tempOri.oid" class="filter-item" placeholder="请选择原料">
+            <el-option v-for="item in originalList" :key="item.id" :label="item.name" :value="item.id" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogOriVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="updateOriData()">
+          确定
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
-import { getGroupDestroy, addDestroy, setDestroy, delDestroy } from '@/api/destroy'
+import { getGroupDestroy, addDestroy, setDestroy, delDestroy, setDestroyOriginal } from '@/api/destroy'
+import { getGroupOriginal } from '@/api/original'
 import { getGroupCategory } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 
@@ -117,6 +150,7 @@ export default {
       total: 0,
       categoryList: [],
       templateList: {},
+      originalList: {},
       loading: false,
       listQuery: {
         id: 0,
@@ -125,12 +159,14 @@ export default {
         search: null
       },
       temp: {},
+      tempOri: {},
       dialogVisible: false,
       dialogStatus: '',
       textMap: {
         update: '修改废料信息',
         create: '新增废料'
-      }
+      },
+      dialogOriVisible: false
     }
   },
   computed: {
@@ -157,6 +193,7 @@ export default {
     this.getCategoryList()
     this.getGroupAttrTemp()
     this.getDestroyList()
+    this.getOriginalList()
   },
   methods: {
     resetTemp() {
@@ -203,6 +240,21 @@ export default {
             this.list.push(v)
           })
         }
+        this.loading = false
+      }).catch(error => {
+        this.loading = false
+        Promise.reject(error)
+      })
+    },
+    getOriginalList() {
+      this.loading = true
+      getGroupOriginal({
+        id: this.userdata.user.id,
+        page: 1,
+        limit: 100,
+        search: null
+      }).then(response => {
+        this.originalList = response.data.data.list
         this.loading = false
       }).catch(error => {
         this.loading = false
@@ -300,6 +352,28 @@ export default {
           this.$message({ type: 'success', message: '删除成功!' })
           this.getDestroyList()
         })
+      })
+    },
+    handleSelectOriginal(row) {
+      this.tempOri = {
+        id: row.id,
+        code: row.code,
+        name: row.name,
+        oid: row.oid,
+        oname: row.oname
+      }
+      this.dialogOriVisible = true
+    },
+    updateOriData() {
+      setDestroyOriginal({
+        id: this.userdata.user.id,
+        gid: this.userdata.group.id,
+        did: this.tempOri.id,
+        oid: this.tempOri.oid
+      }).then(response => {
+        this.$message({ type: 'success', message: '修改成功!' })
+        this.getDestroyList()
+        this.dialogOriVisible = false
       })
     }
   }

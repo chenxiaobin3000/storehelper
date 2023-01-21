@@ -32,3 +32,11 @@ export function getGroupHalfgood(data) {
     data
   })
 }
+
+export function setHalfgoodOriginal(data) {
+  return request({
+    url: `${path}/setHalfgoodOriginal`,
+    method: 'post',
+    data
+  })
+}

@@ -32,3 +32,11 @@ export function getGroupDestroy(data) {
     data
   })
 }
+
+export function setDestroyOriginal(data) {
+  return request({
+    url: `${path}/setDestroyOriginal`,
+    method: 'post',
+    data
+  })
+}

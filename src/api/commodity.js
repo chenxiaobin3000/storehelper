@@ -32,3 +32,11 @@ export function getGroupCommodity(data) {
     data
   })
 }
+
+export function setCommodityOriginal(data) {
+  return request({
+    url: `${path}/setCommodityOriginal`,
+    method: 'post',
+    data
+  })
+}
