@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="半成品编号" width="100px" align="center">
+      <el-table-column label="编号" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="半成品名称" width="200px" align="center">
+      <el-table-column label="名称" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
@@ -21,9 +21,14 @@
           <span>{{ row.attribute }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="单位" width="110px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.unit }}克</span>
+        </template>
+      </el-table-column>
       <el-table-column label="价格" width="110px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.price }}</span>
+          <span>{{ row.price }}元</span>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center">
@@ -46,22 +51,19 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getHalfgoodList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
-      <el-form :model="temp" label-position="left" label-width="100px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="半成品编号" prop="code">
+      <el-form :model="temp" label-position="left" label-width="60px" style="width: 100%; padding: 0 4% 0 4%;">
+        <el-form-item label="编号" prop="code">
           <el-input v-model="temp.code" />
         </el-form-item>
-        <el-form-item label="半成品名称" prop="name">
+        <el-form-item label="名称" prop="name">
           <el-input v-model="temp.name" />
         </el-form-item>
-        <el-form-item label="半成品品类" prop="category">
-          <el-select v-model="temp.category" class="filter-item" style="width: 38%" placeholder="请选择品类">
+        <el-form-item label="品类" prop="category">
+          <el-select v-model="temp.category" class="filter-item" placeholder="请选择品类">
             <el-option v-for="item in categoryList" :key="item.id" :label="item.label" :value="item.id" />
           </el-select>
-          <el-select v-model="temp.template" class="filter-item" style="width: 60%; margin-left: 2%;" placeholder="请选择属性模板" @change="changeTemplate">
-            <el-option v-for="item in templateList" :key="item.id" :label="item.label" :value="item.id" />
-          </el-select>
         </el-form-item>
-        <el-form-item v-if="temp.attributes && temp.attributes.length > 0" label="半成品属性" prop="attribute1">
+        <el-form-item v-if="temp.attributes && temp.attributes.length > 0" label="属性" prop="attribute1">
           <el-input v-if="temp.attributes && temp.attributes.length > 0" v-model="temp.attributes[0]" style="width: 49%" :placeholder="temp.holders[0]" />
           <el-input v-if="temp.attributes && temp.attributes.length > 1" v-model="temp.attributes[1]" style="width: 49%; margin-left: 2%;" :placeholder="temp.holders[1]" />
         </el-form-item>
@@ -77,8 +79,11 @@
           <el-input v-if="temp.attributes && temp.attributes.length > 6" v-model="temp.attributes[6]" style="width: 49%" :placeholder="temp.holders[6]" />
           <el-input v-if="temp.attributes && temp.attributes.length > 7" v-model="temp.attributes[7]" style="width: 49%; margin-left: 2%;" :placeholder="temp.holders[7]" />
         </el-form-item>
-        <el-form-item label="半成品价格" prop="price">
+        <el-form-item label="价格" prop="price">
           <el-input-number v-model="temp.price" :precision="2" />
+        </el-form-item>
+        <el-form-item label="单位" prop="unit">
+          <el-input-number v-model="temp.unit" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="temp.remark" />
@@ -111,7 +116,7 @@ export default {
       list: null,
       total: 0,
       categoryList: [],
-      templateList: [],
+      templateList: {},
       loading: false,
       listQuery: {
         id: 0,
@@ -160,11 +165,17 @@ export default {
         code: '',
         name: '',
         category: null,
-        template: null,
         attributes: [],
         holders: [],
         price: 0,
+        unit: 0,
         remark: ''
+      }
+      if (this.templateList && this.templateList.length > 0) {
+        this.templateList.forEach(v => {
+          this.temp.attributes.push('')
+          this.temp.holders.push(v)
+        })
       }
     },
     getHalfgoodList() {
@@ -174,22 +185,24 @@ export default {
       ).then(response => {
         this.total = response.data.data.total
         this.list = []
-        response.data.data.list.forEach(v => {
-          // 品类
-          this.categoryList.forEach(c => {
-            if (c.id === v.cid) {
-              v.category = c.id
-              v.categoryName = c.label
-            }
+        if (response.data.data.list && response.data.data.list.length > 0) {
+          response.data.data.list.forEach(v => {
+            // 品类
+            this.categoryList.forEach(c => {
+              if (c.id === v.cid) {
+                v.category = c.id
+                v.categoryName = c.label
+              }
+            })
+            // 属性
+            let idx = 0
+            v.attribute = ''
+            this.templateList.forEach(t => {
+              v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
+            })
+            this.list.push(v)
           })
-          // 属性
-          let idx = 0
-          v.attribute = ''
-          this.templateList[v.atid - 1].value.forEach(t => {
-            v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
-          })
-          this.list.push(v)
-        })
+        }
         this.loading = false
       }).catch(error => {
         this.loading = false
@@ -213,31 +226,10 @@ export default {
     },
     getGroupAttrTemp() {
       getGroupAttrTemp({
-        id: this.userdata.user.id
+        id: this.userdata.user.id,
+        atid: 2
       }).then(response => {
-        if (response.data.data.list1 && response.data.data.list1.length > 0) {
-          this.templateList.push({ id: 1, label: response.data.data.list1.join('/'), value: response.data.data.list1 })
-        }
-        if (response.data.data.list2 && response.data.data.list2.length > 0) {
-          this.templateList.push({ id: 2, label: response.data.data.list2.join('/'), value: response.data.data.list2 })
-        }
-        if (response.data.data.list3 && response.data.data.list3.length > 0) {
-          this.templateList.push({ id: 3, label: response.data.data.list3.join('/'), value: response.data.data.list3 })
-        }
-        if (response.data.data.list4 && response.data.data.list4.length > 0) {
-          this.templateList.push({ id: 4, label: response.data.data.list4.join('/'), value: response.data.data.list4 })
-        }
-        if (response.data.data.list5 && response.data.data.list5.length > 0) {
-          this.templateList.push({ id: 5, label: response.data.data.list5.join('/'), value: response.data.data.list5 })
-        }
-      })
-    },
-    changeTemplate(id) {
-      this.temp.attributes = []
-      this.temp.holders = []
-      this.templateList[id - 1].value.forEach(v => {
-        this.temp.attributes.push('')
-        this.temp.holders.push(v)
+        this.templateList = response.data.data.list
       })
     },
     createData() {
@@ -246,9 +238,9 @@ export default {
         gid: this.userdata.group.id,
         code: this.temp.code,
         name: this.temp.name,
-        atid: this.temp.template,
         cid: this.temp.category,
         price: this.temp.price,
+        unit: this.temp.unit,
         remark: this.temp.remark,
         attrs: this.temp.attributes
       }).then(response => {
@@ -263,14 +255,14 @@ export default {
         code: row.code,
         name: row.name,
         category: row.category,
-        template: row.atid,
         attributes: [],
         holders: [],
         price: row.price,
+        unit: row.unit,
         remark: row.remark
       }
       let idx = 0
-      this.templateList[row.atid - 1].value.forEach(v => {
+      this.templateList.forEach(v => {
         this.temp.attributes.push(row.attrs[idx++])
         this.temp.holders.push(v)
       })
@@ -280,13 +272,13 @@ export default {
     updateData() {
       setHalfgood({
         id: this.userdata.user.id,
-        commid: this.temp.id,
+        hid: this.temp.id,
         gid: this.userdata.group.id,
         code: this.temp.code,
         name: this.temp.name,
-        atid: this.temp.template,
         cid: this.temp.category,
         price: this.temp.price,
+        unit: this.temp.unit,
         remark: this.temp.remark,
         attrs: this.temp.attributes
       }).then(response => {
@@ -303,7 +295,7 @@ export default {
       }).then(() => {
         delHalfgood({
           id: this.userdata.user.id,
-          cid: row.id
+          hid: row.id
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
           this.getHalfgoodList()

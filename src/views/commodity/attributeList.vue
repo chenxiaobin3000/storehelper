@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="16">
         <el-form>
-          <el-form-item label="商品属性模板一">
+          <el-form-item label="商品属性模板">
             <el-button type="primary" size="mini" class="button-node" @click="handleUpdateTemp()">
               更新模板
             </el-button>
@@ -11,23 +11,23 @@
               <el-option v-for="item in attrOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-drag-select>
           </el-form-item>
-          <el-form-item label="商品属性模板二">
-            <el-drag-select v-model="attrTempList2" class="select-node" multiple placeholder="请选择商品属性">
+          <el-form-item label="半成品属性模板">
+            <el-drag-select v-model="attrTempList2" class="select-node" multiple placeholder="请选择半成品属性">
               <el-option v-for="item in attrOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-drag-select>
           </el-form-item>
-          <el-form-item label="商品属性模板三">
-            <el-drag-select v-model="attrTempList3" class="select-node" multiple placeholder="请选择商品属性">
+          <el-form-item label="原料属性模板">
+            <el-drag-select v-model="attrTempList3" class="select-node" multiple placeholder="请选择原料属性">
               <el-option v-for="item in attrOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-drag-select>
           </el-form-item>
-          <el-form-item label="商品属性模板四">
-            <el-drag-select v-model="attrTempList4" class="select-node" multiple placeholder="请选择商品属性">
+          <el-form-item label="标品属性模板">
+            <el-drag-select v-model="attrTempList4" class="select-node" multiple placeholder="请选择标品属性">
               <el-option v-for="item in attrOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-drag-select>
           </el-form-item>
-          <el-form-item label="商品属性模板五">
-            <el-drag-select v-model="attrTempList5" class="select-node" multiple placeholder="请选择商品属性">
+          <el-form-item label="废料属性模板">
+            <el-drag-select v-model="attrTempList5" class="select-node" multiple placeholder="请选择废料属性">
               <el-option v-for="item in attrOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-drag-select>
           </el-form-item>
@@ -151,7 +151,8 @@ export default {
     },
     getGroupAttrTemp() {
       getGroupAttrTemp({
-        id: this.userdata.user.id
+        id: this.userdata.user.id,
+        atid: 0
       }).then(response => {
         this.attrTempList1 = response.data.data.list1
         this.attrTempList2 = response.data.data.list2
