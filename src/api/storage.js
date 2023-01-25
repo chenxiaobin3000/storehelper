@@ -32,3 +32,11 @@ export function getGroupStorage(data) {
     data
   })
 }
+
+export function getStorageOrder(data) {
+  return request({
+    url: `${path}/getStorageOrder`,
+    method: 'post',
+    data
+  })
+}

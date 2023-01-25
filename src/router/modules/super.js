@@ -10,13 +10,10 @@ const userRouter = {
   },
   children: [{
     path: 'changeGroup', component: () => import('@/views/super/changeGroup'),
-    name: 'admin_changeGroup', meta: { title: '切换客户', roles: [88881] }
+    name: 'admin_changeGroup', meta: { title: '切换客户', roles: [8889] }
   }, {
     path: 'groupList', component: () => import('@/views/super/groupList'),
-    name: 'admin_groupList', meta: { title: '客户列表', roles: [88882] }
-  }, {
-    path: 'userList', component: () => import('@/views/super/userList'),
-    name: 'admin_userList', meta: { title: '用户列表', roles: [88883] }
+    name: 'admin_groupList', meta: { title: '客户列表', roles: [8890] }
   }]
 }
 

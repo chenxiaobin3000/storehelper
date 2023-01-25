@@ -55,6 +55,7 @@
 import path from 'path'
 import { mapState } from 'vuex'
 import { deepClone } from '@/utils'
+import MpRoleData from '@/utils/mp-role-data'
 import { getRoleMpList, addRoleMp, delRoleMp, setRoleMp, getRoleMp } from '@/api/rolemp'
 
 const defaultRole = {
@@ -80,15 +81,7 @@ export default {
         children: 'children',
         label: 'title'
       },
-      asyncRoutes: [{
-        meta: { title: '报表', roles: [10] }, path: '/report'
-      }, {
-        meta: { title: '生产', roles: [11] }, path: '/product'
-      }, {
-        meta: { title: '仓储', roles: [12] }, path: '/storage'
-      }, {
-        meta: { title: '履约', roles: [13] }, path: '/agreement'
-      }]
+      asyncRoutes: MpRoleData
     }
   },
   computed: {

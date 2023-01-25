@@ -14,7 +14,7 @@
     </el-tree>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
-      <el-form :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+      <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
         <el-form-item label="品类名称" prop="label">
           <el-input v-model="temp.label" />
         </el-form-item>

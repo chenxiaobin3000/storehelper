@@ -31,9 +31,6 @@
             type="textarea"
           />
         </el-form-item>
-        <el-form-item label="提示">
-          <div style="width: 220px">系统会自动添加"首页"权限。</div>
-        </el-form-item>
         <el-form-item label="权限">
           <el-tree
             ref="tree"
@@ -58,6 +55,7 @@
 import path from 'path'
 import { mapState } from 'vuex'
 import { deepClone } from '@/utils'
+import MyRoleData from '@/utils/role-data'
 import { getRoleList, addRole, delRole, setRole, getRole } from '@/api/role'
 
 const defaultRole = {
@@ -102,7 +100,7 @@ export default {
   },
   created() {
     this.userdata = this.$store.getters.userdata
-    this.routes = this.generateRoutes(this.$store.getters.routes)
+    this.routes = this.generateRoutes(MyRoleData)
     this.getRoles()
   },
   methods: {

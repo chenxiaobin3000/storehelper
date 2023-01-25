@@ -10,10 +10,10 @@ const financeRouter = {
   },
   children: [{
     path: 'report', component: () => import('@/views/finance/report'),
-    name: 'finance_report', meta: { title: '财务总览', roles: [402] }
+    name: 'finance_report', meta: { title: '财务总览', roles: [401] }
   }, {
-    path: 'getInfo', component: () => import('@/views/finance/getInfo'),
-    name: 'finance_getInfo', meta: { title: '财务信息', roles: [401] }
+    path: 'getList', component: () => import('@/views/finance/getList'),
+    name: 'finance_getList', meta: { title: '财务信息', roles: [402] }
   }]
 }
 
