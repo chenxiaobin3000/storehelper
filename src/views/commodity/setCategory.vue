@@ -33,7 +33,7 @@
           </div>
         </el-form-item>
         <el-form-item label="品类等级" prop="level">
-          <el-input v-model="temp.level" :disabled="true" />
+          <span>{{ temp.level }}</span>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">

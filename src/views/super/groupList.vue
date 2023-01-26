@@ -48,11 +48,8 @@
         <el-form-item label="联系电话" prop="phone">
           <el-input v-model="temp.contact.phone" />
         </el-form-item>
-        <el-form-item label="提示" prop="msg">
-          <div style="width: 240px">系统会自动查询手机号关联的联系人。</div>
-        </el-form-item>
         <el-form-item label="联系人" prop="contact">
-          <el-input v-model="temp.contact.name" :disabled="true" />
+          <span>{{ temp.contact.name }}</span>
         </el-form-item>
         <el-form-item label="仓库地区" prop="code">
           <el-cascader v-model="temp.region" size="large" :options="regionOptions" />

@@ -241,7 +241,6 @@ export default {
       const isEdit = this.dialogType === 'edit'
       const checkedKeys = this.$refs.tree.getCheckedKeys()
       this.role.routes = this.generateTree(this.asyncRoutes, '/', checkedKeys)
-      console.log(this.role.routes)
       if (isEdit) {
         setRoleMp({
           id: this.userdata.user.id,

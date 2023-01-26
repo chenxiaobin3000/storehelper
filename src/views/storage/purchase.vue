@@ -61,16 +61,50 @@
     <el-dialog title="订单详情" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
         <el-form-item label="批次" prop="batch">
-          <el-input v-model="temp.batch" />
+          <span>{{ temp.batch }}</span>
         </el-form-item>
         <el-form-item label="仓库" prop="sname">
-          <el-input v-model="temp.sname" />
+          <span>{{ temp.sname }}</span>
         </el-form-item>
-        <el-form-item label="商品列表" prop="comms">
-          <el-input v-model="temp.comms" />
+        <el-table v-loading="loading" :data="temp.comms" style="width: 100%" fit highlight-current-row>
+          <el-table-column label="商品列表" width="80px" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.code }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="名称" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.name }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="重量" width="60px" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.unit }}克</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="数量" width="60px" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.value }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="价格" width="60px" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.price }}元</span>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-form-item v-if="temp.imageList && temp.imageList.length > 0">
+          <span>附件列表</span><br>
+          <el-image
+            v-for="image in temp.imageList"
+            :key="image"
+            :src="image"
+            :preview-src-list="temp.imageList"
+            style="width: 100px; height: 100px"
+          />
         </el-form-item>
-        <el-form-item label="附件列表" prop="attrs">
-          <el-input v-model="temp.attrs" />
+        <el-form-item v-else label="附件列表" prop="attrs">
+          <span>没有附件</span>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -85,7 +119,8 @@
 <script>
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
-import { getStorageOrder } from '@/api/storage'
+import ImageSrc from '@/utils/image-src'
+import { getStorageOrder } from '@/api/order'
 
 export default {
   components: { Pagination },
@@ -131,7 +166,8 @@ export default {
         batch: '',
         sname: '',
         comms: [],
-        attrs: []
+        attrs: [],
+        imageList: []
       }
     },
     getOrderList() {
@@ -145,7 +181,6 @@ export default {
           v.commList = ''
           if (v.comms && v.comms.length > 0) {
             v.comms.forEach(c => {
-              console.log(c)
               v.commList = v.commList + c.name + ','
             })
           }
@@ -158,6 +193,12 @@ export default {
     },
     handleDetail(row) {
       this.temp = Object.assign({}, row)
+      this.temp.imageList = []
+      if (this.temp.attrs && this.temp.attrs.length > 0) {
+        this.temp.attrs.forEach(v => {
+          this.temp.imageList.push(ImageSrc[v.src] + v.path + '/' + v.name)
+        })
+      }
       this.dialogVisible = true
     },
     handleRevoke(row) {
