@@ -32,3 +32,19 @@ export function getGroupStorage(data) {
     data
   })
 }
+
+export function delPurchase(data) {
+  return request({
+    url: `${path}/delPurchase`,
+    method: 'post',
+    data
+  })
+}
+
+export function delReturn(data) {
+  return request({
+    url: `${path}/delReturn`,
+    method: 'post',
+    data
+  })
+}

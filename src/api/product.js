@@ -1,9 +1,17 @@
 import request from '@/utils/request'
 const path = '/product'
 
-export function addProduct(data) {
+export function delProcess(data) {
   return request({
-    url: `${path}/addProduct`,
+    url: `${path}/delProcess`,
+    method: 'post',
+    data
+  })
+}
+
+export function delComplete(data) {
+  return request({
+    url: `${path}/delComplete`,
     method: 'post',
     data
   })
