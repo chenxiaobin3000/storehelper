@@ -124,7 +124,7 @@
 
 <script>
 import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import Pagination from '@/components/Pagination'
 
 const calendarTypeOptions = [
   { key: '福建省', display_name: '福州' },
@@ -140,7 +140,6 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 }, {})
 
 export default {
-  name: 'ComplexTable',
   components: { Pagination },
   filters: {
     statusFilter(status) {
