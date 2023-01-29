@@ -1,6 +1,7 @@
 import axios from 'axios'
-import { Message } from 'element-ui'
+import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
+import router from '@/router'
 import { getToken } from '@/utils/cache'
 
 // create an axios instance
@@ -34,11 +35,23 @@ service.interceptors.response.use(
   response => {
     const res = response.data
     if (res.code !== 0) {
-      Message({
-        message: res.msg,
-        type: 'error',
-        duration: 2000
-      })
+      if (res.code === -3) {
+        MessageBox.confirm(res.msg, '确定登出', {
+          confirmButtonText: '重新登陆',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          store.dispatch('account/relogin').then(() => {
+            router.push('/')
+          })
+        })
+      } else {
+        Message({
+          message: res.msg,
+          type: 'error',
+          duration: 2000
+        })
+      }
       return Promise.reject(res.msg)
     } else {
       return response

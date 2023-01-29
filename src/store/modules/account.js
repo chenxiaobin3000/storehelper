@@ -92,6 +92,24 @@ const actions = {
     })
   },
 
+  // user logout
+  relogin({ commit, dispatch }) {
+    return new Promise(resolve => {
+      commit('SET_TOKEN', '')
+      commit('SET_ID', 0)
+      commit('SET_ROLES', [])
+      commit('SET_USERDATA', {})
+      removeToken()
+      removeUserId()
+      resetRouter()
+
+      // reset visited views and cached views
+      dispatch('tagsView/delAllViews', null, { root: true })
+
+      resolve()
+    })
+  },
+
   // remove token
   resetToken({ commit }) {
     return new Promise(resolve => {
