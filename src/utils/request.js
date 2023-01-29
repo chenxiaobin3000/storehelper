@@ -37,7 +37,7 @@ service.interceptors.response.use(
       Message({
         message: res.msg,
         type: 'error',
-        duration: 2 * 1000
+        duration: 2000
       })
       return Promise.reject(res.msg)
     } else {
@@ -50,13 +50,13 @@ service.interceptors.response.use(
       Message({
         message: error.response.data.msg,
         type: 'error',
-        duration: 2 * 1000
+        duration: 2000
       })
     } else {
       Message({
         message: '网络异常，请联系客服',
         type: 'error',
-        duration: 2 * 1000
+        duration: 2000
       })
     }
     return Promise.reject(error)
