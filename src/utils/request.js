@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
-import router from '@/router'
 import { getToken } from '@/utils/cache'
 
 // create an axios instance
@@ -41,9 +40,7 @@ service.interceptors.response.use(
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          store.dispatch('account/relogin').then(() => {
-            router.push('/')
-          })
+          store.dispatch('account/relogin')
         })
       } else {
         Message({

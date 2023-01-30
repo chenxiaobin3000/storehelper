@@ -4,6 +4,7 @@ const supplierRouter = {
   path: '/supplier',
   component: Layout,
   name: 'supplier',
+  hidden: true,
   meta: {
     title: '供应商管理',
     roles: [900]

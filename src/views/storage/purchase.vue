@@ -1,7 +1,12 @@
 <template>
   <div class="app-container">
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="批次" width="200px" align="center">
+      <el-table-column label="类型" width="105px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.otype }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="批次" align="center">
         <template slot-scope="{row}">
           <span>{{ row.batch }} </span>
           <el-button type="Info" size="mini" @click="handleDetail(row)">
@@ -9,7 +14,7 @@
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="仓库" width="140px" align="center">
+      <el-table-column label="仓库" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.sname }}</span>
         </template>
@@ -19,32 +24,27 @@
           <span>{{ row.commList }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总重量" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.value }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="申请人" width="100px" align="center">
+      <el-table-column label="申请人" width="65px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.applyName }} </span>
         </template>
       </el-table-column>
-      <el-table-column label="申请时间" width="100px" align="center">
+      <el-table-column label="申请时间" width="155px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.applyTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核人" width="100px" align="center">
+      <el-table-column label="审核人" width="65px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.reviewName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核时间" width="100px" align="center">
+      <el-table-column label="审核时间" width="155px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.reviewTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="220" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleRevoke(row)">
             撤销审核
@@ -120,12 +120,15 @@
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
+import { getOrderType } from '@/utils/order'
 import { getStorageOrder } from '@/api/order'
+import { revokePurchase, delPurchase, revokeReturn, delReturn } from '@/api/storage'
 
 export default {
   components: { Pagination },
   data() {
     return {
+      userdata: {},
       list: null,
       total: 0,
       loading: false,
@@ -178,6 +181,7 @@ export default {
         this.total = response.data.data.total
         this.list = response.data.data.list
         this.list.forEach(v => {
+          v.otype = getOrderType(v.type)
           v.commList = ''
           if (v.comms && v.comms.length > 0) {
             v.comms.forEach(c => {
@@ -202,14 +206,59 @@ export default {
       this.dialogVisible = true
     },
     handleRevoke(row) {
-
+      if (row.type !== 1 && row.type !== 2) {
+        this.$message({ type: 'error', message: '订单类型异常，请联系管理员!' })
+      }
+      this.$confirm('确定要撤销吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        if (row.type === 1) {
+          revokePurchase({
+            id: this.userdata.user.id,
+            oid: row.id
+          }).then(response => {
+            this.$message({ type: 'success', message: '撤销成功!' })
+            this.getOrderList()
+          })
+        } else {
+          revokeReturn({
+            id: this.userdata.user.id,
+            oid: row.id
+          }).then(response => {
+            this.$message({ type: 'success', message: '撤销成功!' })
+            this.getOrderList()
+          })
+        }
+      })
     },
     handleDelete(row) {
+      if (row.type !== 1 && row.type !== 2) {
+        this.$message({ type: 'error', message: '订单类型异常，请联系管理员!' })
+      }
       this.$confirm('确定要删除吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        if (row.type === 1) {
+          delPurchase({
+            id: this.userdata.user.id,
+            oid: row.id
+          }).then(response => {
+            this.$message({ type: 'success', message: '删除成功!' })
+            this.getOrderList()
+          })
+        } else {
+          delReturn({
+            id: this.userdata.user.id,
+            oid: row.id
+          }).then(response => {
+            this.$message({ type: 'success', message: '删除成功!' })
+            this.getOrderList()
+          })
+        }
       })
     }
   }

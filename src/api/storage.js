@@ -33,9 +33,25 @@ export function getGroupStorage(data) {
   })
 }
 
+export function revokePurchase(data) {
+  return request({
+    url: `${path}/revokePurchase`,
+    method: 'post',
+    data
+  })
+}
+
 export function delPurchase(data) {
   return request({
     url: `${path}/delPurchase`,
+    method: 'post',
+    data
+  })
+}
+
+export function revokeReturn(data) {
+  return request({
+    url: `${path}/revokeReturn`,
     method: 'post',
     data
   })
