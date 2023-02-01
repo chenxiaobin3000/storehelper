@@ -13,7 +13,7 @@ const financeRouter = {
     name: 'finance_report', meta: { title: '财务总览', roles: [401] }
   }, {
     path: 'getList', component: () => import('@/views/finance/getList'),
-    name: 'finance_getList', meta: { title: '财务信息', roles: [402] }
+    name: 'finance_getList', meta: { title: '财务明细', roles: [402] }
   }]
 }
 

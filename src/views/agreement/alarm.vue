@@ -1,40 +1,40 @@
 <template>
   <div class="app-container">
-    <el-form>
-      <el-form-item label="Name">
-        <el-input v-model.trim="user.name" />
-      </el-form-item>
-      <el-form-item label="Email">
-        <el-input v-model.trim="user.email" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submit">Update</el-button>
-      </el-form-item>
-    </el-form>
+    暂无预警记录
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
-  props: {
-    user: {
-      type: Object,
-      default: () => {
-        return {
-          name: '',
-          email: ''
-        }
-      }
+  components: {},
+  data() {
+    return {
+    }
+  },
+  computed: {
+    ...mapState({
+      search: state => state.header.search,
+      create: state => state.header.create
+    })
+  },
+  watch: {
+    search(newVal, oldVal) {
+      this.$message({ type: 'error', message: '不支持搜索!' })
+    },
+    create() {
+      this.$message({ type: 'error', message: '不支持新建!' })
     }
   },
   methods: {
-    submit() {
-      // this.$message({
-      //   message: 'User information has been updated successfully',
-      //   type: 'success',
-      //   duration: 5 * 1000
-      // })
-    }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.app-container {
+  padding: 32px;
+  color: #666;
+}
+</style>

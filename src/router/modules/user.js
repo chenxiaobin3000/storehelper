@@ -10,13 +10,13 @@ const userRouter = {
   },
   children: [{
     path: 'userList', component: () => import('@/views/user/userList'),
-    name: 'user_userList', meta: { title: '用户列表', roles: [1002] }
+    name: 'user_userList', meta: { title: '用户列表', roles: [1001] }
   }, {
     path: 'resetPwd', component: () => import('@/views/user/resetPwd'),
-    name: 'user_resetPwd', meta: { title: '重置密码', roles: [1003] }
+    name: 'user_resetPwd', meta: { title: '重置密码', roles: [1002] }
   }, {
     path: 'setPassword', component: () => import('@/views/user/setPassword'),
-    name: 'user_setPassword', meta: { title: '修改密码', roles: [1001] }
+    name: 'user_setPassword', meta: { title: '修改密码', roles: [1003] }
   }]
 }
 

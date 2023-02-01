@@ -1,14 +1,30 @@
 <template>
   <div class="app-container">
-    123
+    暂无提醒记录
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   components: {},
   data() {
     return {
+    }
+  },
+  computed: {
+    ...mapState({
+      search: state => state.header.search,
+      create: state => state.header.create
+    })
+  },
+  watch: {
+    search(newVal, oldVal) {
+      this.$message({ type: 'error', message: '不支持搜索!' })
+    },
+    create() {
+      this.$message({ type: 'error', message: '不支持新建!' })
     }
   },
   methods: {
@@ -19,10 +35,6 @@ export default {
 <style lang="scss" scoped>
 .app-container {
   padding: 32px;
-  background-color: rgb(240, 242, 245);
-  position: relative;
-}
-
-@media (max-width:1024px) {
+  color: #666;
 }
 </style>

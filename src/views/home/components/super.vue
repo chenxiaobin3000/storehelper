@@ -1,41 +1,52 @@
 <template>
   <div class="app-container">
-    超级账号
-    <el-form>
-      <el-form-item label="Name">
-        <el-input v-model.trim="user.name" />
-      </el-form-item>
-      <el-form-item label="Email">
-        <el-input v-model.trim="user.email" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submit">Update</el-button>
-      </el-form-item>
-    </el-form>
+    <br>
+    <span class="firstLine">{{ userdata.user.name }} ( {{ userdata.group.name }} ) :</span>
+    <br><br>
+    <span class="secondLine">超级管理员，您好！超管的权限很大，请谨慎操作！</span>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
-  props: {
-    user: {
-      type: Object,
-      default: () => {
-        return {
-          name: '',
-          email: ''
-        }
-      }
+  data() {
+    return {
+      userdata: {}
     }
   },
-  methods: {
-    submit() {
-      // this.$message({
-      //   message: 'User information has been updated successfully',
-      //   type: 'success',
-      //   duration: 5 * 1000
-      // })
+  computed: {
+    ...mapState({
+      search: state => state.header.search,
+      create: state => state.header.create
+    })
+  },
+  watch: {
+    search(newVal, oldVal) {
+      this.$message({ type: 'error', message: '不支持搜索!' })
+    },
+    create() {
+      this.$message({ type: 'error', message: '不支持新建!' })
     }
+  },
+  created() {
+    this.userdata = this.$store.getters.userdata
   }
 }
 </script>
+
+<style scoped>
+.app-container {
+  padding: 32px;
+  color: #666;
+}
+
+.firstLine {
+  padding-left: 2%;
+}
+
+.secondLine {
+  padding-left: 7%;
+}
+</style>
