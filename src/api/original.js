@@ -32,3 +32,11 @@ export function getGroupOriginal(data) {
     data
   })
 }
+
+export function getGroupAllOriginal(data) {
+  return request({
+    url: `${path}/getGroupAllOriginal`,
+    method: 'post',
+    data
+  })
+}

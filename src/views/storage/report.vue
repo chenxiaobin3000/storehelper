@@ -1,6 +1,14 @@
 <template>
   <div class="app-container">
-    <chart :series="series" height="100%" width="100%" />
+    <div class="filter-container div-float">
+      <el-select v-model="cycle" style="width: 200px;" class="filter-item">
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
+      <el-select v-model="cid" style="width: 200px;" class="filter-item">
+        <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
+    </div>
+    <chart :labels="labels" :xdata="xdata" :tdata="tdata" width="100%" height="100%" />
   </div>
 </template>
 
@@ -11,29 +19,29 @@ export default {
   components: { Chart },
   data() {
     return {
-      series: []
+      cycle: 1,
+      options: [{
+        value: 1, label: '日报'
+      }, {
+        value: 2, label: '周报'
+      }, {
+        value: 3, label: '月报'
+      }, {
+        value: 5, label: '年报'
+      }],
+      cid: 0,
+      coptions: [{ value: 0, label: '全部' }],
+      labels: [],
+      xdata: [],
+      tdata: []
     }
   },
   created() {
-    this.series = [{
-      name: 'female',
+    this.labels = ['进货', '退货', '库存']
+    this.xdata = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    this.tdata = [{
+      name: '进货',
       type: 'bar',
-      stack: 'total',
-      barMaxWidth: 35,
-      barGap: '10%',
-      itemStyle: {
-        normal: {
-          color: 'rgba(255,144,128,1)',
-          label: {
-            show: true,
-            textStyle: { color: '#fff' },
-            position: 'insideTop',
-            formatter(p) {
-              return p.value > 0 ? p.value : ''
-            }
-          }
-        }
-      },
       data: [
         709,
         1917,
@@ -47,24 +55,9 @@ export default {
         3372,
         2484,
         4078
-      ]
-    }, {
-      name: 'male',
+      ] }, {
+      name: '退货',
       type: 'bar',
-      stack: 'total',
-      itemStyle: {
-        normal: {
-          color: 'rgba(0,191,183,1)',
-          barBorderRadius: 0,
-          label: {
-            show: true,
-            position: 'top',
-            formatter(p) {
-              return p.value > 0 ? p.value : ''
-            }
-          }
-        }
-      },
       data: [
         327,
         1776,
@@ -76,28 +69,10 @@ export default {
         1390,
         1001,
         951,
-        381,
-        220
-      ]
-    }, {
-      name: 'average',
+        381
+      ] }, {
+      name: '库存',
       type: 'line',
-      stack: 'total',
-      symbolSize: 10,
-      symbol: 'circle',
-      itemStyle: {
-        normal: {
-          color: 'rgba(252,230,48,1)',
-          barBorderRadius: 0,
-          label: {
-            show: true,
-            position: 'top',
-            formatter(p) {
-              return p.value > 0 ? p.value : ''
-            }
-          }
-        }
-      },
       data: [
         1036,
         3693,
@@ -124,5 +99,12 @@ export default {
   position: relative;
   width: 100%;
   height: calc(100vh - 84px);
+}
+
+.div-float {
+  position: absolute;
+  margin-top: 0;
+  margin-left: 200px;
+  z-index: 1;
 }
 </style>

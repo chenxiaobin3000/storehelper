@@ -33,6 +33,14 @@ export function getGroupStorage(data) {
   })
 }
 
+export function getGroupAllStorage(data) {
+  return request({
+    url: `${path}/getGroupAllStorage`,
+    method: 'post',
+    data
+  })
+}
+
 export function revokePurchase(data) {
   return request({
     url: `${path}/revokePurchase`,

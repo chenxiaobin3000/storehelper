@@ -137,7 +137,7 @@
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
 import { getGroupDestroy, addDestroy, setDestroy, delDestroy, setDestroyOriginal } from '@/api/destroy'
-import { getGroupOriginal } from '@/api/original'
+import { getGroupAllOriginal } from '@/api/original'
 import { getGroupCategory } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 
@@ -248,11 +248,8 @@ export default {
     },
     getOriginalList() {
       this.loading = true
-      getGroupOriginal({
-        id: this.userdata.user.id,
-        page: 1,
-        limit: 100,
-        search: null
+      getGroupAllOriginal({
+        id: this.userdata.user.id
       }).then(response => {
         this.originalList = response.data.data.list
         this.loading = false

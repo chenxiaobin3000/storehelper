@@ -25,14 +25,23 @@ export default {
       type: String,
       default: '200px'
     },
-    series: {
+    labels: {
+      type: Array,
+      default: () => []
+    },
+    xdata: {
+      type: Array,
+      default: () => []
+    },
+    tdata: {
       type: Array,
       default: () => []
     }
   },
   data() {
     return {
-      chart: null
+      chart: null,
+      color: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc']
     }
   },
   mounted() {
@@ -48,13 +57,6 @@ export default {
   methods: {
     initChart() {
       this.chart = echarts.init(document.getElementById(this.id))
-      const xData = (function() {
-        const data = []
-        for (let i = 1; i < 13; i++) {
-          data.push(i + 'month')
-        }
-        return data
-      }())
       this.chart.setOption({
         tooltip: {
           trigger: 'axis',
@@ -67,14 +69,14 @@ export default {
           right: '2%',
           borderWidth: 0,
           top: 50,
-          bottom: 60,
+          bottom: 30,
           textStyle: { color: '#fff' }
         },
         legend: {
           x: '1%',
-          top: '0',
+          top: '6',
           textStyle: { color: '#90979c' },
-          data: ['female', 'male', 'average']
+          data: this.labels
         },
         calculable: true,
         xAxis: [{
@@ -88,7 +90,7 @@ export default {
           axisTick: { show: false },
           splitArea: { show: false },
           axisLabel: { interval: 0 },
-          data: xData
+          data: this.xdata
         }],
         yAxis: [{
           type: 'value',
@@ -102,27 +104,36 @@ export default {
           axisLabel: { interval: 0 },
           splitArea: { show: false }
         }],
-        dataZoom: [{
-          show: true,
-          height: 30,
-          xAxisIndex: [0],
-          bottom: 0,
-          start: 10,
-          end: 80,
-          handleIcon: 'path://M306.1,413c0,2.2-1.8,4-4,4h-59.8c-2.2,0-4-1.8-4-4V200.8c0-2.2,1.8-4,4-4h59.8c2.2,0,4,1.8,4,4V413z',
-          handleSize: '110%',
-          handleStyle: { color: '#d3dee5' },
-          textStyle: { color: '#fff' },
-          borderColor: '#90979c'
-        }, {
-          type: 'inside',
-          show: true,
-          height: 15,
-          start: 1,
-          end: 35
-        }],
-        series: this.series
+        series: this.createDate(this.tdata)
       })
+    },
+    createDate(list) {
+      const ret = []
+      const size = list.length
+      for (let i = 0; i < size; i++) {
+        ret.push({
+          name: list[i].name,
+          type: list[i].type,
+          stack: 'total',
+          symbolSize: 10,
+          symbol: 'circle',
+          data: list[i].data,
+          itemStyle: {
+            normal: {
+              color: this.color[i],
+              barBorderRadius: 0,
+              label: {
+                show: true,
+                position: 'top',
+                formatter(p) {
+                  return p.value > 0 ? p.value : ''
+                }
+              }
+            }
+          }
+        })
+      }
+      return ret
     }
   }
 }
