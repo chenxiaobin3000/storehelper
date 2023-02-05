@@ -40,24 +40,17 @@ export default {
   },
   data() {
     return {
-      chart: null,
-      color: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc']
+      chart: null
     }
   },
   watch: {
     tdata() {
+      this.destroy()
       this.initChart()
     }
   },
-  mounted() {
-    this.initChart()
-  },
   beforeDestroy() {
-    if (!this.chart) {
-      return
-    }
-    this.chart.dispose()
-    this.chart = null
+    this.destroy()
   },
   methods: {
     initChart() {
@@ -66,15 +59,16 @@ export default {
         tooltip: {
           trigger: 'axis',
           axisPointer: {
+            type: 'cross',
             textStyle: { color: '#fff' }
           }
         },
         grid: {
           left: '5%',
-          right: '2%',
-          borderWidth: 0,
+          right: '5%',
           top: 50,
           bottom: 30,
+          borderWidth: 0,
           textStyle: { color: '#fff' }
         },
         legend: {
@@ -83,7 +77,6 @@ export default {
           textStyle: { color: '#90979c' },
           data: this.labels
         },
-        calculable: true,
         xAxis: [{
           type: 'category',
           axisLine: {
@@ -91,25 +84,26 @@ export default {
               color: '#90979c'
             }
           },
-          splitLine: { show: false },
-          axisTick: { show: false },
-          splitArea: { show: false },
-          axisLabel: { interval: 0 },
           data: this.xdata
         }],
         yAxis: [{
           type: 'value',
+          minInterval: 1,
           splitLine: { show: false },
           axisLine: {
             lineStyle: {
               color: '#90979c'
             }
-          },
-          axisTick: { show: false },
-          axisLabel: {
-            interval: 0
-          },
-          splitArea: { show: false }
+          }
+        }, {
+          type: 'value',
+          minInterval: 1,
+          splitLine: { show: false },
+          axisLine: {
+            lineStyle: {
+              color: '#90979c'
+            }
+          }
         }],
         series: this.createDate(this.tdata)
       })
@@ -121,14 +115,12 @@ export default {
         ret.push({
           name: list[i].name,
           type: list[i].type,
-          stack: 'total',
           symbolSize: 10,
-          symbol: 'circle',
           data: list[i].data,
+          yAxisIndex: list[i].yAxisIndex,
           itemStyle: {
             normal: {
-              color: this.color[i],
-              barBorderRadius: 0,
+              color: list[i].color,
               label: {
                 show: true,
                 position: 'top',
@@ -141,6 +133,13 @@ export default {
         })
       }
       return ret
+    },
+    destroy() {
+      if (!this.chart) {
+        return
+      }
+      this.chart.dispose()
+      this.chart = null
     }
   }
 }

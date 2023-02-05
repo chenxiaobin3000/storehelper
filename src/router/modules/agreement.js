@@ -9,7 +9,7 @@ const agreementRouter = {
     roles: [200]
   },
   children: [{
-    path: 'report', component: () => import('@/views/agreement/report'),
+    path: 'report', component: () => import('@/views/report/agreement'),
     name: 'agreement_report', meta: { title: '履约总览', roles: [201] }
   }, {
     path: 'getList', component: () => import('@/views/agreement/getList'),

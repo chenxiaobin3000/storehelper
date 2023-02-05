@@ -9,7 +9,7 @@ const productRouter = {
     roles: [600]
   },
   children: [{
-    path: 'report', component: () => import('@/views/product/report'),
+    path: 'report', component: () => import('@/views/report/product'),
     name: 'product_report', meta: { title: '生产总览', roles: [601] }
   }, {
     path: 'getList', component: () => import('@/views/product/getList'),

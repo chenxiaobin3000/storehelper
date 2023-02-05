@@ -66,13 +66,13 @@ export default {
 
     // 数据
     this.tdata = [{
-      name: '履约退货订单数', type: 'bar', data: []
+      name: '履约发货订单数', type: 'line', yAxisIndex: 1, color: '#91cc75', data: []
     }, {
-      name: '履约发货订单数', type: 'bar', data: []
+      name: '履约退货订单数', type: 'line', yAxisIndex: 1, color: '#ee6666', data: []
     }, {
-      name: '履约退货商品数', type: 'line', data: []
+      name: '履约发货商品数', type: 'bar', yAxisIndex: 0, color: '#5470c6', data: []
     }, {
-      name: '履约发货商品数', type: 'line', data: []
+      name: '履约退货商品数', type: 'bar', yAxisIndex: 0, color: '#fac858', data: []
     }]
 
     // 左上标签
@@ -93,31 +93,33 @@ export default {
       }
     },
     getAgreementDayReport() {
-      this.tdata[0].data = [0, 0, 0, 0, 0, 0, 0]
-      this.tdata[1].data = [0, 0, 0, 0, 0, 0, 0]
-      this.tdata[2].data = [0, 0, 0, 0, 0, 0, 0]
-      this.tdata[3].data = [0, 0, 0, 0, 0, 0, 0]
       getAgreementReport({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
         cycle: 1
       }).then(response => {
+        const tdata = [...this.tdata]
+        tdata[0].data = Array(7).fill(0)
+        tdata[1].data = [...tdata[0].data]
+        tdata[2].data = [...tdata[0].data]
+        tdata[3].data = [...tdata[0].data]
         const size = this.xdata.length
         const data = response.data.data.list
         data.forEach(v => {
           for (let i = 0; i < size; i++) {
             if (this.xdata[i].key === v.date) {
-              if (v.type === 5) {
-                this.tdata[0].data[i] = v.num
-                this.tdata[2].data[i] = v.total
-              } else if (v.type === 6) {
-                this.tdata[1].data[i] = v.num
-                this.tdata[3].data[i] = v.total
+              if (v.type === 6) {
+                tdata[0].data[i] = v.num
+                tdata[2].data[i] = v.total
+              } else if (v.type === 5) {
+                tdata[1].data[i] = v.num
+                tdata[3].data[i] = v.total
               }
               return
             }
           }
         })
+        this.tdata = tdata
       })
     }
   }

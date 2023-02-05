@@ -9,7 +9,7 @@ const marketRouter = {
     roles: [500]
   },
   children: [{
-    path: 'report', component: () => import('@/views/market/report'),
+    path: 'report', component: () => import('@/views/report/market'),
     name: 'market_report', meta: { title: '销售总览', roles: [502] }
   }, {
     path: 'pdd', name: 'market_pdd',
