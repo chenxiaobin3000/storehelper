@@ -9,8 +9,8 @@ const commodityRouter = {
     roles: [300]
   },
   children: [{
-    path: 'saleReport', component: () => import('@/views/commodity/saleReport'),
-    name: 'commodity_saleReport', meta: { title: '销售数据', roles: [301] }
+    path: 'report', component: () => import('@/views/commodity/report'),
+    name: 'commodity_report', meta: { title: '销售数据', roles: [301] }
   }, {
     path: 'commodityList', component: () => import('@/views/commodity/commodityList'),
     name: 'commodity_commodityList', meta: { title: '商品列表', roles: [302] }

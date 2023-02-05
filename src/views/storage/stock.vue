@@ -48,7 +48,7 @@ import { mapState } from 'vuex'
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
 import { getStockCommodity, getStockHalfgood, getStockOriginal, getStockStandard, getStockDestroy } from '@/api/stock'
-import { getGroupStorage } from '@/api/storage'
+import { getGroupAllStorage } from '@/api/storage'
 
 export default {
   components: { Pagination },
@@ -99,21 +99,17 @@ export default {
     }
   },
   created() {
-    const today = new Date()
-    today.setDate(today.getDate() - 1)
     this.listQuery.id = this.$store.getters.userdata.user.id
     this.userdata = this.$store.getters.userdata
+    const today = new Date()
+    today.setDate(today.getDate() - 1)
     this.listQuery.date = parseTime(today, '{y}-{m}-{d}')
-    console.log(this.listQuery.date)
     this.getGroupStorage()
   },
   methods: {
     getGroupStorage() {
-      getGroupStorage({
-        id: this.userdata.user.id,
-        page: 1,
-        limit: 100,
-        search: null
+      getGroupAllStorage({
+        id: this.userdata.user.id
       }).then(response => {
         if (response.data.data.list && response.data.data.list.length > 0) {
           response.data.data.list.forEach(v => {

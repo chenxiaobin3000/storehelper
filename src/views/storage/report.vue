@@ -1,11 +1,8 @@
 <template>
   <div class="app-container">
-    <div class="filter-container div-float">
-      <el-select v-model="cycle" style="width: 200px;" class="filter-item">
+    <div class="filter-container div-float" style="float:right; right:50px;">
+      <el-select v-model="cycle" class="filter-item">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
-      <el-select v-model="cid" style="width: 200px;" class="filter-item">
-        <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
     </div>
     <chart :labels="labels" :xdata="xdata" :tdata="tdata" width="100%" height="100%" />
@@ -13,6 +10,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import Chart from '@/components/Charts/Chart'
 
 export default {
@@ -27,13 +25,25 @@ export default {
       }, {
         value: 3, label: '月报'
       }, {
-        value: 5, label: '年报'
+        value: 4, label: '年报'
       }],
-      cid: 0,
-      coptions: [{ value: 0, label: '全部' }],
       labels: [],
       xdata: [],
       tdata: []
+    }
+  },
+  computed: {
+    ...mapState({
+      search: state => state.header.search,
+      create: state => state.header.create
+    })
+  },
+  watch: {
+    search(newVal, oldVal) {
+      this.$message({ type: 'error', message: '不支持搜索!' })
+    },
+    create() {
+      this.$message({ type: 'error', message: '不支持新建!' })
     }
   },
   created() {

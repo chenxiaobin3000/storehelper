@@ -44,6 +44,11 @@ export default {
       color: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc']
     }
   },
+  watch: {
+    tdata() {
+      this.initChart()
+    }
+  },
   mounted() {
     this.initChart()
   },
@@ -74,7 +79,7 @@ export default {
         },
         legend: {
           x: '1%',
-          top: '6',
+          top: '2',
           textStyle: { color: '#90979c' },
           data: this.labels
         },
@@ -101,7 +106,9 @@ export default {
             }
           },
           axisTick: { show: false },
-          axisLabel: { interval: 0 },
+          axisLabel: {
+            interval: 0
+          },
           splitArea: { show: false }
         }],
         series: this.createDate(this.tdata)
