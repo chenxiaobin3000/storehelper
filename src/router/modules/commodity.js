@@ -28,7 +28,7 @@ const commodityRouter = {
     name: 'commodity_destroyList', meta: { title: '废料列表', roles: [306] }
   }, {
     path: 'setCategory', component: () => import('@/views/commodity/setCategory'),
-    name: 'commodity_setCategory', meta: { title: '品类设置', roles: [307] }
+    name: 'commodity_setCategory', meta: { title: '品类管理', roles: [307] }
   }, {
     path: 'attributeList', component: () => import('@/views/commodity/attributeList'),
     name: 'system_attributeList', meta: { title: '属性管理', roles: [308] }

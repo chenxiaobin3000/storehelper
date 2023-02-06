@@ -1,5 +1,5 @@
 <template>
-  <div id="meituan">
+  <div id="kuaiLv">
     <router-view />
   </div>
 </template>

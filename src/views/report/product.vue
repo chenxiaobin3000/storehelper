@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="filter-container div-float" style="float:right; right:50px;">
+    <div v-if="tdata.length > 0" class="filter-container div-float" style="float:right; right:50px;">
       <el-select v-model="cycle" class="filter-item">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>

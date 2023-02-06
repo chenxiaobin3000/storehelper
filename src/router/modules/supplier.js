@@ -14,7 +14,7 @@ const supplierRouter = {
     name: 'supplier_getList', meta: { title: '供应商列表', roles: [901] }
   }, {
     path: 'keepBook', component: () => import('@/views/supplier/keepBook'),
-    name: 'supplier_keepBook', meta: { title: '账款记录', roles: [902] }
+    name: 'supplier_keepBook', meta: { title: '账款明细', roles: [902] }
   }]
 }
 
