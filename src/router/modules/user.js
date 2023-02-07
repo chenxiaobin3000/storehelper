@@ -1,6 +1,6 @@
 import Layout from '@/layout'
 
-const userRouter = {
+export default {
   path: '/user',
   component: Layout,
   name: 'user',
@@ -19,5 +19,3 @@ const userRouter = {
     name: 'user_setPassword', meta: { title: '修改密码', roles: [1003] }
   }]
 }
-
-export default userRouter

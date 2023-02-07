@@ -1,4 +1,5 @@
 import { asyncRoutes, constantRoutes } from '@/router'
+import { pddRouter, meituanRouter, kuailvRouter } from '@/router/modules/market'
 
 /**
  * Use meta.role to determine if the current user has permission
@@ -44,10 +45,26 @@ const mutations = {
   }
 }
 
+function fixRoutes(asyncRoutes, markets) {
+  // 添加销售平台节点
+  if (markets.includes(1)) {
+    asyncRoutes[1].children.push(pddRouter)
+  }
+  if (markets.includes(2)) {
+    asyncRoutes[1].children.push(meituanRouter)
+  }
+  if (markets.includes(3)) {
+    asyncRoutes[1].children.push(kuailvRouter)
+  }
+  return asyncRoutes
+}
+
 const actions = {
-  generateRoutes({ commit }, roles) {
+  generateRoutes({ commit }, data) {
     return new Promise(resolve => {
-      const accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
+      // 根据对接销售平台，添加节点
+      const newRoutes = fixRoutes(asyncRoutes, data.markets)
+      const accessedRoutes = filterAsyncRoutes(newRoutes, data.roles)
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
     })

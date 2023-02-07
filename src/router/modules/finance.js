@@ -1,6 +1,6 @@
 import Layout from '@/layout'
 
-const financeRouter = {
+export default {
   path: '/finance',
   component: Layout,
   name: 'finance',
@@ -16,5 +16,3 @@ const financeRouter = {
     name: 'finance_getList', meta: { title: '财务明细', roles: [402] }
   }]
 }
-
-export default financeRouter

@@ -1,6 +1,6 @@
 import Layout from '@/layout'
 
-const storageRouter = {
+export default {
   path: '/storage',
   component: Layout,
   name: 'storage',
@@ -25,5 +25,3 @@ const storageRouter = {
     name: 'storage_alarm', meta: { title: '到期提醒', roles: [805] }
   }]
 }
-
-export default storageRouter

@@ -1,6 +1,6 @@
 import Layout from '@/layout'
 
-const userRouter = {
+export default {
   path: '/super',
   component: Layout,
   name: 'super',
@@ -16,5 +16,3 @@ const userRouter = {
     name: 'admin_groupList', meta: { title: '客户列表', roles: [8890] }
   }]
 }
-
-export default userRouter

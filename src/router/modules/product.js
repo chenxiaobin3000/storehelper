@@ -1,6 +1,6 @@
 import Layout from '@/layout'
 
-const productRouter = {
+export default {
   path: '/product',
   component: Layout,
   name: 'product',
@@ -19,5 +19,3 @@ const productRouter = {
     name: 'product_alarm', meta: { title: '损耗预警', roles: [603] }
   }]
 }
-
-export default productRouter

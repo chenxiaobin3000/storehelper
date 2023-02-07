@@ -1,6 +1,6 @@
 import Layout from '@/layout'
 
-const systemRouter = {
+export default {
   path: '/system',
   component: Layout,
   name: 'system',
@@ -25,5 +25,3 @@ const systemRouter = {
     name: 'system_charge', meta: { title: '充值管理', roles: [1105] }
   }]
 }
-
-export default systemRouter

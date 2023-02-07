@@ -1,6 +1,6 @@
 import Layout from '@/layout'
 
-const supplierRouter = {
+export default {
   path: '/supplier',
   component: Layout,
   name: 'supplier',
@@ -17,5 +17,3 @@ const supplierRouter = {
     name: 'supplier_keepBook', meta: { title: '账款明细', roles: [902] }
   }]
 }
-
-export default supplierRouter

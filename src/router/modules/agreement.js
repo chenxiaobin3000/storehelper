@@ -1,6 +1,6 @@
 import Layout from '@/layout'
 
-const agreementRouter = {
+export default {
   path: '/agreement',
   component: Layout,
   name: 'agreement',
@@ -19,5 +19,3 @@ const agreementRouter = {
     name: 'agreement_alarm', meta: { title: '退货预警', roles: [203] }
   }]
 }
-
-export default agreementRouter

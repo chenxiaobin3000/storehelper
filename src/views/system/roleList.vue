@@ -55,7 +55,7 @@
 import path from 'path'
 import { mapState } from 'vuex'
 import { deepClone } from '@/utils'
-import MyRoleData from '@/utils/role-data'
+import { MyRoleData, MyRoleDataPdd, MyRoleDataMeiTuan, MyRoleDataKuaiLv } from '@/utils/role-data'
 import { getRoleList, addRole, delRole, setRole, getRole } from '@/api/role'
 
 const defaultRole = {
@@ -100,6 +100,7 @@ export default {
   },
   created() {
     this.userdata = this.$store.getters.userdata
+    this.fixRoutes()
     this.routes = this.generateRoutes(MyRoleData)
     this.getRoles()
   },
@@ -121,6 +122,22 @@ export default {
         this.loading = false
         Promise.reject(error)
       })
+    },
+    fixRoutes() {
+      const children = MyRoleData[0].children
+      if (children.length <= 2) {
+        const markets = this.userdata.market
+        // 添加销售平台节点
+        if (markets.includes(1)) {
+          children.push(MyRoleDataPdd)
+        }
+        if (markets.includes(2)) {
+          children.push(MyRoleDataMeiTuan)
+        }
+        if (markets.includes(3)) {
+          children.push(MyRoleDataKuaiLv)
+        }
+      }
     },
     generateRoutes(routes, basePath = '/') {
       const res = []

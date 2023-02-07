@@ -1,6 +1,6 @@
 import Layout from '@/layout'
 
-const commodityRouter = {
+export default {
   path: '/commodity',
   component: Layout,
   name: 'commodity',
@@ -34,5 +34,3 @@ const commodityRouter = {
     name: 'system_attributeList', meta: { title: '属性管理', roles: [308] }
   }]
 }
-
-export default commodityRouter

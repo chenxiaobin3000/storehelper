@@ -29,12 +29,12 @@
           <span>{{ row.attribute }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="单位" width="110px" align="center">
+      <el-table-column label="单位" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.unit }}克</span>
         </template>
       </el-table-column>
-      <el-table-column label="价格" width="110px" align="center">
+      <el-table-column label="价格" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.price }}元</span>
         </template>

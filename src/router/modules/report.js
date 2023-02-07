@@ -1,6 +1,6 @@
 import Layout from '@/layout'
 
-const reportRouter = {
+export default {
   path: '/report',
   component: Layout,
   name: 'report',
@@ -25,5 +25,3 @@ const reportRouter = {
     name: 'report_stock', meta: { title: '库存报表', roles: [705] }
   }]
 }
-
-export default reportRouter
