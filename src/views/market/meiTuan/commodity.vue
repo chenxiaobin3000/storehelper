@@ -1,27 +1,30 @@
 <template>
   <div class="app-container">
+    <div class="filter-container">
+      <el-select v-model="ctype" class="filter-item" @change="handleSelect">
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
+    </div>
+
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
+      <el-table-column label="平台名称" width="160px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.code }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="编号" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" width="200px" align="center">
+      <el-table-column label="内部名称" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="原料" width="160px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.oname }} </span>
-          <el-button @click="handleSelectOriginal(row)">
-            修改
-          </el-button>
-        </template>
-      </el-table-column>
       <el-table-column label="品类" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.categoryName }}</span>
+          <span>{{ row.category }}</span>
         </template>
       </el-table-column>
       <el-table-column label="属性" width="160px" align="center">
@@ -58,74 +61,38 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
-      <el-form :model="temp" label-position="left" label-width="60px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="编号" prop="code">
-          <el-input v-model="temp.code" />
-        </el-form-item>
-        <el-form-item label="名称" prop="name">
+    <el-dialog title="修改平台对接商品信息" :visible.sync="dialogVisible">
+      <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
+        <el-form-item label="平台名称" prop="name">
           <el-input v-model="temp.name" />
         </el-form-item>
+        <el-form-item label="编号" prop="name">
+          <span>{{ temp.code }}</span>
+        </el-form-item>
+        <el-form-item label="内部名称" prop="name">
+          <span>{{ temp.name }}</span>
+        </el-form-item>
         <el-form-item label="品类" prop="category">
-          <el-select v-model="temp.category" class="filter-item" placeholder="请选择品类">
-            <el-option v-for="item in categoryList" :key="item.id" :label="item.label" :value="item.id" />
-          </el-select>
+          <span>{{ temp.category }}</span>
         </el-form-item>
-        <el-form-item v-if="temp.attributes && temp.attributes.length > 0" label="属性" prop="attribute1">
-          <el-input v-if="temp.attributes && temp.attributes.length > 0" v-model="temp.attributes[0]" style="width: 49%" :placeholder="temp.holders[0]" />
-          <el-input v-if="temp.attributes && temp.attributes.length > 1" v-model="temp.attributes[1]" style="width: 49%; margin-left: 2%;" :placeholder="temp.holders[1]" />
-        </el-form-item>
-        <el-form-item v-if="temp.attributes && temp.attributes.length > 2" label="" prop="attribute2">
-          <el-input v-if="temp.attributes && temp.attributes.length > 2" v-model="temp.attributes[2]" style="width: 49%" :placeholder="temp.holders[2]" />
-          <el-input v-if="temp.attributes && temp.attributes.length > 3" v-model="temp.attributes[3]" style="width: 49%; margin-left: 2%;" :placeholder="temp.holders[3]" />
-        </el-form-item>
-        <el-form-item v-if="temp.attributes && temp.attributes.length > 4" label="" prop="attribute3">
-          <el-input v-if="temp.attributes && temp.attributes.length > 4" v-model="temp.attributes[4]" style="width: 49%" :placeholder="temp.holders[4]" />
-          <el-input v-if="temp.attributes && temp.attributes.length > 5" v-model="temp.attributes[5]" style="width: 49%; margin-left: 2%;" :placeholder="temp.holders[5]" />
-        </el-form-item>
-        <el-form-item v-if="temp.attributes && temp.attributes.length > 6" label="" prop="attribute4">
-          <el-input v-if="temp.attributes && temp.attributes.length > 6" v-model="temp.attributes[6]" style="width: 49%" :placeholder="temp.holders[6]" />
-          <el-input v-if="temp.attributes && temp.attributes.length > 7" v-model="temp.attributes[7]" style="width: 49%; margin-left: 2%;" :placeholder="temp.holders[7]" />
+        <el-form-item label="属性" prop="attribute">
+          <span>{{ temp.attribute }}</span>
         </el-form-item>
         <el-form-item label="价格" prop="price">
-          <el-input-number v-model="temp.price" :precision="2" />
+          <span>{{ temp.price }}</span>
         </el-form-item>
         <el-form-item label="单位" prop="unit">
-          <el-input-number v-model="temp.unit" />
+          <span>{{ temp.unit }}</span>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="temp.remark" />
+          <span>{{ temp.remark }}</span>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">
           取消
         </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          确定
-        </el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog title="设置关联原料" :visible.sync="dialogOriVisible">
-      <el-form :model="tempOri" label-position="left" label-width="60px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="编号" prop="code">
-          <el-input v-model="tempOri.code" />
-        </el-form-item>
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="tempOri.name" />
-        </el-form-item>
-        <el-form-item label="原料" prop="original">
-          <el-select v-model="tempOri.oid" class="filter-item" placeholder="请选择原料">
-            <el-option v-for="item in originalList" :key="item.id" :label="item.name" :value="item.id" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogOriVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="updateOriData()">
+        <el-button type="primary" @click="updateData()">
           确定
         </el-button>
       </div>
@@ -136,9 +103,9 @@
 <script>
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
-import { getGroupCommodity, addCommodity, setCommodity, delCommodity, setCommodityOriginal } from '@/api/commodity'
-import { getGroupAllOriginal } from '@/api/original'
-import { getGroupCategory } from '@/api/category'
+import { getGroupCommodity, setCommodity } from '@/api/commodity'
+import { getGroupStandard } from '@/api/standard'
+import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 
 export default {
@@ -146,11 +113,16 @@ export default {
   data() {
     return {
       userdata: {},
+      ctype: 1,
+      options: [{
+        value: 1, label: '商品'
+      }, {
+        value: 4, label: '标品'
+      }],
       list: null,
       total: 0,
       categoryList: [],
       templateList: {},
-      originalList: {},
       loading: false,
       listQuery: {
         id: 0,
@@ -159,14 +131,7 @@ export default {
         search: null
       },
       temp: {},
-      tempOri: {},
-      dialogVisible: false,
-      dialogStatus: '',
-      textMap: {
-        update: '修改商品信息',
-        create: '新增商品'
-      },
-      dialogOriVisible: false
+      dialogVisible: false
     }
   },
   computed: {
@@ -181,9 +146,7 @@ export default {
       this.getCommodityList()
     },
     create() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogVisible = true
+      this.$message({ type: 'error', message: '不支持新建!' })
     }
   },
   created() {
@@ -193,7 +156,6 @@ export default {
     this.getCategoryList()
     this.getGroupAttrTemp()
     this.getCommodityList()
-    this.getOriginalList()
   },
   methods: {
     resetTemp() {
@@ -202,100 +164,90 @@ export default {
         code: '',
         name: '',
         category: null,
-        attributes: [],
-        holders: [],
+        attribute: '',
         price: 0,
         unit: 0,
         remark: ''
       }
-      if (this.templateList && this.templateList.length > 0) {
-        this.templateList.forEach(v => {
-          this.temp.attributes.push('')
-          this.temp.holders.push(v)
-        })
-      }
+    },
+    handleSelect() {
+      this.listQuery.page = 1
+      this.listQuery.limit = 20
+      this.getCommodityList()
     },
     getCommodityList() {
       this.loading = true
-      getGroupCommodity(
-        this.listQuery
-      ).then(response => {
-        this.total = response.data.data.total
-        this.list = []
-        if (response.data.data.list && response.data.data.list.length > 0) {
-          response.data.data.list.forEach(v => {
-            // 品类
-            this.categoryList.forEach(c => {
-              if (c.id === v.cid) {
-                v.category = c.id
-                v.categoryName = c.label
-              }
+      if (this.ctype === 1) {
+        getGroupCommodity(
+          this.listQuery
+        ).then(response => {
+          this.total = response.data.data.total
+          this.list = []
+          if (response.data.data.list && response.data.data.list.length > 0) {
+            response.data.data.list.forEach(v => {
+              // 品类
+              this.categoryList.forEach(c => {
+                if (c.id === v.cid) {
+                  v.category = c.name
+                }
+              })
+              // 属性
+              let idx = 0
+              v.attribute = ''
+              this.templateList.forEach(t => {
+                v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
+              })
+              this.list.push(v)
             })
-            // 属性
-            let idx = 0
-            v.attribute = ''
-            this.templateList.forEach(t => {
-              v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
+          }
+          this.loading = false
+        }).catch(error => {
+          this.loading = false
+          Promise.reject(error)
+        })
+      } else {
+        getGroupStandard(
+          this.listQuery
+        ).then(response => {
+          this.total = response.data.data.total
+          this.list = []
+          if (response.data.data.list && response.data.data.list.length > 0) {
+            response.data.data.list.forEach(v => {
+              // 品类
+              this.categoryList.forEach(c => {
+                if (c.id === v.cid) {
+                  v.category = c.name
+                }
+              })
+              // 属性
+              let idx = 0
+              v.attribute = ''
+              this.templateList.forEach(t => {
+                v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
+              })
+              this.list.push(v)
             })
-            this.list.push(v)
-          })
-        }
-        this.loading = false
-      }).catch(error => {
-        this.loading = false
-        Promise.reject(error)
-      })
-    },
-    getOriginalList() {
-      this.loading = true
-      getGroupAllOriginal({
-        id: this.userdata.user.id
-      }).then(response => {
-        this.originalList = response.data.data.list
-        this.loading = false
-      }).catch(error => {
-        this.loading = false
-        Promise.reject(error)
-      })
+          }
+          this.loading = false
+        }).catch(error => {
+          this.loading = false
+          Promise.reject(error)
+        })
+      }
     },
     getCategoryList() {
-      getGroupCategory({
+      getGroupCategoryList({
         id: this.userdata.user.id
       }).then(response => {
-        this.generator(response.data.data.list)
-      })
-    },
-    generator(tree) {
-      tree.forEach(v => {
-        this.categoryList.push(v)
-        if (v.children != null) {
-          this.generator(v.children)
-        }
+        this.categoryList = response.data.data.list
       })
     },
     getGroupAttrTemp() {
       getGroupAttrTemp({
         id: this.userdata.user.id,
-        atid: 1
+        atid: this.ctype
       }).then(response => {
         this.templateList = response.data.data.list
-      })
-    },
-    createData() {
-      addCommodity({
-        id: this.userdata.user.id,
-        gid: this.userdata.group.id,
-        code: this.temp.code,
-        name: this.temp.name,
-        cid: this.temp.category,
-        price: this.temp.price,
-        unit: this.temp.unit,
-        remark: this.temp.remark,
-        attrs: this.temp.attributes
-      }).then(response => {
-        this.$message({ type: 'success', message: '新增成功!' })
-        this.getCommodityList()
-        this.dialogVisible = false
       })
     },
     handleUpdate(row) {
@@ -303,19 +255,12 @@ export default {
         id: row.id,
         code: row.code,
         name: row.name,
-        category: row.category,
-        attributes: [],
-        holders: [],
+        categoryName: row.categoryName,
+        attribute: row.attribute,
         price: row.price,
         unit: row.unit,
         remark: row.remark
       }
-      let idx = 0
-      this.templateList.forEach(v => {
-        this.temp.attributes.push(row.attrs[idx++])
-        this.temp.holders.push(v)
-      })
-      this.dialogStatus = 'update'
       this.dialogVisible = true
     },
     updateData() {
@@ -324,12 +269,7 @@ export default {
         commid: this.temp.id,
         gid: this.userdata.group.id,
         code: this.temp.code,
-        name: this.temp.name,
-        cid: this.temp.category,
-        price: this.temp.price,
-        unit: this.temp.unit,
-        remark: this.temp.remark,
-        attrs: this.temp.attributes
+        name: this.temp.name
       }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
         this.getCommodityList()
@@ -342,35 +282,13 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delCommodity({
+        delStandard({
           id: this.userdata.user.id,
-          cid: row.id
+          sid: row.id
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
-          this.getCommodityList()
+          this.getStandardList()
         })
-      })
-    },
-    handleSelectOriginal(row) {
-      this.tempOri = {
-        id: row.id,
-        code: row.code,
-        name: row.name,
-        oid: row.oid,
-        oname: row.oname
-      }
-      this.dialogOriVisible = true
-    },
-    updateOriData() {
-      setCommodityOriginal({
-        id: this.userdata.user.id,
-        gid: this.userdata.group.id,
-        cid: this.tempOri.id,
-        oid: this.tempOri.oid
-      }).then(response => {
-        this.$message({ type: 'success', message: '修改成功!' })
-        this.getCommodityList()
-        this.dialogOriVisible = false
       })
     }
   }

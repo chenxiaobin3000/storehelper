@@ -138,7 +138,7 @@ import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
 import { getGroupDestroy, addDestroy, setDestroy, delDestroy, setDestroyOriginal } from '@/api/destroy'
 import { getGroupAllOriginal } from '@/api/original'
-import { getGroupCategory } from '@/api/category'
+import { getGroupCategoryTree } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 
 export default {
@@ -259,7 +259,7 @@ export default {
       })
     },
     getCategoryList() {
-      getGroupCategory({
+      getGroupCategoryTree({
         id: this.userdata.user.id
       }).then(response => {
         this.generator(response.data.data.list)

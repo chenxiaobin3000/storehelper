@@ -50,7 +50,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { getGroupCategory, addCategory, setCategory, delCategory } from '@/api/category'
+import { getGroupCategoryTree, addCategory, setCategory, delCategory } from '@/api/category'
 
 export default {
   data() {
@@ -102,7 +102,7 @@ export default {
     },
     getCategoryList() {
       this.loading = true
-      getGroupCategory({
+      getGroupCategoryTree({
         id: this.userdata.user.id
       }).then(response => {
         this.categoryTree = response.data.data.list

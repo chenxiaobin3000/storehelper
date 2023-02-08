@@ -1,19 +1,30 @@
 <template>
   <div class="app-container">
+    <div class="filter-container">
+      <el-select v-model="ctype" class="filter-item" @change="handleSelect">
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
+    </div>
+
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
+      <el-table-column label="平台名称" width="160px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.mname }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="编号" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" width="200px" align="center">
+      <el-table-column label="内部名称" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="品类" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.categoryName }}</span>
+          <span>{{ row.category }}</span>
         </template>
       </el-table-column>
       <el-table-column label="属性" width="160px" align="center">
@@ -50,50 +61,38 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
-      <el-form :model="temp" label-position="left" label-width="60px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="编号" prop="code">
-          <el-input v-model="temp.code" />
+    <el-dialog title="修改平台对接商品信息" :visible.sync="dialogVisible">
+      <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
+        <el-form-item label="平台名称" prop="name">
+          <el-input v-model="temp.mname" />
         </el-form-item>
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="temp.name" />
+        <el-form-item label="编号" prop="name">
+          <span>{{ temp.code }}</span>
+        </el-form-item>
+        <el-form-item label="内部名称" prop="name">
+          <span>{{ temp.name }}</span>
         </el-form-item>
         <el-form-item label="品类" prop="category">
-          <el-select v-model="temp.category" class="filter-item" placeholder="请选择品类">
-            <el-option v-for="item in categoryList" :key="item.id" :label="item.label" :value="item.id" />
-          </el-select>
+          <span>{{ temp.category }}</span>
         </el-form-item>
-        <el-form-item v-if="temp.attributes && temp.attributes.length > 0" label="属性" prop="attribute1">
-          <el-input v-if="temp.attributes && temp.attributes.length > 0" v-model="temp.attributes[0]" style="width: 49%" :placeholder="temp.holders[0]" />
-          <el-input v-if="temp.attributes && temp.attributes.length > 1" v-model="temp.attributes[1]" style="width: 49%; margin-left: 2%;" :placeholder="temp.holders[1]" />
-        </el-form-item>
-        <el-form-item v-if="temp.attributes && temp.attributes.length > 2" label="" prop="attribute2">
-          <el-input v-if="temp.attributes && temp.attributes.length > 2" v-model="temp.attributes[2]" style="width: 49%" :placeholder="temp.holders[2]" />
-          <el-input v-if="temp.attributes && temp.attributes.length > 3" v-model="temp.attributes[3]" style="width: 49%; margin-left: 2%;" :placeholder="temp.holders[3]" />
-        </el-form-item>
-        <el-form-item v-if="temp.attributes && temp.attributes.length > 4" label="" prop="attribute3">
-          <el-input v-if="temp.attributes && temp.attributes.length > 4" v-model="temp.attributes[4]" style="width: 49%" :placeholder="temp.holders[4]" />
-          <el-input v-if="temp.attributes && temp.attributes.length > 5" v-model="temp.attributes[5]" style="width: 49%; margin-left: 2%;" :placeholder="temp.holders[5]" />
-        </el-form-item>
-        <el-form-item v-if="temp.attributes && temp.attributes.length > 6" label="" prop="attribute4">
-          <el-input v-if="temp.attributes && temp.attributes.length > 6" v-model="temp.attributes[6]" style="width: 49%" :placeholder="temp.holders[6]" />
-          <el-input v-if="temp.attributes && temp.attributes.length > 7" v-model="temp.attributes[7]" style="width: 49%; margin-left: 2%;" :placeholder="temp.holders[7]" />
+        <el-form-item label="属性" prop="attribute">
+          <span>{{ temp.attribute }}</span>
         </el-form-item>
         <el-form-item label="价格" prop="price">
-          <el-input-number v-model="temp.price" :precision="2" />
+          <span>{{ temp.price }}</span>
         </el-form-item>
         <el-form-item label="单位" prop="unit">
-          <el-input-number v-model="temp.unit" />
+          <span>{{ temp.unit }}</span>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="temp.remark" />
+          <span>{{ temp.remark }}</span>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">
           取消
         </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+        <el-button type="primary" @click="updateData()">
           确定
         </el-button>
       </div>
@@ -104,15 +103,24 @@
 <script>
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
-import { getGroupCommodity, addCommodity, setCommodity, delCommodity } from '@/api/commodity'
-import { getGroupCategory } from '@/api/category'
+import { getGroupCommodity } from '@/api/commodity'
+import { getGroupStandard } from '@/api/standard'
+import { setMarketCommodity, delMarketCommodity } from '@/api/market'
+import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 
 export default {
   components: { Pagination },
   data() {
     return {
+      marketId: 1, // pdd
       userdata: {},
+      ctype: 1,
+      options: [{
+        value: 1, label: '商品'
+      }, {
+        value: 4, label: '标品'
+      }],
       list: null,
       total: 0,
       categoryList: [],
@@ -125,12 +133,7 @@ export default {
         search: null
       },
       temp: {},
-      dialogVisible: false,
-      dialogStatus: '',
-      textMap: {
-        update: '修改商品信息',
-        create: '新增商品'
-      }
+      dialogVisible: false
     }
   },
   computed: {
@@ -145,9 +148,7 @@ export default {
       this.getCommodityList()
     },
     create() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogVisible = true
+      this.$message({ type: 'error', message: '不支持新建!' })
     }
   },
   created() {
@@ -161,126 +162,120 @@ export default {
   methods: {
     resetTemp() {
       this.temp = {
+        mname: '',
         id: 0,
         code: '',
         name: '',
         category: null,
-        attributes: [],
-        holders: [],
+        attribute: '',
         price: 0,
         unit: 0,
         remark: ''
       }
-      if (this.templateList && this.templateList.length > 0) {
-        this.templateList.forEach(v => {
-          this.temp.attributes.push('')
-          this.temp.holders.push(v)
-        })
-      }
+    },
+    handleSelect() {
+      this.listQuery.page = 1
+      this.listQuery.limit = 20
+      this.getCommodityList()
     },
     getCommodityList() {
       this.loading = true
-      getGroupCommodity(
-        this.listQuery
-      ).then(response => {
-        this.total = response.data.data.total
-        this.list = []
-        if (response.data.data.list && response.data.data.list.length > 0) {
-          response.data.data.list.forEach(v => {
-            // 品类
-            this.categoryList.forEach(c => {
-              if (c.id === v.cid) {
-                v.category = c.id
-                v.categoryName = c.label
-              }
+      if (this.ctype === 1) {
+        getGroupCommodity(
+          this.listQuery
+        ).then(response => {
+          this.total = response.data.data.total
+          this.list = []
+          if (response.data.data.list && response.data.data.list.length > 0) {
+            response.data.data.list.forEach(v => {
+              // 品类
+              this.categoryList.forEach(c => {
+                if (c.id === v.cid) {
+                  v.category = c.name
+                }
+              })
+              // 属性
+              let idx = 0
+              v.attribute = ''
+              this.templateList.forEach(t => {
+                v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
+              })
+              this.list.push(v)
             })
-            // 属性
-            let idx = 0
-            v.attribute = ''
-            this.templateList.forEach(t => {
-              v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
+          }
+          this.loading = false
+        }).catch(error => {
+          this.loading = false
+          Promise.reject(error)
+        })
+      } else {
+        getGroupStandard(
+          this.listQuery
+        ).then(response => {
+          this.total = response.data.data.total
+          this.list = []
+          if (response.data.data.list && response.data.data.list.length > 0) {
+            response.data.data.list.forEach(v => {
+              // 品类
+              this.categoryList.forEach(c => {
+                if (c.id === v.cid) {
+                  v.category = c.name
+                }
+              })
+              // 属性
+              let idx = 0
+              v.attribute = ''
+              this.templateList.forEach(t => {
+                v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
+              })
+              this.list.push(v)
             })
-            this.list.push(v)
-          })
-        }
-        this.loading = false
-      }).catch(error => {
-        this.loading = false
-        Promise.reject(error)
-      })
+          }
+          this.loading = false
+        }).catch(error => {
+          this.loading = false
+          Promise.reject(error)
+        })
+      }
     },
     getCategoryList() {
-      getGroupCategory({
+      getGroupCategoryList({
         id: this.userdata.user.id
       }).then(response => {
-        this.generator(response.data.data.list)
-      })
-    },
-    generator(tree) {
-      tree.forEach(v => {
-        this.categoryList.push(v)
-        if (v.children != null) {
-          this.generator(v.children)
-        }
+        this.categoryList = response.data.data.list
       })
     },
     getGroupAttrTemp() {
       getGroupAttrTemp({
         id: this.userdata.user.id,
-        atid: 1
+        atid: this.ctype
       }).then(response => {
         this.templateList = response.data.data.list
       })
     },
-    createData() {
-      addCommodity({
-        id: this.userdata.user.id,
-        gid: this.userdata.group.id,
-        code: this.temp.code,
-        name: this.temp.name,
-        cid: this.temp.category,
-        price: this.temp.price,
-        unit: this.temp.unit,
-        remark: this.temp.remark,
-        attrs: this.temp.attributes
-      }).then(response => {
-        this.$message({ type: 'success', message: '新增成功!' })
-        this.getCommodityList()
-        this.dialogVisible = false
-      })
-    },
     handleUpdate(row) {
       this.temp = {
+        mname: row.mname,
         id: row.id,
+        cid: row.cid,
         code: row.code,
         name: row.name,
-        category: row.category,
-        attributes: [],
-        holders: [],
+        categoryName: row.categoryName,
+        attribute: row.attribute,
         price: row.price,
         unit: row.unit,
         remark: row.remark
       }
-      let idx = 0
-      this.templateList.forEach(v => {
-        this.temp.attributes.push(row.attrs[idx++])
-        this.temp.holders.push(v)
-      })
-      this.dialogStatus = 'update'
       this.dialogVisible = true
     },
     updateData() {
-      setCommodity({
+      setMarketCommodity({
         id: this.userdata.user.id,
-        commid: this.temp.id,
         gid: this.userdata.group.id,
-        code: this.temp.code,
-        name: this.temp.name,
-        cid: this.temp.category,
-        price: this.temp.price,
-        unit: this.temp.unit,
-        remark: this.temp.remark,
-        attrs: this.temp.attributes
+        mid: this.marketId,
+        cid: this.temp.cid,
+        name: this.temp.mname,
+        price: this.temp.price
       }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
         this.getCommodityList()
@@ -293,12 +288,13 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delCommodity({
+        delMarketCommodity({
           id: this.userdata.user.id,
-          cid: row.id
+          gid: this.userdata.group.id,
+          did: row.id
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
-          this.getCommodityList()
+          this.getStandardList()
         })
       })
     }

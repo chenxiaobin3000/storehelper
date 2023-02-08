@@ -25,9 +25,17 @@ export function delCategory(data) {
   })
 }
 
-export function getGroupCategory(data) {
+export function getGroupCategoryList(data) {
   return request({
-    url: `${path}/getGroupCategory`,
+    url: `${path}/getGroupCategoryList`,
+    method: 'post',
+    data
+  })
+}
+
+export function getGroupCategoryTree(data) {
+  return request({
+    url: `${path}/getGroupCategoryTree`,
     method: 'post',
     data
   })
