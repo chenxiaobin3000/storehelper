@@ -14,5 +14,8 @@ export default {
   }, {
     path: 'groupList', component: () => import('@/views/super/groupList'),
     name: 'admin_groupList', meta: { title: '客户列表', roles: [8890] }
+  }, {
+    path: 'marketInput', component: () => import('@/views/super/marketInput'),
+    name: 'admin_marketInput', meta: { title: '销售录入', roles: [8891] }
   }]
 }

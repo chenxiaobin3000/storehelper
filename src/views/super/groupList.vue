@@ -6,9 +6,9 @@
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="地区" width="140px" align="center">
+      <el-table-column label="地区" width="180px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.area }}</span>
+          <span>{{ row.areaName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="联系人" width="100px" align="center">
@@ -24,6 +24,11 @@
       <el-table-column label="地址" align="center">
         <template slot-scope="{row}">
           <span>{{ row.address }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="资金" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.money }}元</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
@@ -52,7 +57,7 @@
           <span>{{ temp.contact.name }}</span>
         </el-form-item>
         <el-form-item label="仓库地区" prop="code">
-          <el-cascader v-model="temp.region" size="large" :options="regionOptions" />
+          <el-cascader v-model="temp.region" size="large" style="width: 80%;" :options="regionOptions" />
         </el-form-item>
         <el-form-item label="公司地址" prop="address">
           <el-input v-model="temp.address" />
@@ -72,7 +77,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { regionData } from 'element-china-area-data'
+import { regionData, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
 import { getGroupList, addGroup, setGroup, delGroup } from '@/api/group'
 import { getUserByPhone } from '@/api/user'
@@ -145,6 +150,14 @@ export default {
         this.total = response.data.data.total
         this.list = response.data.data.list
         // 处理地区码
+        this.list.forEach(v => {
+          console.log(1)
+          const temp = []
+          temp.push(v.area.slice(0, 6))
+          temp.push(v.area.slice(6, 12))
+          temp.push(v.area.slice(12, 18))
+          v.areaName = CodeToText[temp[0]] + '/' + CodeToText[temp[1]] + '/' + CodeToText[temp[2]]
+        })
         this.loading = false
       }).catch(error => {
         this.loading = false
@@ -152,6 +165,10 @@ export default {
       })
     },
     createData() {
+      if (!this.temp.region || this.temp.region.length <= 0) {
+        this.$message({ type: 'error', message: '请选择公司地区' })
+        return
+      }
       // 先从手机号获取联系人信息
       getUserByPhone({
         id: this.listQuery.id,
@@ -174,10 +191,19 @@ export default {
     handleUpdate(row) {
       this.temp = Object.assign({}, row)
       this.oldPhone = this.temp.contact.phone
+      const temp = []
+      temp.push(row.area.slice(0, 6))
+      temp.push(row.area.slice(6, 12))
+      temp.push(row.area.slice(12, 18))
+      this.temp.region = temp
       this.dialogStatus = 'update'
       this.dialogVisible = true
     },
     updateData() {
+      if (!this.temp.region || this.temp.region.length <= 0) {
+        this.$message({ type: 'error', message: '请选择公司地区' })
+        return
+      }
       // 先判断手机号有没改
       if (this.temp.contact.phone !== this.oldPhone) {
         // 先从手机号获取联系人信息

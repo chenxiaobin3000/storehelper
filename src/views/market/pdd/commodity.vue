@@ -103,9 +103,7 @@
 <script>
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
-import { getGroupCommodity } from '@/api/commodity'
-import { getGroupStandard } from '@/api/standard'
-import { setMarketCommodity, delMarketCommodity } from '@/api/market'
+import { setMarketCommodity, delMarketCommodity, getMarketCommodity, setMarketStandard, delMarketStandard, getMarketStandard } from '@/api/market'
 import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 
@@ -130,6 +128,7 @@ export default {
         id: 0,
         page: 1,
         limit: 20,
+        mid: 0,
         search: null
       },
       temp: {},
@@ -154,6 +153,7 @@ export default {
   created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
+    this.listQuery.mid = this.marketId
     this.resetTemp()
     this.getCategoryList()
     this.getGroupAttrTemp()
@@ -181,7 +181,7 @@ export default {
     getCommodityList() {
       this.loading = true
       if (this.ctype === 1) {
-        getGroupCommodity(
+        getMarketCommodity(
           this.listQuery
         ).then(response => {
           this.total = response.data.data.total
@@ -209,7 +209,7 @@ export default {
           Promise.reject(error)
         })
       } else {
-        getGroupStandard(
+        getMarketStandard(
           this.listQuery
         ).then(response => {
           this.total = response.data.data.total
@@ -260,7 +260,7 @@ export default {
         cid: row.cid,
         code: row.code,
         name: row.name,
-        categoryName: row.categoryName,
+        category: row.category,
         attribute: row.attribute,
         price: row.price,
         unit: row.unit,
@@ -269,18 +269,33 @@ export default {
       this.dialogVisible = true
     },
     updateData() {
-      setMarketCommodity({
-        id: this.userdata.user.id,
-        gid: this.userdata.group.id,
-        mid: this.marketId,
-        cid: this.temp.cid,
-        name: this.temp.mname,
-        price: this.temp.price
-      }).then(response => {
-        this.$message({ type: 'success', message: '修改成功!' })
-        this.getCommodityList()
-        this.dialogVisible = false
-      })
+      if (this.ctype === 1) {
+        setMarketCommodity({
+          id: this.userdata.user.id,
+          gid: this.userdata.group.id,
+          mid: this.marketId,
+          cid: this.temp.id,
+          name: this.temp.mname,
+          price: 0
+        }).then(response => {
+          this.$message({ type: 'success', message: '修改成功!' })
+          this.getCommodityList()
+          this.dialogVisible = false
+        })
+      } else {
+        setMarketStandard({
+          id: this.userdata.user.id,
+          gid: this.userdata.group.id,
+          mid: this.marketId,
+          cid: this.temp.id,
+          name: this.temp.mname,
+          price: 0
+        }).then(response => {
+          this.$message({ type: 'success', message: '修改成功!' })
+          this.getCommodityList()
+          this.dialogVisible = false
+        })
+      }
     },
     handleDelete(row) {
       this.$confirm('确定要删除吗?', '提示', {
@@ -288,14 +303,27 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delMarketCommodity({
-          id: this.userdata.user.id,
-          gid: this.userdata.group.id,
-          did: row.id
-        }).then(response => {
-          this.$message({ type: 'success', message: '删除成功!' })
-          this.getStandardList()
-        })
+        if (this.ctype === 1) {
+          delMarketCommodity({
+            id: this.userdata.user.id,
+            gid: this.userdata.group.id,
+            mid: this.marketId,
+            cid: row.id
+          }).then(response => {
+            this.$message({ type: 'success', message: '删除成功!' })
+            this.getCommodityList()
+          })
+        } else {
+          delMarketStandard({
+            id: this.userdata.user.id,
+            gid: this.userdata.group.id,
+            mid: this.marketId,
+            cid: row.id
+          }).then(response => {
+            this.$message({ type: 'success', message: '删除成功!' })
+            this.getCommodityList()
+          })
+        }
       })
     }
   }

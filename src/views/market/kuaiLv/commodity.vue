@@ -9,7 +9,7 @@
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="平台名称" width="160px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.code }}</span>
+          <span>{{ row.mname }}</span>
         </template>
       </el-table-column>
       <el-table-column label="编号" width="100px" align="center">
@@ -64,7 +64,7 @@
     <el-dialog title="修改平台对接商品信息" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
         <el-form-item label="平台名称" prop="name">
-          <el-input v-model="temp.name" />
+          <el-input v-model="temp.mname" />
         </el-form-item>
         <el-form-item label="编号" prop="name">
           <span>{{ temp.code }}</span>
@@ -103,8 +103,7 @@
 <script>
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
-import { getGroupCommodity, setCommodity } from '@/api/commodity'
-import { getGroupStandard } from '@/api/standard'
+import { setMarketCommodity, delMarketCommodity, getMarketCommodity, setMarketStandard, delMarketStandard, getMarketStandard } from '@/api/market'
 import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 
@@ -112,6 +111,7 @@ export default {
   components: { Pagination },
   data() {
     return {
+      marketId: 3, // kuailv
       userdata: {},
       ctype: 1,
       options: [{
@@ -128,6 +128,7 @@ export default {
         id: 0,
         page: 1,
         limit: 20,
+        mid: 0,
         search: null
       },
       temp: {},
@@ -152,6 +153,7 @@ export default {
   created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
+    this.listQuery.mid = this.marketId
     this.resetTemp()
     this.getCategoryList()
     this.getGroupAttrTemp()
@@ -160,6 +162,7 @@ export default {
   methods: {
     resetTemp() {
       this.temp = {
+        mname: '',
         id: 0,
         code: '',
         name: '',
@@ -178,7 +181,7 @@ export default {
     getCommodityList() {
       this.loading = true
       if (this.ctype === 1) {
-        getGroupCommodity(
+        getMarketCommodity(
           this.listQuery
         ).then(response => {
           this.total = response.data.data.total
@@ -206,7 +209,7 @@ export default {
           Promise.reject(error)
         })
       } else {
-        getGroupStandard(
+        getMarketStandard(
           this.listQuery
         ).then(response => {
           this.total = response.data.data.total
@@ -252,10 +255,12 @@ export default {
     },
     handleUpdate(row) {
       this.temp = {
+        mname: row.mname,
         id: row.id,
+        cid: row.cid,
         code: row.code,
         name: row.name,
-        categoryName: row.categoryName,
+        category: row.category,
         attribute: row.attribute,
         price: row.price,
         unit: row.unit,
@@ -264,17 +269,33 @@ export default {
       this.dialogVisible = true
     },
     updateData() {
-      setCommodity({
-        id: this.userdata.user.id,
-        commid: this.temp.id,
-        gid: this.userdata.group.id,
-        code: this.temp.code,
-        name: this.temp.name
-      }).then(response => {
-        this.$message({ type: 'success', message: '修改成功!' })
-        this.getCommodityList()
-        this.dialogVisible = false
-      })
+      if (this.ctype === 1) {
+        setMarketCommodity({
+          id: this.userdata.user.id,
+          gid: this.userdata.group.id,
+          mid: this.marketId,
+          cid: this.temp.id,
+          name: this.temp.mname,
+          price: 0
+        }).then(response => {
+          this.$message({ type: 'success', message: '修改成功!' })
+          this.getCommodityList()
+          this.dialogVisible = false
+        })
+      } else {
+        setMarketStandard({
+          id: this.userdata.user.id,
+          gid: this.userdata.group.id,
+          mid: this.marketId,
+          cid: this.temp.id,
+          name: this.temp.mname,
+          price: 0
+        }).then(response => {
+          this.$message({ type: 'success', message: '修改成功!' })
+          this.getCommodityList()
+          this.dialogVisible = false
+        })
+      }
     },
     handleDelete(row) {
       this.$confirm('确定要删除吗?', '提示', {
@@ -282,13 +303,27 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delStandard({
-          id: this.userdata.user.id,
-          sid: row.id
-        }).then(response => {
-          this.$message({ type: 'success', message: '删除成功!' })
-          this.getStandardList()
-        })
+        if (this.ctype === 1) {
+          delMarketCommodity({
+            id: this.userdata.user.id,
+            gid: this.userdata.group.id,
+            mid: this.marketId,
+            cid: row.id
+          }).then(response => {
+            this.$message({ type: 'success', message: '删除成功!' })
+            this.getCommodityList()
+          })
+        } else {
+          delMarketStandard({
+            id: this.userdata.user.id,
+            gid: this.userdata.group.id,
+            mid: this.marketId,
+            cid: row.id
+          }).then(response => {
+            this.$message({ type: 'success', message: '删除成功!' })
+            this.getCommodityList()
+          })
+        }
       })
     }
   }

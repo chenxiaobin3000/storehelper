@@ -6,7 +6,7 @@
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="地区" width="140px" align="center">
+      <el-table-column label="地区" width="180px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.areaName }}</span>
         </template>
@@ -52,7 +52,7 @@
           <span>{{ temp.contact.name }}</span>
         </el-form-item>
         <el-form-item label="仓库地区" prop="code">
-          <el-cascader v-model="temp.region" size="large" :options="regionOptions" />
+          <el-cascader v-model="temp.region" size="large" style="width: 80%;" :options="regionOptions" />
         </el-form-item>
         <el-form-item label="仓库地址" prop="address">
           <el-input v-model="temp.address" />
@@ -152,7 +152,7 @@ export default {
           temp.push(v.area.slice(0, 6))
           temp.push(v.area.slice(6, 12))
           temp.push(v.area.slice(12, 18))
-          v.areaName = CodeToText[(temp[0])] + '/' + CodeToText[(temp[1])] + '/' + CodeToText[(temp[2])]
+          v.areaName = CodeToText[temp[0]] + '/' + CodeToText[temp[1]] + '/' + CodeToText[temp[2]]
         })
         this.loading = false
       }).catch(error => {
@@ -161,6 +161,10 @@ export default {
       })
     },
     createData() {
+      if (!this.temp.region || this.temp.region.length <= 0) {
+        this.$message({ type: 'error', message: '请选择仓库地区' })
+        return
+      }
       // 先从手机号获取联系人信息
       getUserByPhone({
         id: this.listQuery.id,
@@ -193,6 +197,10 @@ export default {
       this.dialogVisible = true
     },
     updateData() {
+      if (!this.temp.region || this.temp.region.length <= 0) {
+        this.$message({ type: 'error', message: '请选择仓库地区' })
+        return
+      }
       // 先判断手机号有没改
       if (this.temp.contact.phone !== this.oldPhone) {
         // 先从手机号获取联系人信息
