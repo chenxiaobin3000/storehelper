@@ -9,9 +9,7 @@
       <el-table-column label="批次" align="center">
         <template slot-scope="{row}">
           <span>{{ row.batch }} </span>
-          <el-button type="Info" size="mini" @click="handleDetail(row)">
-            详情
-          </el-button>
+          <el-button icon="el-icon-tickets" size="mini" circle @click="handleDetail(row)" />
         </template>
       </el-table-column>
       <el-table-column label="仓库" width="100px" align="center">

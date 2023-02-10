@@ -14,9 +14,7 @@
       <el-table-column label="原料" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.oname }} </span>
-          <el-button @click="handleSelectOriginal(row)">
-            修改
-          </el-button>
+          <el-button icon="el-icon-edit" size="mini" circle @click="handleSelectOriginal(row)" />
         </template>
       </el-table-column>
       <el-table-column label="品类" width="100px" align="center">

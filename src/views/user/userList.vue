@@ -24,9 +24,7 @@
       <el-table-column label="小程序角色" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.rolemp.name }} </span>
-          <el-button type="Info" size="mini" @click="handleUpdateMp(row)">
-            修改
-          </el-button>
+          <el-button icon="el-icon-edit" size="mini" circle @click="handleUpdateMp(row)" />
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">

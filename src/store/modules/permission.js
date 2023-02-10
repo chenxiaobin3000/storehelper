@@ -47,14 +47,16 @@ const mutations = {
 
 function fixRoutes(asyncRoutes, markets) {
   // 添加销售平台节点
-  if (markets.includes(1)) {
-    asyncRoutes[1].children.push(pddRouter)
-  }
-  if (markets.includes(2)) {
-    asyncRoutes[1].children.push(meituanRouter)
-  }
-  if (markets.includes(3)) {
-    asyncRoutes[1].children.push(kuailvRouter)
+  if (asyncRoutes[1].children.length < 3) {
+    if (markets.includes(1)) {
+      asyncRoutes[1].children.push(pddRouter)
+    }
+    if (markets.includes(2)) {
+      asyncRoutes[1].children.push(meituanRouter)
+    }
+    if (markets.includes(3)) {
+      asyncRoutes[1].children.push(kuailvRouter)
+    }
   }
   return asyncRoutes
 }
