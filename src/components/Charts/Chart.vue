@@ -122,7 +122,7 @@ export default {
             normal: {
               color: list[i].color,
               label: {
-                show: true,
+                show: false,
                 position: 'top',
                 formatter(p) {
                   return p.value > 0 ? p.value : ''

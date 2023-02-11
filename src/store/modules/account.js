@@ -59,7 +59,8 @@ const actions = {
         commit('SET_USERDATA', {
           user: user,
           group: group,
-          market: market
+          market: market,
+          admin: perms.includes(8888)
         })
         resolve({
           name: user.name,

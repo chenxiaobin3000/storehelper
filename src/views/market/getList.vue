@@ -1,6 +1,9 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
+      <el-select v-model="listQuery.mid" class="filter-item" @change="handleSelect">
+        <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
       <el-select v-model="ctype" class="filter-item" @change="handleSelect">
         <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
@@ -54,8 +57,14 @@ export default {
   components: { Pagination },
   data() {
     return {
-      marketId: 1, // pdd
       userdata: {},
+      moptions: [{
+        value: 1, label: '拼多多'
+      }, {
+        value: 2, label: '美团'
+      }, {
+        value: 3, label: '快驴'
+      }],
       ctype: 1,
       coptions: [{
         value: 1, label: '商品'
@@ -94,7 +103,7 @@ export default {
   created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
-    this.listQuery.mid = this.marketId
+    this.listQuery.mid = 1
     this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
     this.getCommodityList()
   },

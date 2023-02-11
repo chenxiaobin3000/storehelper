@@ -51,7 +51,7 @@
 import path from 'path'
 import { mapState } from 'vuex'
 import { deepClone } from '@/utils'
-import { MyRoleData } from '@/utils/role-data'
+import { MyRoleData, AdminRoleData } from '@/utils/role-data'
 import { getRoleList, addRole, delRole, setRole, getRole } from '@/api/role'
 
 const defaultRole = {
@@ -96,10 +96,13 @@ export default {
   },
   created() {
     this.userdata = this.$store.getters.userdata
-    this.routes = this.generateRoutes(MyRoleData)
+    this.routes = this.generateRoutes(this.fixRoutes())
     this.getRoles()
   },
   methods: {
+    fixRoutes() {
+      return this.userdata.admin ? AdminRoleData : MyRoleData
+    },
     getRoles() {
       this.loading = true
       getRoleList({
@@ -173,7 +176,7 @@ export default {
       if (this.role.routes) {
         this.checkStrictly = true // 保护父子节点不相互影响
         this.$nextTick(() => {
-          const routes = this.filterAsyncRoutes(MyRoleData, this.role.routes)
+          const routes = this.filterAsyncRoutes(this.fixRoutes(), this.role.routes)
           this.$refs.tree.setCheckedNodes(this.generateArr(routes))
           this.checkStrictly = false
         })
@@ -186,7 +189,7 @@ export default {
           scope.row.routes = this.role.routes
           this.checkStrictly = true // 保护父子节点不相互影响
           this.$nextTick(() => {
-            const routes = this.filterAsyncRoutes(MyRoleData, this.role.routes)
+            const routes = this.filterAsyncRoutes(this.fixRoutes(), this.role.routes)
             this.$refs.tree.setCheckedNodes(this.generateArr(routes))
             this.checkStrictly = false
           })
@@ -235,7 +238,7 @@ export default {
     confirmRole() {
       const isEdit = this.dialogType === 'edit'
       const checkedKeys = this.$refs.tree.getCheckedKeys()
-      this.role.routes = this.generateTree(MyRoleData, '/', checkedKeys)
+      this.role.routes = this.generateTree(this.fixRoutes(), '/', checkedKeys)
       if (isEdit) {
         setRole({
           id: this.userdata.user.id,

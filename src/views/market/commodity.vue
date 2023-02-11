@@ -1,6 +1,9 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
+      <el-select v-model="listQuery.mid" class="filter-item" @change="handleSelect">
+        <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
       <el-select v-model="ctype" class="filter-item" @change="handleSelect">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
@@ -111,8 +114,14 @@ export default {
   components: { Pagination },
   data() {
     return {
-      marketId: 1, // pdd
       userdata: {},
+      moptions: [{
+        value: 1, label: '拼多多'
+      }, {
+        value: 2, label: '美团'
+      }, {
+        value: 3, label: '快驴'
+      }],
       ctype: 1,
       options: [{
         value: 1, label: '商品'
@@ -153,7 +162,7 @@ export default {
   created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
-    this.listQuery.mid = this.marketId
+    this.listQuery.mid = 1
     this.resetTemp()
     this.getCategoryList()
     this.getGroupAttrTemp()
@@ -185,24 +194,7 @@ export default {
           this.listQuery
         ).then(response => {
           this.total = response.data.data.total
-          this.list = []
-          if (response.data.data.list && response.data.data.list.length > 0) {
-            response.data.data.list.forEach(v => {
-              // 品类
-              this.categoryList.forEach(c => {
-                if (c.id === v.cid) {
-                  v.category = c.name
-                }
-              })
-              // 属性
-              let idx = 0
-              v.attribute = ''
-              this.templateList.forEach(t => {
-                v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
-              })
-              this.list.push(v)
-            })
-          }
+          this.handleRet(response.data.data.list)
           this.loading = false
         }).catch(error => {
           this.loading = false
@@ -213,28 +205,31 @@ export default {
           this.listQuery
         ).then(response => {
           this.total = response.data.data.total
-          this.list = []
-          if (response.data.data.list && response.data.data.list.length > 0) {
-            response.data.data.list.forEach(v => {
-              // 品类
-              this.categoryList.forEach(c => {
-                if (c.id === v.cid) {
-                  v.category = c.name
-                }
-              })
-              // 属性
-              let idx = 0
-              v.attribute = ''
-              this.templateList.forEach(t => {
-                v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
-              })
-              this.list.push(v)
-            })
-          }
+          this.handleRet(response.data.data.list)
           this.loading = false
         }).catch(error => {
           this.loading = false
           Promise.reject(error)
+        })
+      }
+    },
+    handleRet(list) {
+      this.list = []
+      if (list && list.length > 0) {
+        list.forEach(v => {
+          // 品类
+          this.categoryList.forEach(c => {
+            if (c.id === v.cid) {
+              v.category = c.name
+            }
+          })
+          // 属性
+          let idx = 0
+          v.attribute = ''
+          this.templateList.forEach(t => {
+            v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
+          })
+          this.list.push(v)
         })
       }
     },
@@ -269,28 +264,22 @@ export default {
       this.dialogVisible = true
     },
     updateData() {
+      const data = {
+        id: this.userdata.user.id,
+        gid: this.userdata.group.id,
+        mid: this.listQuery.mid,
+        cid: this.temp.id,
+        name: this.temp.mname,
+        price: 0
+      }
       if (this.ctype === 1) {
-        setMarketCommodity({
-          id: this.userdata.user.id,
-          gid: this.userdata.group.id,
-          mid: this.marketId,
-          cid: this.temp.id,
-          name: this.temp.mname,
-          price: 0
-        }).then(response => {
+        setMarketCommodity(data).then(response => {
           this.$message({ type: 'success', message: '修改成功!' })
           this.getCommodityList()
           this.dialogVisible = false
         })
       } else {
-        setMarketStandard({
-          id: this.userdata.user.id,
-          gid: this.userdata.group.id,
-          mid: this.marketId,
-          cid: this.temp.id,
-          name: this.temp.mname,
-          price: 0
-        }).then(response => {
+        setMarketStandard(data).then(response => {
           this.$message({ type: 'success', message: '修改成功!' })
           this.getCommodityList()
           this.dialogVisible = false
@@ -303,23 +292,19 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        const data = {
+          id: this.userdata.user.id,
+          gid: this.userdata.group.id,
+          mid: this.listQuery.mid,
+          cid: row.id
+        }
         if (this.ctype === 1) {
-          delMarketCommodity({
-            id: this.userdata.user.id,
-            gid: this.userdata.group.id,
-            mid: this.marketId,
-            cid: row.id
-          }).then(response => {
+          delMarketCommodity(data).then(response => {
             this.$message({ type: 'success', message: '删除成功!' })
             this.getCommodityList()
           })
         } else {
-          delMarketStandard({
-            id: this.userdata.user.id,
-            gid: this.userdata.group.id,
-            mid: this.marketId,
-            cid: row.id
-          }).then(response => {
+          delMarketStandard(data).then(response => {
             this.$message({ type: 'success', message: '删除成功!' })
             this.getCommodityList()
           })

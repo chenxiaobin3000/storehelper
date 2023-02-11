@@ -1,7 +1,13 @@
 <template>
   <div class="app-container">
     <div v-if="tdata.length > 0" class="filter-container div-float" style="float:right; right:50px;">
-      <el-select v-model="cycle" class="filter-item">
+      <el-select v-model="marketId" class="filter-item" @change="handleSelect">
+        <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
+      <el-select v-model="ctype" class="filter-item" @change="handleSelect">
+        <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
+      <el-select v-model="cycle" class="filter-item" @change="handleSelect">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
     </div>
@@ -11,12 +17,33 @@
 
 <script>
 import { mapState } from 'vuex'
+import { parseTime } from '@/utils'
 import Chart from '@/components/Charts/Chart'
+import { getMarketReport } from '@/api/report'
 
 export default {
   components: { Chart },
   data() {
     return {
+      userdata: {},
+      marketId: 0,
+      moptions: [{
+        value: 0, label: '全部'
+      }, {
+        value: 1, label: '拼多多'
+      }, {
+        value: 2, label: '美团'
+      }, {
+        value: 3, label: '快驴'
+      }],
+      ctype: 0,
+      coptions: [{
+        value: 0, label: '全部'
+      }, {
+        value: 1, label: '商品'
+      }, {
+        value: 4, label: '标品'
+      }],
       cycle: 1,
       options: [{
         value: 1, label: '日报'
@@ -47,59 +74,76 @@ export default {
     }
   },
   created() {
-    this.labels = ['进货', '退货', '库存']
-    this.xdata = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    this.userdata = this.$store.getters.userdata
+
+    // x轴
+    this.xdata = []
+    const date = new Date()
+    date.setDate(date.getDate() - 7)
+    for (let i = 0; i < 7; i++) {
+      this.xdata.push({
+        key: parseTime(date, '{y}{m}{d}'),
+        value: parseTime(date, '{m}月{d}日')
+      })
+      date.setDate(date.getDate() + 1)
+    }
+
+    // 数据
     this.tdata = [{
-      name: '进货',
-      type: 'bar',
-      data: [
-        709,
-        1917,
-        2455,
-        2610,
-        1719,
-        1433,
-        1544,
-        3285,
-        5208,
-        3372,
-        2484,
-        4078
-      ] }, {
-      name: '退货',
-      type: 'bar',
-      data: [
-        327,
-        1776,
-        507,
-        1200,
-        800,
-        482,
-        204,
-        1390,
-        1001,
-        951,
-        381
-      ] }, {
-      name: '库存',
-      type: 'line',
-      data: [
-        1036,
-        3693,
-        2962,
-        3810,
-        2519,
-        1915,
-        1748,
-        4675,
-        6209,
-        4323,
-        2865,
-        4298
-      ]
+      name: '销售金额', type: 'line', yAxisIndex: 0, color: '#91cc75', data: []
+    }, {
+      name: '退货金额', type: 'line', yAxisIndex: 0, color: '#ee6666', data: []
+    }, {
+      name: '销量', type: 'bar', yAxisIndex: 1, color: '#5470c6', data: []
+    }, {
+      name: '退货量', type: 'bar', yAxisIndex: 1, color: '#fac858', data: []
     }]
+
+    // 左上标签
+    this.labels = []
+    this.tdata.forEach(v => {
+      this.labels.push(v.name)
+    })
+    this.getMarketReport()
   },
   methods: {
+    handleSelect() {
+      this.getMarketReport()
+    },
+    getMarketReport() {
+      switch (this.cycle) {
+        case 1: // 日报
+          this.getMarketDayReport()
+          break
+        default:
+          break
+      }
+    },
+    getMarketDayReport() {
+      getMarketReport({
+        id: this.userdata.user.id,
+        gid: this.userdata.group.id,
+        mid: this.marketId,
+        type: this.ctype,
+        cycle: 1
+      }).then(response => {
+        const tdata = [...this.tdata]
+        tdata[0].data = Array(7).fill(0)
+        tdata[1].data = [...tdata[0].data]
+        const size = this.xdata.length
+        const data = response.data.data.list
+        data.forEach(v => {
+          for (let i = 0; i < size; i++) {
+            if (this.xdata[i].key === v.date) {
+              tdata[0].data[i] = v.total
+              tdata[2].data[i] = v.value
+              return
+            }
+          }
+        })
+        this.tdata = tdata
+      })
+    }
   }
 }
 </script>

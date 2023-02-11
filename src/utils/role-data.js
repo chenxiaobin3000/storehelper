@@ -1,4 +1,6 @@
 export const MyRoleData = [{
+  path: '/', meta: { title: '首页报表', roles: [100] }
+}, {
   path: '/market', meta: { title: '销售管理', roles: [500] },
   children: [{
     path: 'report', meta: { title: '全网总览', roles: [501] }
@@ -111,3 +113,14 @@ export const MyRoleData = [{
     path: 'charge', meta: { title: '充值管理', roles: [1105] }
   }]
 }]
+
+export const AdminRoleData = MyRoleData.concat([{
+  path: '/super', meta: { title: '超级用户', roles: [8888] },
+  children: [{
+    path: 'changeGroup', meta: { title: '切换客户', roles: [8889] }
+  }, {
+    path: 'groupList', meta: { title: '客户列表', roles: [8890] }
+  }, {
+    path: 'marketInput', meta: { title: '销售录入', roles: [8891] }
+  }]
+}])
