@@ -25,11 +25,7 @@
           <el-input v-model="role.name" />
         </el-form-item>
         <el-form-item label="角色描述">
-          <el-input
-            v-model="role.description"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            type="textarea"
-          />
+          <el-input v-model="role.description" />
         </el-form-item>
         <el-form-item label="权限">
           <el-tree
@@ -55,7 +51,7 @@
 import path from 'path'
 import { mapState } from 'vuex'
 import { deepClone } from '@/utils'
-import { MyRoleData, MyRoleDataPdd, MyRoleDataMeiTuan, MyRoleDataKuaiLv } from '@/utils/role-data'
+import { MyRoleData } from '@/utils/role-data'
 import { getRoleList, addRole, delRole, setRole, getRole } from '@/api/role'
 
 const defaultRole = {
@@ -100,7 +96,6 @@ export default {
   },
   created() {
     this.userdata = this.$store.getters.userdata
-    this.fixRoutes()
     this.routes = this.generateRoutes(MyRoleData)
     this.getRoles()
   },
@@ -122,22 +117,6 @@ export default {
         this.loading = false
         Promise.reject(error)
       })
-    },
-    fixRoutes() {
-      const children = MyRoleData[0].children
-      if (children.length <= 2) {
-        const markets = this.userdata.market
-        // 添加销售平台节点
-        if (markets.includes(1)) {
-          children.push(MyRoleDataPdd)
-        }
-        if (markets.includes(2)) {
-          children.push(MyRoleDataMeiTuan)
-        }
-        if (markets.includes(3)) {
-          children.push(MyRoleDataKuaiLv)
-        }
-      }
     },
     generateRoutes(routes, basePath = '/') {
       const res = []
@@ -194,7 +173,7 @@ export default {
       if (this.role.routes) {
         this.checkStrictly = true // 保护父子节点不相互影响
         this.$nextTick(() => {
-          const routes = this.filterAsyncRoutes(this.$store.getters.routes, this.role.routes)
+          const routes = this.filterAsyncRoutes(MyRoleData, this.role.routes)
           this.$refs.tree.setCheckedNodes(this.generateArr(routes))
           this.checkStrictly = false
         })
@@ -207,7 +186,7 @@ export default {
           scope.row.routes = this.role.routes
           this.checkStrictly = true // 保护父子节点不相互影响
           this.$nextTick(() => {
-            const routes = this.filterAsyncRoutes(this.$store.getters.routes, this.role.routes)
+            const routes = this.filterAsyncRoutes(MyRoleData, this.role.routes)
             this.$refs.tree.setCheckedNodes(this.generateArr(routes))
             this.checkStrictly = false
           })
@@ -256,7 +235,7 @@ export default {
     confirmRole() {
       const isEdit = this.dialogType === 'edit'
       const checkedKeys = this.$refs.tree.getCheckedKeys()
-      this.role.routes = this.generateTree(this.$store.getters.routes, '/', checkedKeys)
+      this.role.routes = this.generateTree(MyRoleData, '/', checkedKeys)
       if (isEdit) {
         setRole({
           id: this.userdata.user.id,

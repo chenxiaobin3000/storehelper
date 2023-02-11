@@ -151,7 +151,6 @@ export default {
         this.list = response.data.data.list
         // 处理地区码
         this.list.forEach(v => {
-          console.log(1)
           const temp = []
           temp.push(v.area.slice(0, 6))
           temp.push(v.area.slice(6, 12))

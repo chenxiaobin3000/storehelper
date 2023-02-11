@@ -3,7 +3,13 @@ export const MyRoleData = [{
   children: [{
     path: 'report', meta: { title: '全网总览', roles: [501] }
   }, {
-    path: 'offline', hidden: true, meta: { title: '线下客户', roles: [502] }
+    path: 'getList', meta: { title: '销售明细', roles: [502] }
+  }, {
+    path: 'commodity', meta: { title: '对接模板', roles: [503] }
+  }, {
+    path: 'alarm', meta: { title: '调价预警', roles: [504] }
+  }, {
+    path: 'offline', hidden: true, meta: { title: '线下客户', roles: [505] }
   }]
 }, {
   path: '/product', meta: { title: '生产管理', roles: [600] },
@@ -105,42 +111,3 @@ export const MyRoleData = [{
     path: 'charge', meta: { title: '充值管理', roles: [1105] }
   }]
 }]
-
-export const MyRoleDataPdd = {
-  path: 'pdd', meta: { title: '拼多多', roles: [510] },
-  children: [{
-    path: 'report', meta: { title: '销售总览', roles: [511] }
-  }, {
-    path: 'getList', meta: { title: '销售明细', roles: [512] }
-  }, {
-    path: 'commodity', meta: { title: '对接模板', roles: [513] }
-  }, {
-    path: 'alarm', meta: { title: '调价预警', roles: [514] }
-  }]
-}
-
-export const MyRoleDataMeiTuan = {
-  path: 'meituan', meta: { title: '美团', roles: [520] },
-  children: [{
-    path: 'report', meta: { title: '销售总览', roles: [521] }
-  }, {
-    path: 'getList', meta: { title: '销售明细', roles: [522] }
-  }, {
-    path: 'commodity', meta: { title: '对接模板', roles: [523] }
-  }, {
-    path: 'alarm', meta: { title: '调价预警', roles: [524] }
-  }]
-}
-
-export const MyRoleDataKuaiLv = {
-  path: 'kuailv', meta: { title: '快驴', roles: [530] },
-  children: [{
-    path: 'report', meta: { title: '销售总览', roles: [531] }
-  }, {
-    path: 'getList', meta: { title: '销售明细', roles: [532] }
-  }, {
-    path: 'commodity', meta: { title: '对接模板', roles: [533] }
-  }, {
-    path: 'alarm', meta: { title: '调价预警', roles: [534] }
-  }]
-}

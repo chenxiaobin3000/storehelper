@@ -25,11 +25,7 @@
           <el-input v-model="role.name" />
         </el-form-item>
         <el-form-item label="角色描述">
-          <el-input
-            v-model="role.description"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            type="textarea"
-          />
+          <el-input v-model="role.description" />
         </el-form-item>
         <el-form-item label="权限">
           <el-tree

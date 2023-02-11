@@ -63,8 +63,7 @@ const actions = {
         })
         resolve({
           name: user.name,
-          roles: perms,
-          markets: market
+          roles: perms
         })
       }).catch(error => {
         reject(error)
