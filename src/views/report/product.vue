@@ -11,7 +11,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { parseTime } from '@/utils'
+import { parseTime, reportCycle } from '@/utils'
 import Chart from '@/components/Charts/Chart'
 import { getProductReport } from '@/api/report'
 
@@ -21,15 +21,7 @@ export default {
     return {
       userdata: {},
       cycle: 1,
-      options: [{
-        value: 1, label: '日报'
-      }, {
-        value: 2, label: '周报'
-      }, {
-        value: 3, label: '月报'
-      }, {
-        value: 4, label: '年报'
-      }],
+      options: reportCycle,
       labels: [],
       xdata: [],
       tdata: []

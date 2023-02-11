@@ -49,7 +49,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { parseTime } from '@/utils'
+import { parseTime, filterMarket } from '@/utils'
 import Pagination from '@/components/Pagination'
 import { getMarketCommDetail, getMarketStanDetail } from '@/api/market'
 
@@ -58,13 +58,7 @@ export default {
   data() {
     return {
       userdata: {},
-      moptions: [{
-        value: 1, label: '拼多多'
-      }, {
-        value: 2, label: '美团'
-      }, {
-        value: 3, label: '快驴'
-      }],
+      moptions: [],
       ctype: 1,
       coptions: [{
         value: 1, label: '商品'
@@ -102,6 +96,7 @@ export default {
   },
   created() {
     this.userdata = this.$store.getters.userdata
+    this.moptions = filterMarket(this.userdata.market, false)
     this.listQuery.id = this.userdata.user.id
     this.listQuery.mid = 1
     this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')

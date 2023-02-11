@@ -17,7 +17,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { parseTime } from '@/utils'
+import { parseTime, filterMarket, reportCycle } from '@/utils'
 import Chart from '@/components/Charts/Chart'
 import { getMarketReport } from '@/api/report'
 
@@ -27,15 +27,7 @@ export default {
     return {
       userdata: {},
       marketId: 0,
-      moptions: [{
-        value: 0, label: '全部'
-      }, {
-        value: 1, label: '拼多多'
-      }, {
-        value: 2, label: '美团'
-      }, {
-        value: 3, label: '快驴'
-      }],
+      moptions: [],
       ctype: 0,
       coptions: [{
         value: 0, label: '全部'
@@ -45,15 +37,7 @@ export default {
         value: 4, label: '标品'
       }],
       cycle: 1,
-      options: [{
-        value: 1, label: '日报'
-      }, {
-        value: 2, label: '周报'
-      }, {
-        value: 3, label: '月报'
-      }, {
-        value: 4, label: '年报'
-      }],
+      options: reportCycle,
       labels: [],
       xdata: [],
       tdata: []
@@ -75,6 +59,7 @@ export default {
   },
   created() {
     this.userdata = this.$store.getters.userdata
+    this.moptions = filterMarket(this.userdata.market, true)
 
     // x轴
     this.xdata = []

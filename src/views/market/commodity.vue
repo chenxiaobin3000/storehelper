@@ -105,6 +105,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { filterMarket } from '@/utils'
 import Pagination from '@/components/Pagination'
 import { setMarketCommodity, delMarketCommodity, getMarketCommodity, setMarketStandard, delMarketStandard, getMarketStandard } from '@/api/market'
 import { getGroupCategoryList } from '@/api/category'
@@ -115,13 +116,7 @@ export default {
   data() {
     return {
       userdata: {},
-      moptions: [{
-        value: 1, label: '拼多多'
-      }, {
-        value: 2, label: '美团'
-      }, {
-        value: 3, label: '快驴'
-      }],
+      moptions: [],
       ctype: 1,
       options: [{
         value: 1, label: '商品'
@@ -161,6 +156,7 @@ export default {
   },
   created() {
     this.userdata = this.$store.getters.userdata
+    this.moptions = filterMarket(this.userdata.market, false)
     this.listQuery.id = this.userdata.user.id
     this.listQuery.mid = 1
     this.resetTemp()

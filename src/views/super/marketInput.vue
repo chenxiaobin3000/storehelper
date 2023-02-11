@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <el-select v-model="listQuery.mid" class="filter-item" @change="handleSelect">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-select v-model="ctype" class="filter-item" @change="handleSelect">
         <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -60,7 +60,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { parseTime } from '@/utils'
+import { parseTime, filterMarket } from '@/utils'
 import Pagination from '@/components/Pagination'
 import { setMarketCommDetail, delMarketCommDetail, getMarketCommDetail, setMarketStanDetail, delMarketStanDetail, getMarketStanDetail } from '@/api/market'
 
@@ -69,13 +69,7 @@ export default {
   data() {
     return {
       userdata: {},
-      options: [{
-        value: 1, label: '拼多多'
-      }, {
-        value: 2, label: '美团'
-      }, {
-        value: 3, label: '快驴'
-      }],
+      moptions: [],
       ctype: 1,
       coptions: [{
         value: 1, label: '商品'
@@ -113,6 +107,7 @@ export default {
   },
   created() {
     this.userdata = this.$store.getters.userdata
+    this.moptions = filterMarket(this.userdata.market, false)
     this.listQuery.id = this.userdata.user.id
     this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
     this.getCommodityList()

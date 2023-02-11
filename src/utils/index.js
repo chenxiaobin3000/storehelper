@@ -151,3 +151,36 @@ export function deepClone(source) {
   })
   return targetObj
 }
+
+/**
+ * 筛选平台标签
+ */
+export function filterMarket(roles, all) {
+  const ret = []
+  if (all) {
+    ret.push({ value: 0, label: '全部' })
+  }
+  if (roles.includes(1)) {
+    ret.push({ value: 1, label: '拼多多' })
+  }
+  if (roles.includes(2)) {
+    ret.push({ value: 2, label: '美团' })
+  }
+  if (roles.includes(3)) {
+    ret.push({ value: 3, label: '快驴' })
+  }
+  return ret
+}
+
+/**
+ * 报表周期标签
+ */
+export const reportCycle = [{
+  value: 1, label: '日报'
+}, {
+  value: 2, label: '周报'
+}, {
+  value: 3, label: '月报'
+}, {
+  value: 4, label: '年报'
+}]
