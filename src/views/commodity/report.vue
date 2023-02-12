@@ -1,13 +1,13 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="marketId" class="filter-item" @change="handleSelect">
+      <el-select v-model="listQuery.mid" class="filter-item" @change="handleSelect">
         <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-select v-model="ctype" class="filter-item" @change="handleSelect">
         <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <el-select v-model="cycle" class="filter-item" @change="handleSelect">
+      <el-select v-model="listQuery.cycle" class="filter-item" @change="handleSelect">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
     </div>
@@ -24,19 +24,17 @@
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总价格" width="100px" align="center">
+      <el-table-column label="总价格 / 销量" width="140px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.name }}</span>
+          <span>{{ row.total }} / {{ row.value }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总销量" width="100px" align="center">
+      <el-table-column v-for="title in titles" :key="title.id" :label="title.value" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="7天数据（循环）/周/月" width="200px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.name }}</span>
+          <span v-if="row.detail[title.key]">
+            {{ row.detail[title.key].total }} / {{ row.detail[title.key].value }}
+          </span>
+          <span v-else>0 / 0</span>
         </template>
       </el-table-column>
     </el-table>
@@ -78,9 +76,9 @@
 
 <script>
 import { mapState } from 'vuex'
-import { filterMarket, reportCycle } from '@/utils'
+import { parseTime, filterMarket, reportCycle } from '@/utils'
 import Pagination from '@/components/Pagination'
-import { getGroupCommodity } from '@/api/commodity'
+import { getCommoditySaleInfo, getStandardSaleInfo } from '@/api/market'
 import { getGroupCategoryTree } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 
@@ -89,27 +87,26 @@ export default {
   data() {
     return {
       userdata: {},
-      marketId: 0,
       moptions: [],
-      ctype: 0,
+      ctype: 1,
       coptions: [{
-        value: 0, label: '全部'
-      }, {
         value: 1, label: '商品'
       }, {
         value: 4, label: '标品'
       }],
-      cycle: 1,
       options: reportCycle,
       list: null,
       total: 0,
       categoryList: [],
       templateList: {},
+      titles: [],
       loading: false,
       listQuery: {
         id: 0,
         page: 1,
         limit: 20,
+        mid: 0,
+        cycle: 1,
         search: null
       },
       temp: {},
@@ -137,41 +134,71 @@ export default {
     this.listQuery.id = this.userdata.user.id
     this.getCategoryList()
     this.getGroupAttrTemp()
+    this.getTitles()
     this.getCommodityList()
   },
   methods: {
     handleSelect() {
       this.getCommodityList()
     },
+    getTitles() {
+      this.titles = []
+      const date = new Date()
+      date.setDate(date.getDate() - 7)
+      for (let i = 0; i < 7; i++) {
+        this.titles.push({
+          id: i,
+          key: parseTime(date, '{y}{m}{d}'),
+          value: parseTime(date, '{m}月{d}日')
+        })
+        date.setDate(date.getDate() + 1)
+      }
+    },
     getCommodityList() {
       this.loading = true
-      getGroupCommodity(
-        this.listQuery
-      ).then(response => {
-        this.total = response.data.data.total
-        this.list = []
-        if (response.data.data.list && response.data.data.list.length > 0) {
-          response.data.data.list.forEach(v => {
-            // 品类
-            this.categoryList.forEach(c => {
-              if (c.id === v.cid) {
-                v.category = c.label
-              }
-            })
-            // 属性
-            let idx = 0
-            v.attribute = ''
-            this.templateList.forEach(t => {
-              v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
-            })
-            this.list.push(v)
+      if (this.ctype === 1) {
+        getCommoditySaleInfo(
+          this.listQuery
+        ).then(response => {
+          this.total = response.data.data.total
+          this.handleRet(response.data.data.list)
+          this.loading = false
+        }).catch(error => {
+          this.loading = false
+          Promise.reject(error)
+        })
+      } else {
+        getStandardSaleInfo(
+          this.listQuery
+        ).then(response => {
+          this.total = response.data.data.total
+          this.handleRet(response.data.data.list)
+          this.loading = false
+        }).catch(error => {
+          this.loading = false
+          Promise.reject(error)
+        })
+      }
+    },
+    handleRet(list) {
+      this.list = []
+      if (list && list.length > 0) {
+        list.forEach(v => {
+          // 品类
+          this.categoryList.forEach(c => {
+            if (c.id === v.cid) {
+              v.category = c.label
+            }
           })
-        }
-        this.loading = false
-      }).catch(error => {
-        this.loading = false
-        Promise.reject(error)
-      })
+          // 属性
+          let idx = 0
+          v.attribute = ''
+          this.templateList.forEach(t => {
+            v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
+          })
+          this.list.push(v)
+        })
+      }
     },
     getCategoryList() {
       getGroupCategoryTree({
