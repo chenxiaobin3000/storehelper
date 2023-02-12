@@ -128,14 +128,14 @@ export default {
       this.$message({ type: 'error', message: '不支持新建!' })
     }
   },
-  created() {
+  async created() {
     this.userdata = this.$store.getters.userdata
     this.moptions = filterMarket(this.userdata.market, true)
     this.listQuery.id = this.userdata.user.id
-    this.getCategoryList()
-    this.getGroupAttrTemp()
-    this.getTitles()
-    this.getCommodityList()
+    await this.getCategoryList()
+    await this.getGroupAttrTemp()
+    await this.getTitles()
+    await this.getCommodityList()
   },
   methods: {
     handleSelect() {

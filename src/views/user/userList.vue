@@ -151,29 +151,13 @@ export default {
       this.dialogVisible = true
     }
   },
-  created() {
+  async created() {
     this.listQuery.id = this.$store.getters.userdata.user.id
     this.resetTemp()
     this.resetTempMp()
-    this.getUserList()
-    getGroupRole({
-      id: this.listQuery.id
-    }).then(response => {
-      this.grouproles = response.data.data.list
-    })
-    getGroupRoleMp({
-      id: this.listQuery.id
-    }).then(response => {
-      this.grouproleMps = response.data.data.list
-      if (this.grouproleMps.length > 0) {
-        this.grouproleMps.unshift({
-          id: 0,
-          gid: this.grouproleMps[0].gid,
-          name: '不分配角色',
-          description: ''
-        })
-      }
-    })
+    await this.getUserList()
+    await this.getGroupRole()
+    await this.getGroupRoleMp()
   },
   methods: {
     resetTemp() {
@@ -214,6 +198,28 @@ export default {
       }).catch(error => {
         this.loading = false
         Promise.reject(error)
+      })
+    },
+    getGroupRole() {
+      getGroupRole({
+        id: this.listQuery.id
+      }).then(response => {
+        this.grouproles = response.data.data.list
+      })
+    },
+    getGroupRoleMp() {
+      getGroupRoleMp({
+        id: this.listQuery.id
+      }).then(response => {
+        this.grouproleMps = response.data.data.list
+        if (this.grouproleMps.length > 0) {
+          this.grouproleMps.unshift({
+            id: 0,
+            gid: this.grouproleMps[0].gid,
+            name: '不分配角色',
+            description: ''
+          })
+        }
       })
     },
     createData() {

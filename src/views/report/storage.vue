@@ -88,6 +88,7 @@ export default {
       getStorageReport({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
+        sid: 0,
         cycle: 1
       }).then(response => {
         const tdata = [...this.tdata]

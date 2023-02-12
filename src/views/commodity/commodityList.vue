@@ -184,14 +184,14 @@ export default {
       this.dialogVisible = true
     }
   },
-  created() {
+  async created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
     this.resetTemp()
-    this.getCategoryList()
-    this.getGroupAttrTemp()
-    this.getCommodityList()
-    this.getOriginalList()
+    await this.getCategoryList()
+    await this.getGroupAttrTemp()
+    await this.getCommodityList()
+    await this.getOriginalList()
   },
   methods: {
     resetTemp() {

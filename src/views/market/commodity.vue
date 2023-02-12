@@ -154,15 +154,15 @@ export default {
       this.$message({ type: 'error', message: '不支持新建!' })
     }
   },
-  created() {
+  async created() {
     this.userdata = this.$store.getters.userdata
     this.moptions = filterMarket(this.userdata.market, false)
     this.listQuery.id = this.userdata.user.id
     this.listQuery.mid = 1
     this.resetTemp()
-    this.getCategoryList()
-    this.getGroupAttrTemp()
-    this.getCommodityList()
+    await this.getCategoryList()
+    await this.getGroupAttrTemp()
+    await this.getCommodityList()
   },
   methods: {
     resetTemp() {
