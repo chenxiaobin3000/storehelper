@@ -17,7 +17,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import { parseTime, filterMarket, reportCycle } from '@/utils'
+import { parseTime, reportCycle } from '@/utils'
+import { filterMarket } from '@/utils/market-data'
 import Chart from '@/components/Charts/Chart'
 import { getMarketReport } from '@/api/report'
 

@@ -105,7 +105,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { filterMarket } from '@/utils'
+import { filterMarket } from '@/utils/market-data'
 import Pagination from '@/components/Pagination'
 import { setMarketCommodity, delMarketCommodity, getMarketCommodity, setMarketStandard, delMarketStandard, getMarketStandard } from '@/api/market'
 import { getGroupCategoryList } from '@/api/category'

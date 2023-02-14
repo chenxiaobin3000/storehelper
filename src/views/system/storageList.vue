@@ -11,12 +11,12 @@
           <span>{{ row.areaName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="联系人" width="100px" align="center">
+      <el-table-column label="联系人" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.contact.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="联系电话" width="140px" align="center">
+      <el-table-column label="联系电话" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.contact.phone }}</span>
         </template>

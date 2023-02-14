@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-table v-loading="loading" :data="rolesList" style="width: 100%;" border highlight-current-row>
+    <el-table v-loading="loading" :data="list" style="width: 100%;" border highlight-current-row>
       <el-table-column align="center" label="角色名称" width="220">
         <template slot-scope="scope">
           {{ scope.row.name }}
@@ -13,19 +13,19 @@
       </el-table-column>
       <el-table-column align="center" label="操作" width="220">
         <template slot-scope="scope">
-          <el-button type="primary" size="small" @click="handleEdit(scope)">编辑</el-button>
+          <el-button type="primary" size="small" @click="handleUpdate(scope)">编辑</el-button>
           <el-button type="danger" size="small" @click="handleDelete(scope)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <el-dialog :visible.sync="dialogVisible" :title="dialogType==='edit'?'修改角色信息':'新建角色'">
-      <el-form :model="role" label-width="80px" label-position="left">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
+      <el-form :model="temp" label-width="80px" label-position="left">
         <el-form-item label="角色名称">
-          <el-input v-model="role.name" />
+          <el-input v-model="temp.name" />
         </el-form-item>
         <el-form-item label="角色描述">
-          <el-input v-model="role.description" />
+          <el-input v-model="temp.description" />
         </el-form-item>
         <el-form-item label="权限">
           <el-tree
@@ -40,8 +40,12 @@
         </el-form-item>
       </el-form>
       <div style="text-align:right;">
-        <el-button type="danger" @click="dialogVisible=false">取消</el-button>
-        <el-button type="primary" @click="confirmRole">确定</el-button>
+        <el-button type="danger" @click="dialogVisible=false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+          确定
+        </el-button>
       </div>
     </el-dialog>
   </div>
@@ -54,28 +58,29 @@ import { deepClone } from '@/utils'
 import { MyRoleData, AdminRoleData } from '@/utils/role-data'
 import { getRoleList, addRole, delRole, setRole, getRole } from '@/api/role'
 
-const defaultRole = {
-  id: 0,
-  name: '',
-  description: '',
-  routes: []
-}
-
 export default {
   data() {
     return {
-      role: Object.assign({}, defaultRole),
       userdata: {},
       routes: [],
-      rolesList: [],
+      list: [],
       loading: false,
-      searchword: null,
-      dialogVisible: false,
-      dialogType: 'new',
+      listQuery: {
+        id: 0,
+        gid: 0,
+        search: null
+      },
+      temp: {},
       checkStrictly: false,
       defaultProps: {
         children: 'children',
         label: 'title'
+      },
+      dialogVisible: false,
+      dialogStatus: '',
+      textMap: {
+        update: '修改角色信息',
+        create: '新建角色'
       }
     }
   },
@@ -87,15 +92,22 @@ export default {
   },
   watch: {
     search(newVal, oldVal) {
-      this.searchword = newVal
+      this.listQuery.search = newVal
       this.getRoles()
     },
     create() {
-      this.handleAddRole()
+      this.resetTemp()
+      if (this.$refs.tree) {
+        this.$refs.tree.setCheckedNodes([])
+      }
+      this.dialogStatus = 'create'
+      this.dialogVisible = true
     }
   },
   created() {
     this.userdata = this.$store.getters.userdata
+    this.listQuery.id = this.userdata.user.id
+    this.listQuery.gid = this.userdata.group.id
     this.routes = this.generateRoutes(this.fixRoutes())
     this.getRoles()
   },
@@ -103,15 +115,21 @@ export default {
     fixRoutes() {
       return this.userdata.admin ? AdminRoleData : MyRoleData
     },
+    resetTemp() {
+      this.temp = {
+        id: 0,
+        name: '',
+        description: '',
+        routes: []
+      }
+    },
     getRoles() {
       this.loading = true
-      getRoleList({
-        id: this.userdata.user.id,
-        gid: this.userdata.group.id,
-        search: this.searchword
-      }).then(response => {
-        this.rolesList = response.data.data.roles
-        this.rolesList.forEach(role => {
+      getRoleList(
+        this.listQuery
+      ).then(response => {
+        this.list = response.data.data.roles
+        this.list.forEach(role => {
           // 角色列表没有包含权限信息
           role.routes = null
         })
@@ -161,40 +179,69 @@ export default {
       })
       return data
     },
-    handleAddRole() {
-      this.role = Object.assign({}, defaultRole)
-      if (this.$refs.tree) {
-        this.$refs.tree.setCheckedNodes([])
-      }
-      this.dialogType = 'new'
-      this.dialogVisible = true
+    createData() {
+      const checkedKeys = this.$refs.tree.getCheckedKeys()
+      this.temp.routes = this.generateTree(this.fixRoutes(), '/', checkedKeys)
+      addRole({
+        id: this.userdata.user.id,
+        gid: this.userdata.group.id,
+        name: this.temp.name,
+        desc: this.temp.description,
+        permissions: this.temp.routes
+      }).then(response => {
+        this.$message({ type: 'success', message: '新增成功!' })
+        this.getRoles()
+        this.dialogVisible = false
+      })
     },
-    handleEdit(scope) {
-      this.dialogType = 'edit'
+    handleUpdate(scope) {
+      this.dialogStatus = 'update'
       this.dialogVisible = true
-      this.role = deepClone(scope.row)
-      if (this.role.routes) {
+      this.temp = deepClone(scope.row)
+      if (this.temp.routes) {
         this.checkStrictly = true // 保护父子节点不相互影响
         this.$nextTick(() => {
-          const routes = this.filterAsyncRoutes(this.fixRoutes(), this.role.routes)
+          const routes = this.filterAsyncRoutes(this.fixRoutes(), this.temp.routes)
           this.$refs.tree.setCheckedNodes(this.generateArr(routes))
           this.checkStrictly = false
         })
       } else {
         getRole({
           id: this.userdata.user.id,
-          rid: this.role.id
+          rid: this.temp.id
         }).then(response => {
-          this.role.routes = response.data.data.permissions
-          scope.row.routes = this.role.routes
+          this.temp.routes = response.data.data.permissions
+          scope.row.routes = this.temp.routes
           this.checkStrictly = true // 保护父子节点不相互影响
           this.$nextTick(() => {
-            const routes = this.filterAsyncRoutes(this.fixRoutes(), this.role.routes)
+            const routes = this.filterAsyncRoutes(this.fixRoutes(), this.temp.routes)
             this.$refs.tree.setCheckedNodes(this.generateArr(routes))
             this.checkStrictly = false
           })
         })
       }
+    },
+    updateData() {
+      const checkedKeys = this.$refs.tree.getCheckedKeys()
+      this.temp.routes = this.generateTree(this.fixRoutes(), '/', checkedKeys)
+      setRole({
+        id: this.userdata.user.id,
+        rid: this.temp.id,
+        gid: this.userdata.group.id,
+        name: this.temp.name,
+        desc: this.temp.description,
+        permissions: this.temp.routes
+      }).then(response => {
+        this.$message({ type: 'success', message: '修改成功!' })
+        this.getRoles()
+        this.dialogVisible = false
+      })
+      // 清除缓存路由，下次展示直接从服务器获取数据
+      this.list.forEach(role => {
+        if (role.id === this.temp.id) {
+          role.routes = null
+        }
+      })
     },
     handleDelete({ $index, row }) {
       this.$confirm('确定要删除吗?', '提示', {
@@ -234,43 +281,6 @@ export default {
         }
       }
       return res
-    },
-    confirmRole() {
-      const isEdit = this.dialogType === 'edit'
-      const checkedKeys = this.$refs.tree.getCheckedKeys()
-      this.role.routes = this.generateTree(this.fixRoutes(), '/', checkedKeys)
-      if (isEdit) {
-        setRole({
-          id: this.userdata.user.id,
-          rid: this.role.id,
-          gid: this.userdata.group.id,
-          name: this.role.name,
-          desc: this.role.description,
-          permissions: this.role.routes
-        }).then(response => {
-          this.$message({ type: 'success', message: '修改成功!' })
-          this.getRoles()
-          this.dialogVisible = false
-        })
-        // 清除缓存路由，下次展示直接从服务器获取数据
-        this.rolesList.forEach(role => {
-          if (role.id === this.role.id) {
-            role.routes = null
-          }
-        })
-      } else {
-        addRole({
-          id: this.userdata.user.id,
-          gid: this.userdata.group.id,
-          name: this.role.name,
-          desc: this.role.description,
-          permissions: this.role.routes
-        }).then(response => {
-          this.$message({ type: 'success', message: '新增成功!' })
-          this.getRoles()
-          this.dialogVisible = false
-        })
-      }
     },
     // 若节点只存在一个子节点，就用子节点代替父节点
     onlyOneShowingChild(children = [], parent) {

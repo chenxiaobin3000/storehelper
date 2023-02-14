@@ -49,7 +49,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import { parseTime, filterMarket } from '@/utils'
+import { parseTime } from '@/utils'
+import { filterMarket } from '@/utils/market-data'
 import Pagination from '@/components/Pagination'
 import { getMarketCommDetail, getMarketStanDetail } from '@/api/market'
 

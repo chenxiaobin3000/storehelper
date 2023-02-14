@@ -76,7 +76,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import { parseTime, filterMarket, reportCycle } from '@/utils'
+import { parseTime, reportCycle } from '@/utils'
+import { filterMarket } from '@/utils/market-data'
 import Pagination from '@/components/Pagination'
 import { getCommoditySaleInfo, getStandardSaleInfo } from '@/api/market'
 import { getGroupCategoryTree } from '@/api/category'
