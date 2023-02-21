@@ -8,11 +8,15 @@ import Layout from '@/layout'
 
 /* Router Modules */
 import agreementRouter from './modules/agreement'
+import cloudRouter from './modules/cloud'
 import commodityRouter from './modules/commodity'
 import financeRouter from './modules/finance'
-import { marketRouter } from './modules/market'
+import lossRouter from './modules/loss'
+import marketRouter from './modules/market'
 import productRouter from './modules/product'
+import purchaseRouter from './modules/purchase'
 import reportRouter from './modules/report'
+import stockRouter from './modules/stock'
 import storageRouter from './modules/storage'
 import superRouter from './modules/super'
 import supplierRouter from './modules/supplier'
@@ -69,9 +73,13 @@ export const asyncRoutes = [
 
   /** when your routing map is too long, you can split it into small modules **/
   marketRouter,
+  purchaseRouter,
   productRouter,
   storageRouter,
   agreementRouter,
+  stockRouter,
+  cloudRouter,
+  lossRouter,
   supplierRouter,
   reportRouter,
   commodityRouter,

@@ -9,19 +9,16 @@ export default {
     roles: [800]
   },
   children: [{
-    path: 'reportStock', component: () => import('@/views/report/stock'),
-    name: 'storage_reportStock', meta: { title: '库存总览', roles: [801] }
+    path: 'report', component: () => import('@/views/storage/report'),
+    name: 'report', meta: { title: '进货总览', roles: [801] }
   }, {
-    path: 'stock', component: () => import('@/views/storage/stock'),
-    name: 'storage_stock', meta: { title: '库存明细', roles: [802] }
+    path: 'purchase', component: () => import('@/views/storage/purchase'),
+    name: 'purchase', meta: { title: '进货明细', roles: [802] }
   }, {
-    path: 'reportStorage', component: () => import('@/views/report/storage'),
-    name: 'storage_reportStorage', meta: { title: '进货总览', roles: [803] }
+    path: 'return', component: () => import('@/views/storage/return'),
+    name: 'return', meta: { title: '退货明细', roles: [803] }
   }, {
-    path: 'getList', component: () => import('@/views/storage/getList'),
-    name: 'storage_getList', meta: { title: '进货明细', roles: [804] }
-  }, {
-    path: 'alarm', component: () => import('@/views/storage/alarm'),
-    name: 'storage_alarm', meta: { title: '到期提醒', roles: [805] }
+    path: 'address', component: () => import('@/views/storage/address'),
+    name: 'address', meta: { title: '仓库地址', roles: [804] }
   }]
 }

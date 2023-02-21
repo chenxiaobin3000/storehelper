@@ -10,12 +10,12 @@ export default {
   },
   children: [{
     path: 'userList', component: () => import('@/views/user/userList'),
-    name: 'user_userList', meta: { title: '用户管理', roles: [1001] }
+    name: 'userList', meta: { title: '用户管理', roles: [1001] }
   }, {
     path: 'resetPwd', component: () => import('@/views/user/resetPwd'),
-    name: 'user_resetPwd', meta: { title: '重置密码', roles: [1002] }
+    name: 'resetPwd', meta: { title: '重置密码', roles: [1002] }
   }, {
     path: 'setPassword', component: () => import('@/views/user/setPassword'),
-    name: 'user_setPassword', meta: { title: '修改密码', roles: [1003] }
+    name: 'setPassword', meta: { title: '修改密码', roles: [1003] }
   }]
 }

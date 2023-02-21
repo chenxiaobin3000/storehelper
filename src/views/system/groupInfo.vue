@@ -1,5 +1,6 @@
 <template>
   <div class="app-container" />
+  <span>充值信息</span>
 </template>
 
 <script>

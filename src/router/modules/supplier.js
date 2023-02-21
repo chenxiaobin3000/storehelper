@@ -11,9 +11,9 @@ export default {
   },
   children: [{
     path: 'getList', component: () => import('@/views/supplier/getList'),
-    name: 'supplier_getList', meta: { title: '供应商列表', roles: [901] }
+    name: 'getList', meta: { title: '供应商列表', roles: [901] }
   }, {
-    path: 'keepBook', component: () => import('@/views/supplier/keepBook'),
-    name: 'supplier_keepBook', meta: { title: '账款明细', roles: [902] }
+    path: 'ledger', component: () => import('@/views/supplier/ledger'),
+    name: 'ledger', meta: { title: '账款明细', roles: [902] }
   }]
 }
