@@ -11,7 +11,6 @@ import agreementRouter from './modules/agreement'
 import cloudRouter from './modules/cloud'
 import commodityRouter from './modules/commodity'
 import financeRouter from './modules/finance'
-import lossRouter from './modules/loss'
 import marketRouter from './modules/market'
 import productRouter from './modules/product'
 import purchaseRouter from './modules/purchase'
@@ -77,9 +76,8 @@ export const asyncRoutes = [
   productRouter,
   storageRouter,
   agreementRouter,
-  stockRouter,
   cloudRouter,
-  lossRouter,
+  stockRouter,
   supplierRouter,
   reportRouter,
   commodityRouter,

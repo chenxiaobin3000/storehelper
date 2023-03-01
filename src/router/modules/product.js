@@ -17,5 +17,8 @@ export default {
   }, {
     path: 'complete', component: () => import('@/views/product/complete'),
     name: 'complete', meta: { title: '完成明细', roles: [603] }
+  }, {
+    path: 'loss', component: () => import('@/views/product/loss'),
+    name: 'loss', meta: { title: '损耗明细', roles: [604] }
   }]
 }

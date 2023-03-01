@@ -1,6 +1,6 @@
 import Layout from '@/layout'
 
-export const marketRouter = {
+export default {
   path: '/market',
   component: Layout,
   name: 'market',
@@ -20,8 +20,5 @@ export const marketRouter = {
   }, {
     path: 'input', component: () => import('@/views/market/input'),
     name: 'input', meta: { title: '价格录入', roles: [504] }
-  }, {
-    path: 'offline', hidden: true, component: () => import('@/views/market/offline'),
-    name: 'offline', meta: { title: '线下客户', roles: [505] }
   }]
 }

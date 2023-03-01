@@ -15,10 +15,16 @@ export default {
     path: 'purchase', component: () => import('@/views/storage/purchase'),
     name: 'purchase', meta: { title: '进货明细', roles: [802] }
   }, {
-    path: 'return', component: () => import('@/views/storage/return'),
-    name: 'return', meta: { title: '退货明细', roles: [803] }
+    path: 'dispatch', component: () => import('@/views/storage/dispatch'),
+    name: 'dispatch', meta: { title: '调度明细', roles: [803] }
   }, {
-    path: 'address', component: () => import('@/views/storage/address'),
-    name: 'address', meta: { title: '仓库地址', roles: [804] }
+    path: 'purchase2', component: () => import('@/views/storage/purchase2'),
+    name: 'purchase2', meta: { title: '入库明细', roles: [804] }
+  }, {
+    path: 'loss', component: () => import('@/views/storage/loss'),
+    name: 'loss', meta: { title: '损耗明细', roles: [805] }
+  }, {
+    path: 'return', component: () => import('@/views/storage/return'),
+    name: 'return', meta: { title: '退货明细', roles: [806] }
   }]
 }

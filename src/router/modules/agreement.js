@@ -4,10 +4,7 @@ export default {
   path: '/agreement',
   component: Layout,
   name: 'agreement',
-  meta: {
-    title: '履约管理',
-    roles: [200]
-  },
+  meta: { title: '履约管理', roles: [200] },
   children: [{
     path: 'report', component: () => import('@/views/agreement/report'),
     name: 'report', meta: { title: '履约总览', roles: [201] }
