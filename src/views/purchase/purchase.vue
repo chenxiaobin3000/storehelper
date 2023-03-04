@@ -132,6 +132,7 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
+        type: 1,
         page: 1,
         limit: 20,
         search: null
@@ -178,6 +179,7 @@ export default {
       ).then(response => {
         this.total = response.data.data.total
         this.list = response.data.data.list
+        console.log(response.data.data)
         this.list.forEach(v => {
           v.otype = getOrderType(v.type)
           v.commList = ''

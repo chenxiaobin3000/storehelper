@@ -78,10 +78,6 @@ export const MyRoleData = [{
     path: 'cloud', meta: { title: '云仓总览', roles: [853] }
   }, {
     path: 'cloudList', meta: { title: '云仓明细', roles: [854] }
-  }, {
-    path: 'storageAddress', meta: { title: '仓库地址', roles: [855] }
-  }, {
-    path: 'cloudAddress', meta: { title: '云仓地址', roles: [856] }
   }]
 }, {
   path: '/supplier', hidden: true, meta: { title: '供应商管理', roles: [900] },
@@ -149,9 +145,13 @@ export const MyRoleData = [{
   }, {
     path: 'groupInfo', meta: { title: '公司信息', roles: [1102] }
   }, {
-    path: 'roleList', meta: { title: '角色管理', roles: [1103] }
+    path: 'storageAddress', meta: { title: '仓库地址', roles: [1103] }
   }, {
-    path: 'mpRoleList', meta: { title: '微信管理', roles: [1104] }
+    path: 'cloudAddress', meta: { title: '云仓地址', roles: [1104] }
+  }, {
+    path: 'roleList', meta: { title: '角色管理', roles: [1105] }
+  }, {
+    path: 'mpRoleList', meta: { title: '微信管理', roles: [1106] }
   }]
 }]
 

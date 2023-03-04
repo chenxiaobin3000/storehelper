@@ -9,9 +9,25 @@ export function getAgreementOrder(data) {
   })
 }
 
+export function getCloudOrder(data) {
+  return request({
+    url: `${path}/getCloudOrder`,
+    method: 'post',
+    data
+  })
+}
+
 export function getProductOrder(data) {
   return request({
     url: `${path}/getProductOrder`,
+    method: 'post',
+    data
+  })
+}
+
+export function getPurchaseOrder(data) {
+  return request({
+    url: `${path}/getPurchaseOrder`,
     method: 'post',
     data
   })

@@ -10,15 +10,15 @@ export default {
   },
   children: [{
     path: 'report', component: () => import('@/views/product/report'),
-    name: 'report', meta: { title: '生产总览', roles: [601] }
+    name: 'product_report', meta: { title: '生产总览', roles: [601] }
   }, {
     path: 'process', component: () => import('@/views/product/process'),
-    name: 'process', meta: { title: '生产明细', roles: [602] }
+    name: 'product_process', meta: { title: '生产明细', roles: [602] }
   }, {
     path: 'complete', component: () => import('@/views/product/complete'),
-    name: 'complete', meta: { title: '完成明细', roles: [603] }
+    name: 'product_complete', meta: { title: '完成明细', roles: [603] }
   }, {
     path: 'loss', component: () => import('@/views/product/loss'),
-    name: 'loss', meta: { title: '损耗明细', roles: [604] }
+    name: 'product_loss', meta: { title: '损耗明细', roles: [604] }
   }]
 }

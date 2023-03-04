@@ -10,9 +10,9 @@ export default {
   },
   children: [{
     path: 'changeGroup', component: () => import('@/views/super/changeGroup'),
-    name: 'changeGroup', meta: { title: '切换客户', roles: [8889] }
+    name: 'super_changeGroup', meta: { title: '切换客户', roles: [8889] }
   }, {
     path: 'groupList', component: () => import('@/views/super/groupList'),
-    name: 'groupList', meta: { title: '客户列表', roles: [8890] }
+    name: 'super_groupList', meta: { title: '客户列表', roles: [8890] }
   }]
 }
