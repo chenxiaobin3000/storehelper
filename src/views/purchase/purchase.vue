@@ -171,6 +171,7 @@ export default {
         type: 1,
         page: 1,
         limit: 20,
+        review: 1, // 全部
         search: null
       },
       temp: {},
