@@ -25,6 +25,14 @@ export function delGroup(data) {
   })
 }
 
+export function getGroup(data) {
+  return request({
+    url: `${path}/getGroup`,
+    method: 'post',
+    data
+  })
+}
+
 export function getGroupList(data) {
   return request({
     url: `${path}/getGroupList`,

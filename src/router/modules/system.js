@@ -15,10 +15,10 @@ export default {
     path: 'groupInfo', component: () => import('@/views/system/groupInfo'),
     name: 'system_groupInfo', meta: { title: '公司信息', roles: [1102] }
   }, {
-    path: 'storageAddress', component: () => import('@/views/stock/storageAddress'),
+    path: 'storageAddress', component: () => import('@/views/system/storageAddress'),
     name: 'system_storageAddress', meta: { title: '仓库地址', roles: [1103] }
   }, {
-    path: 'cloudAddress', component: () => import('@/views/stock/cloudAddress'),
+    path: 'cloudAddress', component: () => import('@/views/system/cloudAddress'),
     name: 'system_cloudAddress', meta: { title: '云仓地址', roles: [1104] }
   }, {
     path: 'roleList', component: () => import('@/views/system/roleList'),

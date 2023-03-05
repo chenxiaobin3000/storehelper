@@ -79,8 +79,7 @@ export default {
         value: 4, label: '标品'
       }, {
         value: 5, label: '废料'
-      }],
-      dialogVisible: false
+      }]
     }
   },
   computed: {

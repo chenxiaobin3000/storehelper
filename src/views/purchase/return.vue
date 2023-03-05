@@ -118,7 +118,6 @@
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
-import { getOrderType } from '@/utils/order'
 import { getProductOrder } from '@/api/order'
 import { revokeProcess, delProcess, revokeComplete, delComplete } from '@/api/product'
 
@@ -179,7 +178,6 @@ export default {
         this.total = response.data.data.total
         this.list = response.data.data.list
         this.list.forEach(v => {
-          v.otype = getOrderType(v.type)
           v.commList = ''
           if (v.comms && v.comms.length > 0) {
             v.comms.forEach(c => {
