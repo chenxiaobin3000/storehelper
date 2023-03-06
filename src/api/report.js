@@ -25,9 +25,25 @@ export function getAgreementReport(data) {
   })
 }
 
+export function getCloudReport(data) {
+  return request({
+    url: `${path}/getCloudReport`,
+    method: 'post',
+    data
+  })
+}
+
 export function getProductReport(data) {
   return request({
     url: `${path}/getProductReport`,
+    method: 'post',
+    data
+  })
+}
+
+export function getPurchaseReport(data) {
+  return request({
+    url: `${path}/getPurchaseReport`,
     method: 'post',
     data
   })

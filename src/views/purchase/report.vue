@@ -13,7 +13,7 @@
 import { mapState } from 'vuex'
 import { parseTime, reportCycle } from '@/utils'
 import Chart from '@/components/Charts/Chart'
-import { getProductReport } from '@/api/report'
+import { getPurchaseReport } from '@/api/report'
 
 export default {
   components: { Chart },
@@ -47,7 +47,7 @@ export default {
     // x轴
     this.xdata = []
     const date = new Date()
-    date.setDate(date.getDate() - 7)
+    date.setDate(date.getDate() - 6)
     for (let i = 0; i < 7; i++) {
       this.xdata.push({
         key: parseTime(date, '{y}{m}{d}'),
@@ -58,13 +58,13 @@ export default {
 
     // 数据
     this.tdata = [{
-      name: '生产开始订单数', type: 'line', yAxisIndex: 1, color: '#ee6666', data: []
+      name: '采购订单数', type: 'line', yAxisIndex: 1, color: '#91cc75', data: []
     }, {
-      name: '生产完成订单数', type: 'line', yAxisIndex: 1, color: '#91cc75', data: []
+      name: '退货订单数', type: 'line', yAxisIndex: 1, color: '#ee6666', data: []
     }, {
-      name: '生产开始商品数', type: 'bar', yAxisIndex: 0, color: '#fac858', data: []
+      name: '采购金额', type: 'bar', yAxisIndex: 0, color: '#5470c6', data: []
     }, {
-      name: '生产完成商品数', type: 'bar', yAxisIndex: 0, color: '#5470c6', data: []
+      name: '退货金额', type: 'bar', yAxisIndex: 0, color: '#fac858', data: []
     }]
 
     // 左上标签
@@ -72,20 +72,20 @@ export default {
     this.tdata.forEach(v => {
       this.labels.push(v.name)
     })
-    this.getProductReport()
+    this.getPurchaseReport()
   },
   methods: {
-    getProductReport() {
+    getPurchaseReport() {
       switch (this.cycle) {
         case 1: // 日报
-          this.getProductDayReport()
+          this.getPurchaseDayReport()
           break
         default:
           break
       }
     },
-    getProductDayReport() {
-      getProductReport({
+    getPurchaseDayReport() {
+      getPurchaseReport({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
         sid: 0,
@@ -101,10 +101,10 @@ export default {
         data.forEach(v => {
           for (let i = 0; i < size; i++) {
             if (this.xdata[i].key === v.date) {
-              if (v.type === 4) {
+              if (v.type === 1) { // 采购
                 tdata[0].data[i] = v.num
                 tdata[2].data[i] = v.total
-              } else if (v.type === 3) {
+              } else if (v.type === 2) { // 退货
                 tdata[1].data[i] = v.num
                 tdata[3].data[i] = v.total
               }
