@@ -168,7 +168,7 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
-        type: 2,
+        type: 2, // 采购退货
         page: 1,
         limit: 20,
         review: 1, // 全部

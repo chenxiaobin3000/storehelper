@@ -65,7 +65,7 @@ export default {
     // x轴
     this.xdata = []
     const date = new Date()
-    date.setDate(date.getDate() - 7)
+    date.setDate(date.getDate() - 6)
     for (let i = 0; i < 7; i++) {
       this.xdata.push({
         key: parseTime(date, '{y}{m}{d}'),
@@ -75,15 +75,7 @@ export default {
     }
 
     // 数据
-    this.tdata = [{
-      name: '销售金额', type: 'line', yAxisIndex: 0, color: '#91cc75', data: []
-    }, {
-      name: '退货金额', type: 'line', yAxisIndex: 0, color: '#ee6666', data: []
-    }, {
-      name: '销量', type: 'bar', yAxisIndex: 1, color: '#5470c6', data: []
-    }, {
-      name: '退货量', type: 'bar', yAxisIndex: 1, color: '#fac858', data: []
-    }]
+    this.resetData()
 
     // 左上标签
     this.labels = []
@@ -93,10 +85,22 @@ export default {
     this.getMarketReport()
   },
   methods: {
+    resetData() {
+      this.tdata = [{
+        name: '销售金额', type: 'line', yAxisIndex: 0, color: '#91cc75', data: []
+      }, {
+        name: '退货金额', type: 'line', yAxisIndex: 0, color: '#ee6666', data: []
+      }, {
+        name: '销量', type: 'bar', yAxisIndex: 1, color: '#5470c6', data: []
+      }, {
+        name: '退货量', type: 'bar', yAxisIndex: 1, color: '#fac858', data: []
+      }]
+    },
     handleSelect() {
       this.getMarketReport()
     },
     getMarketReport() {
+      this.resetData()
       switch (this.cycle) {
         case 1: // 日报
           this.getMarketDayReport()

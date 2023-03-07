@@ -57,15 +57,7 @@ export default {
     }
 
     // 数据
-    this.tdata = [{
-      name: '采购订单数', type: 'line', yAxisIndex: 1, color: '#91cc75', data: []
-    }, {
-      name: '退货订单数', type: 'line', yAxisIndex: 1, color: '#ee6666', data: []
-    }, {
-      name: '采购金额', type: 'bar', yAxisIndex: 0, color: '#5470c6', data: []
-    }, {
-      name: '退货金额', type: 'bar', yAxisIndex: 0, color: '#fac858', data: []
-    }]
+    this.resetData()
 
     // 左上标签
     this.labels = []
@@ -75,7 +67,19 @@ export default {
     this.getPurchaseReport()
   },
   methods: {
+    resetData() {
+      this.tdata = [{
+        name: '采购订单数', type: 'line', yAxisIndex: 1, color: '#91cc75', data: []
+      }, {
+        name: '退货订单数', type: 'line', yAxisIndex: 1, color: '#ee6666', data: []
+      }, {
+        name: '采购金额', type: 'bar', yAxisIndex: 0, color: '#5470c6', data: []
+      }, {
+        name: '退货金额', type: 'bar', yAxisIndex: 0, color: '#fac858', data: []
+      }]
+    },
     getPurchaseReport() {
+      this.resetData()
       switch (this.cycle) {
         case 1: // 日报
           this.getPurchaseDayReport()
@@ -101,12 +105,17 @@ export default {
         data.forEach(v => {
           for (let i = 0; i < size; i++) {
             if (this.xdata[i].key === v.date) {
-              if (v.type === 1) { // 采购
-                tdata[0].data[i] = v.num
-                tdata[2].data[i] = v.total
-              } else if (v.type === 2) { // 退货
-                tdata[1].data[i] = v.num
-                tdata[3].data[i] = v.total
+              switch (v.type) {
+                case 1: // 采购进货
+                  tdata[0].data[i] = v.num
+                  tdata[2].data[i] = v.total
+                  break
+                case 2: // 采购退货
+                  tdata[1].data[i] = v.num
+                  tdata[3].data[i] = v.total
+                  break
+                default:
+                  break
               }
               return
             }

@@ -10,7 +10,7 @@ export default {
   },
   children: [{
     path: 'report', component: () => import('@/views/storage/report'),
-    name: 'storage_report', meta: { title: '进货总览', roles: [801] }
+    name: 'storage_report', meta: { title: '仓储总览', roles: [801] }
   }, {
     path: 'purchase', component: () => import('@/views/storage/purchase'),
     name: 'storage_purchase', meta: { title: '进货明细', roles: [802] }

@@ -57,6 +57,54 @@ export function delPurchase(data) {
   })
 }
 
+export function revokeDispatch(data) {
+  return request({
+    url: `${path}/revokeDispatch`,
+    method: 'post',
+    data
+  })
+}
+
+export function delDispatch(data) {
+  return request({
+    url: `${path}/delDispatch`,
+    method: 'post',
+    data
+  })
+}
+
+export function revokePurchase2(data) {
+  return request({
+    url: `${path}/revokePurchase2`,
+    method: 'post',
+    data
+  })
+}
+
+export function delPurchase2(data) {
+  return request({
+    url: `${path}/delPurchase2`,
+    method: 'post',
+    data
+  })
+}
+
+export function revokeLoss(data) {
+  return request({
+    url: `${path}/revokeLoss`,
+    method: 'post',
+    data
+  })
+}
+
+export function delLoss(data) {
+  return request({
+    url: `${path}/delLoss`,
+    method: 'post',
+    data
+  })
+}
+
 export function revokeReturn(data) {
   return request({
     url: `${path}/revokeReturn`,
