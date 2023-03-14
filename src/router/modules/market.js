@@ -15,6 +15,9 @@ export default {
     path: 'getList', component: () => import('@/views/market/getList'),
     name: 'market_getList', meta: { title: '销售明细', roles: [502] }
   }, {
+    path: 'saleReturn', component: () => import('@/views/market/saleReturn'),
+    name: 'market_saleReturn', meta: { title: '售后明细', roles: [505] }
+  }, {
     path: 'commodity', component: () => import('@/views/market/commodity'),
     name: 'market_commodity', meta: { title: '对接模板', roles: [503] }
   }, {

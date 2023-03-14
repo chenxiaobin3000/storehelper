@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="仓库名称" width="200px" align="center">
+      <el-table-column label="云仓名称" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
@@ -38,11 +38,11 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getGroupStorage" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getGroupCloud" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="仓库名称" prop="name">
+        <el-form-item label="云仓名称" prop="name">
           <el-input v-model="temp.name" />
         </el-form-item>
         <el-form-item label="联系电话" prop="phone">
@@ -51,10 +51,10 @@
         <el-form-item label="联系人" prop="contact">
           <span>{{ temp.contact.name }}</span>
         </el-form-item>
-        <el-form-item label="仓库地区" prop="code">
+        <el-form-item label="云仓地区" prop="code">
           <el-cascader v-model="temp.region" size="large" style="width: 80%;" :options="regionOptions" />
         </el-form-item>
-        <el-form-item label="仓库地址" prop="address">
+        <el-form-item label="云仓地址" prop="address">
           <el-input v-model="temp.address" />
         </el-form-item>
       </el-form>
@@ -74,7 +74,7 @@
 import { mapState } from 'vuex'
 import { regionData, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
-import { getGroupStorage, addStorage, setStorage, delStorage } from '@/api/storage'
+import { getGroupCloud, addCloud, setCloud, delCloud } from '@/api/cloud'
 import { getUserByPhone } from '@/api/user'
 
 export default {
@@ -111,7 +111,7 @@ export default {
   watch: {
     search(newVal, oldVal) {
       this.listQuery.search = newVal
-      this.getGroupStorage()
+      this.getGroupCloud()
     },
     create() {
       this.resetTemp()
@@ -123,7 +123,7 @@ export default {
     this.listQuery.id = this.$store.getters.userdata.user.id
     this.userdata = this.$store.getters.userdata
     this.resetTemp()
-    this.getGroupStorage()
+    this.getGroupCloud()
   },
   methods: {
     resetTemp() {
@@ -139,9 +139,9 @@ export default {
         }
       }
     },
-    getGroupStorage() {
+    getGroupCloud() {
       this.loading = true
-      getGroupStorage(
+      getGroupCloud(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total
@@ -171,7 +171,7 @@ export default {
         phone: this.temp.contact.phone
       }).then(response => {
         // 正式新增
-        addStorage({
+        addCloud({
           id: this.listQuery.id,
           gid: this.userdata.group.id,
           area: this.temp.region.join(''),
@@ -180,7 +180,7 @@ export default {
           address: this.temp.address
         }).then(response => {
           this.$message({ type: 'success', message: '新增成功!' })
-          this.getGroupStorage()
+          this.getGroupCloud()
           this.dialogVisible = false
         })
       })
@@ -208,14 +208,14 @@ export default {
           id: this.listQuery.id,
           phone: this.temp.contact.Phone
         }).then(response => {
-          this.setStorage(response.data.data.id)
+          this.setCloud(response.data.data.id)
         })
       } else {
-        this.setStorage(this.temp.contact.id)
+        this.setCloud(this.temp.contact.id)
       }
     },
-    setStorage(id) {
-      setStorage({
+    setCloud(id) {
+      setCloud({
         id: this.listQuery.id,
         gid: this.userdata.group.id,
         sid: this.temp.id,
@@ -225,7 +225,7 @@ export default {
         address: this.temp.address
       }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
-        this.getGroupStorage()
+        this.getGroupCloud()
         this.dialogVisible = false
       })
     },
@@ -235,13 +235,13 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delStorage({
+        delCloud({
           id: this.listQuery.id,
           gid: this.userdata.group.id,
           sid: row.id
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
-          this.getGroupStorage()
+          this.getGroupCloud()
         })
       })
     }

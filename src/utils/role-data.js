@@ -3,9 +3,11 @@ export const MyRoleData = [{
 }, {
   path: '/market', meta: { title: '销售管理', roles: [500] },
   children: [{
-    path: 'report', meta: { title: '全网总览', roles: [501] }
+    path: 'report', meta: { title: '销售总览', roles: [501] }
   }, {
     path: 'getList', meta: { title: '销售明细', roles: [502] }
+  }, {
+    path: 'saleReturn', meta: { title: '售后明细', roles: [505] }
   }, {
     path: 'commodity', meta: { title: '对接模板', roles: [503] }
   }, {
@@ -16,18 +18,22 @@ export const MyRoleData = [{
   children: [{
     path: 'report', meta: { title: '采购总览', roles: [251] }
   }, {
-    path: 'purchase', meta: { title: '进货明细', roles: [252] }
+    path: 'purchase', meta: { title: '仓储进货', roles: [252] }
   }, {
-    path: 'return', meta: { title: '退货明细', roles: [253] }
+    path: 'return', meta: { title: '仓储退货', roles: [253] }
+  }, {
+    path: 'purchase2', meta: { title: '云仓进货', roles: [254] }
+  }, {
+    path: 'return2', meta: { title: '云仓退货', roles: [255] }
   }]
 }, {
   path: '/product', meta: { title: '生产管理', roles: [600] },
   children: [{
     path: 'report', meta: { title: '生产总览', roles: [601] }
   }, {
-    path: 'process', meta: { title: '生产明细', roles: [602] }
+    path: 'process', meta: { title: '生产开始', roles: [602] }
   }, {
-    path: 'complete', meta: { title: '完成明细', roles: [603] }
+    path: 'complete', meta: { title: '生产完成', roles: [603] }
   }, {
     path: 'loss', meta: { title: '损耗明细', roles: [604] }
   }]
@@ -45,39 +51,47 @@ export const MyRoleData = [{
   children: [{
     path: 'report', meta: { title: '仓储总览', roles: [801] }
   }, {
-    path: 'purchase', meta: { title: '进货明细', roles: [802] }
+    path: 'purchase', meta: { title: '采购进货', roles: [802] }
   }, {
-    path: 'dispatch', meta: { title: '调度明细', roles: [803] }
+    path: 'return', meta: { title: '采购退货', roles: [806] }
   }, {
-    path: 'purchase2', meta: { title: '入库明细', roles: [804] }
+    path: 'dispatch', meta: { title: '调度出库', roles: [803] }
+  }, {
+    path: 'purchase2', meta: { title: '调度入库', roles: [804] }
+  }, {
+    path: 'return', meta: { title: '履约退货', roles: [807] }
   }, {
     path: 'loss', meta: { title: '损耗明细', roles: [805] }
-  }, {
-    path: 'return', meta: { title: '退货明细', roles: [806] }
   }]
 }, {
   path: '/cloud', meta: { title: '云仓管理', roles: [750] },
   children: [{
     path: 'report', meta: { title: '云仓总览', roles: [751] }
   }, {
-    path: 'purchase', meta: { title: '入库明细', roles: [752] }
+    path: 'purchase', meta: { title: '采购入库', roles: [752] }
   }, {
-    path: 'sale', meta: { title: '销售明细', roles: [753] }
+    path: 'return', meta: { title: '采购退货', roles: [755] }
+  }, {
+    path: 'agreement', meta: { title: '履约入库', roles: [753] }
+  }, {
+    path: 'back', meta: { title: '履约退货', roles: [756] }
   }, {
     path: 'loss', meta: { title: '损耗明细', roles: [754] }
-  }, {
-    path: 'return', meta: { title: '退货明细', roles: [755] }
   }]
 }, {
   path: '/stock', meta: { title: '库存管理', roles: [850] },
   children: [{
     path: 'stroage', meta: { title: '库存总览', roles: [851] }
   }, {
-    path: 'stroageList', meta: { title: '库存明细', roles: [852] }
+    path: 'stroageList', meta: { title: '今日库存', roles: [852] }
   }, {
-    path: 'cloud', meta: { title: '云仓总览', roles: [853] }
+    path: 'stroageOldList', meta: { title: '库存明细', roles: [853] }
   }, {
-    path: 'cloudList', meta: { title: '云仓明细', roles: [854] }
+    path: 'cloud', meta: { title: '云仓总览', roles: [854] }
+  }, {
+    path: 'cloudList', meta: { title: '今日云仓', roles: [855] }
+      }, {
+    path: 'cloudOldList', meta: { title: '云仓明细', roles: [856] }
   }]
 }, {
   path: '/supplier', hidden: true, meta: { title: '供应商管理', roles: [900] },
@@ -99,9 +113,9 @@ export const MyRoleData = [{
   }, {
     path: 'storage', meta: { title: '仓储报表', roles: [705] }
   }, {
-    path: 'cloud', meta: { title: '云仓报表', roles: [706] }
-  }, {
     path: 'stock', meta: { title: '仓储库存', roles: [707] }
+  }, {
+    path: 'cloud', meta: { title: '云仓报表', roles: [706] }
   }, {
     path: 'cloudStock', meta: { title: '云仓库存', roles: [708] }
   }]

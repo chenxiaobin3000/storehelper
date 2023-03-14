@@ -27,16 +27,6 @@
           <span>{{ row.attribute }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="单位" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.unit }}克</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="价格" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.price }}元</span>
-        </template>
-      </el-table-column>
       <el-table-column label="备注" align="center">
         <template slot-scope="{row}">
           <span>{{ row.remark }}</span>
@@ -84,12 +74,6 @@
         <el-form-item v-if="temp.attributes && temp.attributes.length > 6" label="" prop="attribute4">
           <el-input v-if="temp.attributes && temp.attributes.length > 6" v-model="temp.attributes[6]" style="width: 49%" :placeholder="temp.holders[6]" />
           <el-input v-if="temp.attributes && temp.attributes.length > 7" v-model="temp.attributes[7]" style="width: 49%; margin-left: 2%;" :placeholder="temp.holders[7]" />
-        </el-form-item>
-        <el-form-item label="价格" prop="price">
-          <el-input-number v-model="temp.price" :precision="2" />
-        </el-form-item>
-        <el-form-item label="单位" prop="unit">
-          <el-input-number v-model="temp.unit" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="temp.remark" />
@@ -202,8 +186,6 @@ export default {
         category: null,
         attributes: [],
         holders: [],
-        price: 0,
-        unit: 0,
         remark: ''
       }
       if (this.templateList && this.templateList.length > 0) {
@@ -286,8 +268,6 @@ export default {
         code: this.temp.code,
         name: this.temp.name,
         cid: this.temp.category,
-        price: this.temp.price,
-        unit: this.temp.unit,
         remark: this.temp.remark,
         attrs: this.temp.attributes
       }).then(response => {
@@ -304,8 +284,6 @@ export default {
         category: row.category,
         attributes: [],
         holders: [],
-        price: row.price,
-        unit: row.unit,
         remark: row.remark
       }
       let idx = 0
@@ -324,8 +302,6 @@ export default {
         code: this.temp.code,
         name: this.temp.name,
         cid: this.temp.category,
-        price: this.temp.price,
-        unit: this.temp.unit,
         remark: this.temp.remark,
         attrs: this.temp.attributes
       }).then(response => {

@@ -57,6 +57,38 @@ export function delPurchase(data) {
   })
 }
 
+export function revokeAgreement(data) {
+  return request({
+    url: `${path}/revokeAgreement`,
+    method: 'post',
+    data
+  })
+}
+
+export function delAgreement(data) {
+  return request({
+    url: `${path}/delAgreement`,
+    method: 'post',
+    data
+  })
+}
+
+export function revokeLoss(data) {
+  return request({
+    url: `${path}/revokeLoss`,
+    method: 'post',
+    data
+  })
+}
+
+export function delLoss(data) {
+  return request({
+    url: `${path}/delLoss`,
+    method: 'post',
+    data
+  })
+}
+
 export function revokeReturn(data) {
   return request({
     url: `${path}/revokeReturn`,
@@ -68,6 +100,22 @@ export function revokeReturn(data) {
 export function delReturn(data) {
   return request({
     url: `${path}/delReturn`,
+    method: 'post',
+    data
+  })
+}
+
+export function revokeBack(data) {
+  return request({
+    url: `${path}/revokeBack`,
+    method: 'post',
+    data
+  })
+}
+
+export function delBack(data) {
+  return request({
+    url: `${path}/delBack`,
     method: 'post',
     data
   })

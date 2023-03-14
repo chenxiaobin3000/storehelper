@@ -89,6 +89,22 @@ export function delPurchase2(data) {
   })
 }
 
+export function revokeAgreement(data) {
+  return request({
+    url: `${path}/revokeAgreement`,
+    method: 'post',
+    data
+  })
+}
+
+export function delAgreement(data) {
+  return request({
+    url: `${path}/delAgreement`,
+    method: 'post',
+    data
+  })
+}
+
 export function revokeLoss(data) {
   return request({
     url: `${path}/revokeLoss`,

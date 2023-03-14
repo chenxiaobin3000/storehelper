@@ -13,15 +13,18 @@ export default {
     name: 'cloud_report', meta: { title: '云仓总览', roles: [751] }
   }, {
     path: 'purchase', component: () => import('@/views/cloud/purchase'),
-    name: 'cloud_purchase', meta: { title: '入库明细', roles: [752] }
+    name: 'cloud_purchase', meta: { title: '采购入库', roles: [752] }
   }, {
-    path: 'sale', component: () => import('@/views/cloud/sale'),
-    name: 'cloud_sale', meta: { title: '销售明细', roles: [753] }
+    path: 'return', component: () => import('@/views/storage/return'),
+    name: 'cloud_return', meta: { title: '采购退货', roles: [755] }
+  }, {
+    path: 'agreement', component: () => import('@/views/cloud/agreement'),
+    name: 'cloud_agreement', meta: { title: '履约入库', roles: [753] }
+  }, {
+    path: 'back', component: () => import('@/views/storage/back'),
+    name: 'cloud_back', meta: { title: '履约退货', roles: [756] }
   }, {
     path: 'loss', component: () => import('@/views/storage/loss'),
     name: 'cloud_loss', meta: { title: '损耗明细', roles: [754] }
-  }, {
-    path: 'return', component: () => import('@/views/storage/return'),
-    name: 'cloud_return', meta: { title: '退货明细', roles: [754] }
   }]
 }

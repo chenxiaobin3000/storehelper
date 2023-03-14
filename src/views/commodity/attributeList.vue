@@ -26,11 +26,6 @@
               <el-option v-for="item in attrOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-drag-select>
           </el-form-item>
-          <el-form-item label="废料属性模板">
-            <el-drag-select v-model="attrTempList5" class="select-node" multiple placeholder="请选择废料属性">
-              <el-option v-for="item in attrOptions" :key="item.value" :label="item.label" :value="item.value" />
-            </el-drag-select>
-          </el-form-item>
         </el-form>
       </el-col>
       <el-col :span="8">

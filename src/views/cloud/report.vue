@@ -33,8 +33,6 @@ export default {
         value: 3, label: '原料'
       }, {
         value: 4, label: '标品'
-      }, {
-        value: 5, label: '废料'
       }],
       cycle: 1,
       options: reportCycle,

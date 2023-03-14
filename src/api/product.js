@@ -32,3 +32,19 @@ export function delComplete(data) {
     data
   })
 }
+
+export function revokeLoss(data) {
+  return request({
+    url: `${path}/revokeLoss`,
+    method: 'post',
+    data
+  })
+}
+
+export function delLoss(data) {
+  return request({
+    url: `${path}/delLoss`,
+    method: 'post',
+    data
+  })
+}

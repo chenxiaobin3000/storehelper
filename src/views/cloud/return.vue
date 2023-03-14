@@ -47,7 +47,7 @@
 import { mapState } from 'vuex'
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import { getStockCommodity, getStockHalfgood, getStockOriginal, getStockStandard, getStockDestroy } from '@/api/stock'
+import { getStockCommodity, getStockHalfgood, getStockOriginal, getStockStandard } from '@/api/stock'
 import { getGroupAllStorage } from '@/api/storage'
 
 export default {
@@ -77,8 +77,6 @@ export default {
         value: 3, label: '原料'
       }, {
         value: 4, label: '标品'
-      }, {
-        value: 5, label: '废料'
       }],
       dialogVisible: false
     }
@@ -135,9 +133,6 @@ export default {
         case 4:
           this.getStockStandard()
           break
-        case 5:
-          this.getStockDestroy()
-          break
       }
     },
     getStockCommodity() {
@@ -182,19 +177,6 @@ export default {
     getStockStandard() {
       this.loading = true
       getStockStandard(
-        this.listQuery
-      ).then(response => {
-        this.total = response.data.data.total
-        this.list = response.data.data.list
-        this.loading = false
-      }).catch(error => {
-        this.loading = false
-        Promise.reject(error)
-      })
-    },
-    getStockDestroy() {
-      this.loading = true
-      getStockDestroy(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total

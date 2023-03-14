@@ -1,41 +1,49 @@
 import request from '@/utils/request'
 const path = '/stock'
 
-export function getStockCommodity(data) {
+export function getStockList(data) {
   return request({
-    url: `${path}/getStockCommodity`,
+    url: `${path}/getStockList`,
     method: 'post',
     data
   })
 }
 
-export function getStockHalfgood(data) {
+export function getStockDay(data) {
   return request({
-    url: `${path}/getStockHalfgood`,
+    url: `${path}/getStockDay`,
     method: 'post',
     data
   })
 }
 
-export function getStockOriginal(data) {
+export function getStockWeek(data) {
   return request({
-    url: `${path}/getStockOriginal`,
+    url: `${path}/getStockWeek`,
     method: 'post',
     data
   })
 }
 
-export function getStockStandard(data) {
+export function getCloudList(data) {
   return request({
-    url: `${path}/getStockStandard`,
+    url: `${path}/getCloudList`,
     method: 'post',
     data
   })
 }
 
-export function getStockDestroy(data) {
+export function getCloudDay(data) {
   return request({
-    url: `${path}/getStockDestroy`,
+    url: `${path}/getCloudDay`,
+    method: 'post',
+    data
+  })
+}
+
+export function getCloudWeek(data) {
+  return request({
+    url: `${path}/getCloudWeek`,
     method: 'post',
     data
   })

@@ -140,14 +140,13 @@ export default {
     getTitles() {
       this.titles = []
       const date = new Date()
-      date.setDate(date.getDate() - 7)
       for (let i = 0; i < 7; i++) {
         this.titles.push({
           id: i,
           key: parseTime(date, '{y}{m}{d}'),
           value: parseTime(date, '{m}月{d}日')
         })
-        date.setDate(date.getDate() + 1)
+        date.setDate(date.getDate() - 1)
       }
     },
     getCommodityList() {
