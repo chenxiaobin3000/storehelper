@@ -59,7 +59,7 @@ export const MyRoleData = [{
   }, {
     path: 'purchase2', meta: { title: '调度入库', roles: [804] }
   }, {
-    path: 'return', meta: { title: '履约退货', roles: [807] }
+    path: 'back', meta: { title: '履约退货', roles: [807] }
   }, {
     path: 'loss', meta: { title: '损耗明细', roles: [805] }
   }]

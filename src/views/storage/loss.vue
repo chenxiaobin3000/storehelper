@@ -168,7 +168,7 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
-        type: 6, // 仓储损耗
+        type: 13, // 仓储损耗
         page: 1,
         limit: 20,
         review: 1, // 全部

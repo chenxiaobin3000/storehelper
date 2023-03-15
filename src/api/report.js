@@ -56,11 +56,3 @@ export function getStorageReport(data) {
     data
   })
 }
-
-export function getStockReport(data) {
-  return request({
-    url: `${path}/getStockReport`,
-    method: 'post',
-    data
-  })
-}

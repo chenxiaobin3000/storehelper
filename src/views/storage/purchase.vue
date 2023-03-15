@@ -168,7 +168,7 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
-        type: 3, // 仓储入库
+        type: 10, // 仓储采购入库
         page: 1,
         limit: 20,
         review: 1, // 全部

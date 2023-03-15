@@ -168,7 +168,7 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
-        type: 7, // 仓储退货
+        type: 15, // 仓储履约退货
         page: 1,
         limit: 20,
         review: 1, // 全部

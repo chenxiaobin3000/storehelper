@@ -17,7 +17,7 @@ import { mapState } from 'vuex'
 import { parseTime, reportCycle } from '@/utils'
 import Chart from '@/components/Charts/Chart'
 import { getGroupAllStorage } from '@/api/storage'
-import { getStockReport } from '@/api/report'
+import { getStockDay } from '@/api/stock'
 
 export default {
   components: { Chart },
@@ -61,7 +61,7 @@ export default {
     // x轴
     this.xdata = []
     const date = new Date()
-    date.setDate(date.getDate() - 7)
+    date.setDate(date.getDate() - 6)
     for (let i = 0; i < 7; i++) {
       this.xdata.push({
         key: parseTime(date, '{y}{m}{d}'),
@@ -82,18 +82,18 @@ export default {
     getStockReport() {
       switch (this.cycle) {
         case 1: // 日报
-          this.getStockDayReport()
+          this.getStockDay()
           break
         default:
           break
       }
     },
-    getStockDayReport() {
-      getStockReport({
+    getStockDay() {
+      getStockDay({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
-        type: this.ctype,
-        cycle: 1
+        sid: 0,
+        ctype: this.ctype
       }).then(response => {
         const tdata = [...this.tdata]
         const tsize = tdata.length
@@ -115,6 +115,19 @@ export default {
                 tdata[title.idx].data[i] = v.total
                 return
               }
+            }
+          })
+        })
+
+        const today = response.data.data.today
+        tdata.forEach(title => {
+          if (title.id === 0) {
+            return
+          }
+          today.forEach(v => {
+            if (title.id === v.id) {
+              tdata[0].data[6] += v.total
+              tdata[title.idx].data[6] = v.total
             }
           })
         })

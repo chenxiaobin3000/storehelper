@@ -168,7 +168,7 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
-        type: 4, // 仓储调度
+        type: 11, // 仓储调度出库
         page: 1,
         limit: 20,
         review: 1, // 全部

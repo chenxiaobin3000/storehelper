@@ -21,14 +21,19 @@
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="重量" width="180px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.value / 1000 }}kg</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="价格" width="180px" align="center">
+      <el-table-column label="货值" width="180px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.price }}元</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="重量" width="180px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.weight / 1000 }}kg</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="件数" width="180px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.value }}件</span>
         </template>
       </el-table-column>
     </el-table>
@@ -39,8 +44,9 @@
 
 <script>
 import { mapState } from 'vuex'
+import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import { getStockList } from '@/api/stock'
+import { getStockDetail } from '@/api/stock'
 import { getGroupAllStorage } from '@/api/storage'
 
 export default {
@@ -54,15 +60,14 @@ export default {
       listQuery: {
         id: 0,
         sid: 0,
-        ctype: 0,
+        ctype: 1,
+        date: null,
         page: 1,
         limit: 20,
         search: null
       },
       soptions: [],
       coptions: [{
-        value: 0, label: '全部'
-      }, {
         value: 1, label: '商品'
       }, {
         value: 2, label: '半成品'
@@ -91,6 +96,9 @@ export default {
   created() {
     this.listQuery.id = this.$store.getters.userdata.user.id
     this.userdata = this.$store.getters.userdata
+    const today = new Date()
+    today.setDate(today.getDate() - 1)
+    this.listQuery.date = parseTime(today, '{y}-{m}-{d}')
     this.getGroupStorage()
   },
   methods: {
@@ -109,7 +117,8 @@ export default {
     },
     getStockList() {
       this.loading = true
-      getStockList(
+      console.log(this.listQuery)
+      getStockDetail(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total

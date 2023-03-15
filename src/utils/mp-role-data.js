@@ -14,15 +14,17 @@ export default [{
 }, {
   meta: { title: '仓储申请', roles: [15] }, path: '/storageApply',
   children: [{
-    meta: { title: '仓储进货申请', roles: [16] }, path: '/storagePurchaseApply'
+    meta: { title: '仓储采购进货申请', roles: [16] }, path: '/storagePurchaseApply'
   }, {
-    meta: { title: '仓储调度申请', roles: [17] }, path: '/storageDispatchApply'
+    meta: { title: '仓储调度出库申请', roles: [17] }, path: '/storageDispatchApply'
   }, {
-    meta: { title: '调度入库申请', roles: [18] }, path: '/storagePurchase2Apply'
+    meta: { title: '调度调度入库申请', roles: [18] }, path: '/storagePurchase2Apply'
   }, {
     meta: { title: '仓储损耗申请', roles: [19] }, path: '/storageLossApply'
   }, {
-    meta: { title: '仓储退货申请', roles: [20] }, path: '/storageReturnApply'
+    meta: { title: '仓储采购退货申请', roles: [20] }, path: '/storageReturnApply'
+  }, {
+    meta: { title: '仓储履约退货申请', roles: [21] }, path: '/storageBackApply'
   }]
 }, {
   meta: { title: '生产申请', roles: [25] }, path: '/productApply',
@@ -70,15 +72,17 @@ export default [{
 }, {
   meta: { title: '仓储审核', roles: [55] }, path: '/storageReview',
   children: [{
-    meta: { title: '仓储进货审核', roles: [56] }, path: '/storagePurchaseReview'
+    meta: { title: '仓储采购进货审核', roles: [56] }, path: '/storagePurchaseReview'
   }, {
-    meta: { title: '仓储调度审核', roles: [57] }, path: '/storageDispatchReview'
+    meta: { title: '仓储调度出库审核', roles: [57] }, path: '/storageDispatchReview'
   }, {
-    meta: { title: '调度入库审核', roles: [58] }, path: '/storagePurchase2Review'
+    meta: { title: '调度调度入库审核', roles: [58] }, path: '/storagePurchase2Review'
   }, {
     meta: { title: '仓储损耗审核', roles: [59] }, path: '/storageLossReview'
   }, {
-    meta: { title: '仓储退货审核', roles: [60] }, path: '/storageReturnReview'
+    meta: { title: '仓储采购退货审核', roles: [60] }, path: '/storageReturnReview'
+  }, {
+    meta: { title: '仓储履约退货审核', roles: [60] }, path: '/storageBackReview'
   }]
 }, {
   meta: { title: '生产审核', roles: [65] }, path: '/productReview',
@@ -97,15 +101,15 @@ export default [{
     meta: { title: '履约退货审核', roles: [72] }, path: '/agreementReturnReview'
   }]
 }, {
-  meta: { title: '云仓审核', roles: [75] }, path: '/agreementReview',
+  meta: { title: '云仓审核', roles: [75] }, path: '/cloudReview',
   children: [{
-    meta: { title: '云仓进货审核', roles: [76] }, path: '/agreementPurchaseReview'
+    meta: { title: '云仓进货审核', roles: [76] }, path: '/cloudPurchaseReview'
   }, {
-    meta: { title: '云仓仓库退货审核', roles: [77] }, path: '/agreementReturnReview'
+    meta: { title: '云仓仓库退货审核', roles: [77] }, path: '/cloudReturnReview'
   }, {
-    meta: { title: '云仓损耗审核', roles: [78] }, path: '/agreementLossReview'
+    meta: { title: '云仓损耗审核', roles: [78] }, path: '/cloudLossReview'
   }, {
-    meta: { title: '云仓采购退货审核', roles: [79] }, path: '/saleReturnReview'
+    meta: { title: '云仓采购退货审核', roles: [79] }, path: '/cloudReturnReview'
   }]
 }, {
   meta: { title: '销售审核', roles: [85] }, path: '/saleReview',

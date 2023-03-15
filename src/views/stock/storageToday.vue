@@ -8,7 +8,6 @@
         <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-input v-model="listQuery.search" placeholder="商品名称" style="width: 200px;" class="filter-item" @keyup.enter.native="getStockList" />
-      <span style="color:#888" class="filter-item">截止 {{ listQuery.date }} 23:59:59</span>
     </div>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
@@ -22,19 +21,19 @@
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="单位" width="180px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.unit }}克</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="数量" width="180px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.value }}件</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="价格" width="180px" align="center">
+      <el-table-column label="货值" width="180px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.price }}元</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="重量" width="180px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.weight / 1000 }}kg</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="件数" width="180px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.value }}件</span>
         </template>
       </el-table-column>
     </el-table>
@@ -45,9 +44,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import { getStockDay } from '@/api/stock'
+import { getStockList } from '@/api/stock'
 import { getGroupAllStorage } from '@/api/storage'
 
 export default {
@@ -61,16 +59,13 @@ export default {
       listQuery: {
         id: 0,
         sid: 0,
-        ctype: 0,
-        date: null,
+        ctype: 1,
         page: 1,
         limit: 20,
         search: null
       },
       soptions: [],
       coptions: [{
-        value: 0, label: '全部'
-      }, {
         value: 1, label: '商品'
       }, {
         value: 2, label: '半成品'
@@ -99,9 +94,6 @@ export default {
   created() {
     this.listQuery.id = this.$store.getters.userdata.user.id
     this.userdata = this.$store.getters.userdata
-    const today = new Date()
-    today.setDate(today.getDate() - 1)
-    this.listQuery.date = parseTime(today, '{y}-{m}-{d}')
     this.getGroupStorage()
   },
   methods: {
@@ -120,8 +112,7 @@ export default {
     },
     getStockList() {
       this.loading = true
-      console.log(this.listQuery)
-      getStockDay(
+      getStockList(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total

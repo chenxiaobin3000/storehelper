@@ -168,7 +168,7 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
-        type: 1, // 采购进货
+        type: 3, // 采购云仓进货
         page: 1,
         limit: 20,
         review: 1, // 全部
@@ -216,7 +216,6 @@ export default {
       ).then(response => {
         this.total = response.data.data.total
         this.list = response.data.data.list
-        console.log(response.data.data)
         this.list.forEach(v => {
           v.commList = ''
           if (v.comms && v.comms.length > 0) {
