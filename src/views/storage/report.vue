@@ -69,17 +69,17 @@ export default {
   methods: {
     resetData() {
       this.tdata = [{
-        name: '仓储入库订单数', type: 'line', yAxisIndex: 1, color: '#91cc75', data: []
+        name: '采购入库', type: 'line', yAxisIndex: 1, color: '#91cc75', data: []
       }, {
-        name: '调度出库订单数', type: 'line', yAxisIndex: 1, color: '#9a60b4', data: []
+        name: '调度出库', type: 'line', yAxisIndex: 1, color: '#9a60b4', data: []
       }, {
-        name: '调度入库订单数', type: 'line', yAxisIndex: 1, color: '#5470c6', data: []
+        name: '调度入库', type: 'line', yAxisIndex: 1, color: '#5470c6', data: []
       }, {
-        name: '仓储损耗订单数', type: 'line', yAxisIndex: 1, color: '#fac858', data: []
+        name: '仓储损耗', type: 'line', yAxisIndex: 1, color: '#fac858', data: []
       }, {
-        name: '仓储退货订单数', type: 'line', yAxisIndex: 1, color: '#ee6666', data: []
+        name: '采购退货', type: 'line', yAxisIndex: 1, color: '#ee6666', data: []
       }, {
-        name: '仓储入库商品数', type: 'bar', yAxisIndex: 0, color: '#73c0de', data: []
+        name: '履约退货', type: 'line', yAxisIndex: 1, color: '#73c0de', data: []
       }]
     },
     getStorageReport() {
@@ -112,21 +112,23 @@ export default {
           for (let i = 0; i < size; i++) {
             if (this.xdata[i].key === v.date) {
               switch (v.type) {
-                case 3: // 仓储入库
+                case 10: // 仓储采购入库
                   tdata[0].data[i] = v.num
-                  tdata[5].data[i] = v.total
                   break
-                case 4: // 调度出库
+                case 11: // 调度出库
                   tdata[1].data[i] = v.num
                   break
-                case 5: // 调度入库
+                case 12: // 调度入库
                   tdata[2].data[i] = v.num
                   break
-                case 6: // 仓储损耗
+                case 13: // 仓储损耗
                   tdata[3].data[i] = v.num
                   break
-                case 7: // 仓储退货
+                case 14: // 仓储采购退货
                   tdata[4].data[i] = v.num
+                  break
+                case 15: // 仓储履约退货
+                  tdata[5].data[i] = v.num
                   break
                 default:
                   break

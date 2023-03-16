@@ -69,13 +69,13 @@ export default {
   methods: {
     resetData() {
       this.tdata = [{
-        name: '采购订单数', type: 'line', yAxisIndex: 1, color: '#91cc75', data: []
+        name: '仓储采购', type: 'line', yAxisIndex: 0, color: '#91cc75', data: []
       }, {
-        name: '退货订单数', type: 'line', yAxisIndex: 1, color: '#ee6666', data: []
+        name: '仓储退货', type: 'line', yAxisIndex: 0, color: '#ee6666', data: []
       }, {
-        name: '采购金额', type: 'bar', yAxisIndex: 0, color: '#5470c6', data: []
+        name: '云仓采购', type: 'line', yAxisIndex: 0, color: '#5470c6', data: []
       }, {
-        name: '退货金额', type: 'bar', yAxisIndex: 0, color: '#fac858', data: []
+        name: '云仓退货', type: 'line', yAxisIndex: 0, color: '#fac858', data: []
       }]
     },
     getPurchaseReport() {
@@ -106,13 +106,17 @@ export default {
           for (let i = 0; i < size; i++) {
             if (this.xdata[i].key === v.date) {
               switch (v.type) {
-                case 1: // 采购进货
+                case 1: // 采购仓储进货
                   tdata[0].data[i] = v.num
-                  tdata[2].data[i] = v.total
                   break
-                case 2: // 采购退货
+                case 2: // 采购仓储退货
                   tdata[1].data[i] = v.num
-                  tdata[3].data[i] = v.total
+                  break
+                case 3: // 采购云仓进货
+                  tdata[2].data[i] = v.num
+                  break
+                case 4: // 采购云仓退货
+                  tdata[3].data[i] = v.num
                   break
                 default:
                   break
