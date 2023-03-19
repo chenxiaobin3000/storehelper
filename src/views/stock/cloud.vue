@@ -16,7 +16,7 @@
 import { mapState } from 'vuex'
 import { parseTime, reportCycle } from '@/utils'
 import Chart from '@/components/Charts/Chart'
-import { getGroupAllStorage } from '@/api/storage'
+import { getGroupAllCloud } from '@/api/cloud'
 import { getStockDay } from '@/api/stock'
 
 export default {
@@ -27,10 +27,6 @@ export default {
       ctype: 1,
       coptions: [{
         value: 1, label: '商品'
-      }, {
-        value: 2, label: '半成品'
-      }, {
-        value: 3, label: '原料'
       }, {
         value: 4, label: '标品'
       }],
@@ -70,7 +66,7 @@ export default {
       date.setDate(date.getDate() + 1)
     }
 
-    await this.getGroupAllStorage()
+    await this.getGroupAllCloud()
     this.$nextTick(() => {
       this.getStockReport()
     })
@@ -134,8 +130,8 @@ export default {
         this.tdata = tdata
       })
     },
-    getGroupAllStorage() {
-      getGroupAllStorage({
+    getGroupAllCloud() {
+      getGroupAllCloud({
         id: this.userdata.user.id
       }).then(response => {
         const color = ['#ee6666', '#5470c6', '#fac858', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc']

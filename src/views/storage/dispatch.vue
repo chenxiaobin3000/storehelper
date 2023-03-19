@@ -73,17 +73,17 @@
                 <span>{{ row.name }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="重量" width="60px" align="center">
+            <el-table-column label="重量" width="70px" align="center">
               <template slot-scope="{row}">
-                <span>{{ row.unit }}克</span>
+                <span>{{ row.weight / 1000 }}kg</span>
               </template>
             </el-table-column>
-            <el-table-column label="数量" width="60px" align="center">
+            <el-table-column label="数量" width="70px" align="center">
               <template slot-scope="{row}">
-                <span>{{ row.value }}</span>
+                <span>{{ row.value }}件</span>
               </template>
             </el-table-column>
-            <el-table-column label="价格" width="60px" align="center">
+            <el-table-column label="价格" width="70px" align="center">
               <template slot-scope="{row}">
                 <span>{{ row.price }}元</span>
               </template>

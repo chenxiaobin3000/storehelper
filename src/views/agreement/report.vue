@@ -47,7 +47,7 @@ export default {
     // x轴
     this.xdata = []
     const date = new Date()
-    date.setDate(date.getDate() - 7)
+    date.setDate(date.getDate() - 6)
     for (let i = 0; i < 7; i++) {
       this.xdata.push({
         key: parseTime(date, '{y}{m}{d}'),
@@ -57,15 +57,7 @@ export default {
     }
 
     // 数据
-    this.tdata = [{
-      name: '履约发货订单数', type: 'line', yAxisIndex: 1, color: '#91cc75', data: []
-    }, {
-      name: '履约退货订单数', type: 'line', yAxisIndex: 1, color: '#ee6666', data: []
-    }, {
-      name: '履约发货商品数', type: 'bar', yAxisIndex: 0, color: '#5470c6', data: []
-    }, {
-      name: '履约退货商品数', type: 'bar', yAxisIndex: 0, color: '#fac858', data: []
-    }]
+    this.resetData()
 
     // 左上标签
     this.labels = []
@@ -75,6 +67,13 @@ export default {
     this.getAgreementReport()
   },
   methods: {
+    resetData() {
+      this.tdata = [{
+        name: '履约发货', type: 'line', yAxisIndex: 0, color: '#91cc75', data: []
+      }, {
+        name: '履约退货', type: 'line', yAxisIndex: 0, color: '#ee6666', data: []
+      }]
+    },
     getAgreementReport() {
       switch (this.cycle) {
         case 1: // 日报
@@ -94,21 +93,21 @@ export default {
         const tdata = [...this.tdata]
         tdata[0].data = Array(7).fill(0)
         tdata[1].data = [...tdata[0].data]
-        tdata[2].data = [...tdata[0].data]
-        tdata[3].data = [...tdata[0].data]
         const size = this.xdata.length
         const data = response.data.data.list
         data.forEach(v => {
           for (let i = 0; i < size; i++) {
             if (this.xdata[i].key === v.date) {
-              if (v.type === 6) {
-                tdata[0].data[i] = v.num
-                tdata[2].data[i] = v.total
-              } else if (v.type === 5) {
-                tdata[1].data[i] = v.num
-                tdata[3].data[i] = v.total
+              switch (v.type) {
+                case 30: // 履约发货
+                  tdata[0].data[i] = v.num
+                  break
+                case 31: // 履约退货
+                  tdata[1].data[i] = v.num
+                  break
+                default:
+                  break
               }
-              return
             }
           }
         })

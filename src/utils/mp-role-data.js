@@ -45,13 +45,15 @@ export default [{
 }, {
   meta: { title: '云仓申请', roles: [35] }, path: '/cloudApply',
   children: [{
-    meta: { title: '云仓进货申请', roles: [36] }, path: '/cloudPurchaseApply'
+    meta: { title: '云仓履约进货申请', roles: [40] }, path: '/cloudAgreementApply'
   }, {
-    meta: { title: '云仓仓库退货申请', roles: [37] }, path: '/cloudReturnApply'
+    meta: { title: '云仓履约退货申请', roles: [39] }, path: '/cloudBackApply'
+  }, {
+    meta: { title: '云仓采购进货申请', roles: [36] }, path: '/cloudPurchaseApply'
+  }, {
+    meta: { title: '云仓采购退货申请', roles: [37] }, path: '/cloudReturnApply'
   }, {
     meta: { title: '云仓损耗申请', roles: [38] }, path: '/cloudLossApply'
-  }, {
-    meta: { title: '云仓采购退货申请', roles: [39] }, path: '/cloudBackApply'
   }]
 }, {
   meta: { title: '销售申请', roles: [45] }, path: '/saleApply',
@@ -82,7 +84,7 @@ export default [{
   }, {
     meta: { title: '仓储采购退货审核', roles: [60] }, path: '/storageReturnReview'
   }, {
-    meta: { title: '仓储履约退货审核', roles: [60] }, path: '/storageBackReview'
+    meta: { title: '仓储履约退货审核', roles: [61] }, path: '/storageBackReview'
   }]
 }, {
   meta: { title: '生产审核', roles: [65] }, path: '/productReview',
@@ -103,13 +105,15 @@ export default [{
 }, {
   meta: { title: '云仓审核', roles: [75] }, path: '/cloudReview',
   children: [{
-    meta: { title: '云仓进货审核', roles: [76] }, path: '/cloudPurchaseReview'
+    meta: { title: '云仓履约进货审核', roles: [80] }, path: '/cloudAgreementReview'
   }, {
-    meta: { title: '云仓仓库退货审核', roles: [77] }, path: '/cloudReturnReview'
+    meta: { title: '云仓履约退货审核', roles: [79] }, path: '/cloudBackReview'
+  }, {
+    meta: { title: '云仓采购进货审核', roles: [76] }, path: '/cloudPurchaseReview'
+  }, {
+    meta: { title: '云仓采购退货审核', roles: [77] }, path: '/cloudReturnReview'
   }, {
     meta: { title: '云仓损耗审核', roles: [78] }, path: '/cloudLossReview'
-  }, {
-    meta: { title: '云仓采购退货审核', roles: [79] }, path: '/cloudReturnReview'
   }]
 }, {
   meta: { title: '销售审核', roles: [85] }, path: '/saleReview',
