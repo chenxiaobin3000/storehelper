@@ -68,13 +68,13 @@ export const MyRoleData = [{
   children: [{
     path: 'report', meta: { title: '云仓总览', roles: [751] }
   }, {
-    path: 'purchase', meta: { title: '采购入库', roles: [752] }
-  }, {
-    path: 'return', meta: { title: '采购退货', roles: [755] }
-  }, {
     path: 'agreement', meta: { title: '履约入库', roles: [753] }
   }, {
     path: 'back', meta: { title: '履约退货', roles: [756] }
+  }, {
+    path: 'purchase', meta: { title: '采购入库', roles: [752] }
+  }, {
+    path: 'return', meta: { title: '采购退货', roles: [755] }
   }, {
     path: 'loss', meta: { title: '损耗明细', roles: [754] }
   }]
@@ -90,7 +90,7 @@ export const MyRoleData = [{
     path: 'cloud', meta: { title: '云仓总览', roles: [854] }
   }, {
     path: 'cloudList', meta: { title: '今日云仓', roles: [855] }
-      }, {
+  }, {
     path: 'cloudOldList', meta: { title: '云仓明细', roles: [856] }
   }]
 }, {

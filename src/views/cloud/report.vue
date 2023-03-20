@@ -13,7 +13,7 @@
 import { mapState } from 'vuex'
 import { parseTime, reportCycle } from '@/utils'
 import Chart from '@/components/Charts/Chart'
-import { getStorageReport } from '@/api/report'
+import { getCloudReport } from '@/api/report'
 
 export default {
   components: { Chart },
@@ -64,36 +64,36 @@ export default {
     this.tdata.forEach(v => {
       this.labels.push(v.name)
     })
-    this.getStorageReport()
+    this.getCloudReport()
   },
   methods: {
     resetData() {
       this.tdata = [{
-        name: '仓储入库订单数', type: 'line', yAxisIndex: 1, color: '#91cc75', data: []
+        name: '履约入库', type: 'line', yAxisIndex: 1, color: '#91cc75', data: []
       }, {
-        name: '调度出库订单数', type: 'line', yAxisIndex: 1, color: '#9a60b4', data: []
+        name: '履约退货', type: 'line', yAxisIndex: 1, color: '#9a60b4', data: []
       }, {
-        name: '调度入库订单数', type: 'line', yAxisIndex: 1, color: '#5470c6', data: []
+        name: '采购入库', type: 'line', yAxisIndex: 1, color: '#5470c6', data: []
       }, {
-        name: '仓储损耗订单数', type: 'line', yAxisIndex: 1, color: '#fac858', data: []
+        name: '采购退货', type: 'line', yAxisIndex: 1, color: '#fac858', data: []
       }, {
-        name: '仓储退货订单数', type: 'line', yAxisIndex: 1, color: '#ee6666', data: []
+        name: '云仓损耗', type: 'line', yAxisIndex: 1, color: '#ee6666', data: []
       }, {
-        name: '仓储入库商品数', type: 'bar', yAxisIndex: 0, color: '#73c0de', data: []
+        name: '履约入库数量', type: 'bar', yAxisIndex: 0, color: '#73c0de', data: []
       }]
     },
-    getStorageReport() {
+    getCloudReport() {
       this.resetData()
       switch (this.cycle) {
         case 1: // 日报
-          this.getStorageDayReport()
+          this.getCloudDayReport()
           break
         default:
           break
       }
     },
-    getStorageDayReport() {
-      getStorageReport({
+    getCloudDayReport() {
+      getCloudReport({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
         sid: 0,
@@ -112,20 +112,20 @@ export default {
           for (let i = 0; i < size; i++) {
             if (this.xdata[i].key === v.date) {
               switch (v.type) {
-                case 3: // 仓储入库
+                case 44: // 履约入库
                   tdata[0].data[i] = v.num
                   tdata[5].data[i] = v.total
                   break
-                case 4: // 调度出库
+                case 43: // 履约退货
                   tdata[1].data[i] = v.num
                   break
-                case 5: // 调度入库
+                case 40: // 采购入库
                   tdata[2].data[i] = v.num
                   break
-                case 6: // 仓储损耗
+                case 41: // 采购退货
                   tdata[3].data[i] = v.num
                   break
-                case 7: // 仓储退货
+                case 42: // 云仓损耗
                   tdata[4].data[i] = v.num
                   break
                 default:

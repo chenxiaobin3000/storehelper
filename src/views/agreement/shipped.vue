@@ -12,6 +12,11 @@
           <span>{{ row.sname }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="云仓" width="100px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.cname }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="商品" align="center">
         <template slot-scope="{row}">
           <span>{{ row.commList }}</span>
@@ -58,6 +63,9 @@
         </el-form-item>
         <el-form-item label="仓库" prop="sname">
           <span>{{ temp.sname }}</span>
+        </el-form-item>
+        <el-form-item label="云仓" prop="sname">
+          <span>{{ temp.cname }}</span>
         </el-form-item>
 
         <!-- 商品列表 -->

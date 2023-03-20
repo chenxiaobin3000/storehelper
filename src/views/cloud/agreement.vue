@@ -7,7 +7,7 @@
           <el-button icon="el-icon-tickets" size="mini" circle @click="handleDetail(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="仓库" width="100px" align="center">
+      <el-table-column label="云仓" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.sname }}</span>
         </template>
@@ -56,7 +56,7 @@
         <el-form-item label="批次" prop="batch">
           <span>{{ temp.batch }}</span>
         </el-form-item>
-        <el-form-item label="仓库" prop="sname">
+        <el-form-item label="云仓" prop="sname">
           <span>{{ temp.sname }}</span>
         </el-form-item>
 
@@ -73,17 +73,17 @@
                 <span>{{ row.name }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="重量" width="60px" align="center">
+            <el-table-column label="重量" width="70px" align="center">
               <template slot-scope="{row}">
-                <span>{{ row.unit }}克</span>
+                <span>{{ row.weight / 1000 }}kg</span>
               </template>
             </el-table-column>
-            <el-table-column label="数量" width="60px" align="center">
+            <el-table-column label="数量" width="70px" align="center">
               <template slot-scope="{row}">
-                <span>{{ row.value }}</span>
+                <span>{{ row.value }}件</span>
               </template>
             </el-table-column>
-            <el-table-column label="价格" width="60px" align="center">
+            <el-table-column label="价格" width="70px" align="center">
               <template slot-scope="{row}">
                 <span>{{ row.price }}元</span>
               </template>
@@ -155,8 +155,8 @@
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
-import { getStorageOrder } from '@/api/order'
-import { revokeReturn, delReturn } from '@/api/storage'
+import { getCloudOrder } from '@/api/order'
+import { revokeAgreement, delAgreement } from '@/api/cloud'
 
 export default {
   components: { Pagination },
@@ -168,7 +168,7 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
-        type: 15, // 仓储履约退货
+        type: 44, // 云仓履约入库
         page: 1,
         limit: 20,
         review: 1, // 全部
@@ -211,7 +211,7 @@ export default {
     },
     getOrderList() {
       this.loading = true
-      getStorageOrder(
+      getCloudOrder(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total
@@ -246,7 +246,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        revokeReturn({
+        revokeAgreement({
           id: this.userdata.user.id,
           oid: row.id
         }).then(() => {
@@ -264,7 +264,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delReturn({
+        delAgreement({
           id: this.userdata.user.id,
           oid: row.id
         }).then(() => {

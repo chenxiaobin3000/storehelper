@@ -17,7 +17,7 @@ import { mapState } from 'vuex'
 import { parseTime, reportCycle } from '@/utils'
 import Chart from '@/components/Charts/Chart'
 import { getGroupAllCloud } from '@/api/cloud'
-import { getStockDay } from '@/api/stock'
+import { getCloudDay } from '@/api/stock'
 
 export default {
   components: { Chart },
@@ -68,24 +68,24 @@ export default {
 
     await this.getGroupAllCloud()
     this.$nextTick(() => {
-      this.getStockReport()
+      this.getCloudReport()
     })
   },
   methods: {
     handleSelect() {
-      this.getStockReport()
+      this.getCloudReport()
     },
-    getStockReport() {
+    getCloudReport() {
       switch (this.cycle) {
         case 1: // 日报
-          this.getStockDay()
+          this.getCloudDay()
           break
         default:
           break
       }
     },
-    getStockDay() {
-      getStockDay({
+    getCloudDay() {
+      getCloudDay({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
         sid: 0,

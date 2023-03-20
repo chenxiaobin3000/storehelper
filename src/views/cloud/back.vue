@@ -7,14 +7,9 @@
           <el-button icon="el-icon-tickets" size="mini" circle @click="handleDetail(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="仓库" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.sname }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="云仓" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.cname }}</span>
+          <span>{{ row.sname }}</span>
         </template>
       </el-table-column>
       <el-table-column label="商品" align="center">
@@ -61,11 +56,8 @@
         <el-form-item label="批次" prop="batch">
           <span>{{ temp.batch }}</span>
         </el-form-item>
-        <el-form-item label="仓库" prop="sname">
-          <span>{{ temp.sname }}</span>
-        </el-form-item>
         <el-form-item label="云仓" prop="sname">
-          <span>{{ temp.cname }}</span>
+          <span>{{ temp.sname }}</span>
         </el-form-item>
 
         <!-- 商品列表 -->
@@ -163,8 +155,8 @@
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
-import { getAgreementOrder } from '@/api/order'
-import { revokeReturn, delReturn } from '@/api/agreement'
+import { getCloudOrder } from '@/api/order'
+import { revokeBack, delBack } from '@/api/cloud'
 
 export default {
   components: { Pagination },
@@ -176,7 +168,7 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
-        type: 31, // 履约退货
+        type: 43, // 云仓履约退货
         page: 1,
         limit: 20,
         review: 1, // 全部
@@ -219,7 +211,7 @@ export default {
     },
     getOrderList() {
       this.loading = true
-      getAgreementOrder(
+      getCloudOrder(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total
@@ -254,7 +246,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        revokeReturn({
+        revokeBack({
           id: this.userdata.user.id,
           oid: row.id
         }).then(() => {
@@ -264,12 +256,15 @@ export default {
       })
     },
     handleDelete(row) {
+      if (row.type !== 1 && row.type !== 2) {
+        this.$message({ type: 'error', message: '订单类型异常，请联系管理员!' })
+      }
       this.$confirm('确定要删除吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delReturn({
+        delBack({
           id: this.userdata.user.id,
           oid: row.id
         }).then(() => {

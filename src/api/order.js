@@ -40,3 +40,11 @@ export function getStorageOrder(data) {
     data
   })
 }
+
+export function getSaleOrder(data) {
+  return request({
+    url: `${path}/getSaleOrder`,
+    method: 'post',
+    data
+  })
+}

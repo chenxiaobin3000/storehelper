@@ -7,7 +7,7 @@
           <el-button icon="el-icon-tickets" size="mini" circle @click="handleDetail(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="仓库" width="100px" align="center">
+      <el-table-column label="云仓" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.sname }}</span>
         </template>
@@ -56,7 +56,7 @@
         <el-form-item label="批次" prop="batch">
           <span>{{ temp.batch }}</span>
         </el-form-item>
-        <el-form-item label="仓库" prop="sname">
+        <el-form-item label="云仓" prop="sname">
           <span>{{ temp.sname }}</span>
         </el-form-item>
 
@@ -73,17 +73,17 @@
                 <span>{{ row.name }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="重量" width="60px" align="center">
+            <el-table-column label="重量" width="70px" align="center">
               <template slot-scope="{row}">
-                <span>{{ row.unit }}克</span>
+                <span>{{ row.weight / 1000 }}kg</span>
               </template>
             </el-table-column>
-            <el-table-column label="数量" width="60px" align="center">
+            <el-table-column label="数量" width="70px" align="center">
               <template slot-scope="{row}">
-                <span>{{ row.value }}</span>
+                <span>{{ row.value }}件</span>
               </template>
             </el-table-column>
-            <el-table-column label="价格" width="60px" align="center">
+            <el-table-column label="价格" width="70px" align="center">
               <template slot-scope="{row}">
                 <span>{{ row.price }}元</span>
               </template>
@@ -155,8 +155,8 @@
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
-import { getPurchaseOrder } from '@/api/order'
-import { revokePurchase, delPurchase } from '@/api/purchase'
+import { getSaleOrder } from '@/api/order'
+import { revokeReturn, delReturn } from '@/api/cloud'
 
 export default {
   components: { Pagination },
@@ -168,7 +168,7 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
-        type: 1, // 采购进货
+        type: 50, // 销售售后
         page: 1,
         limit: 20,
         review: 1, // 全部
@@ -211,12 +211,11 @@ export default {
     },
     getOrderList() {
       this.loading = true
-      getPurchaseOrder(
+      getSaleOrder(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total
         this.list = response.data.data.list
-        console.log(response.data.data)
         this.list.forEach(v => {
           v.commList = ''
           if (v.comms && v.comms.length > 0) {
@@ -247,7 +246,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        revokePurchase({
+        revokeReturn({
           id: this.userdata.user.id,
           oid: row.id
         }).then(() => {
@@ -257,12 +256,15 @@ export default {
       })
     },
     handleDelete(row) {
+      if (row.type !== 1 && row.type !== 2) {
+        this.$message({ type: 'error', message: '订单类型异常，请联系管理员!' })
+      }
       this.$confirm('确定要删除吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delPurchase({
+        delReturn({
           id: this.userdata.user.id,
           oid: row.id
         }).then(() => {
