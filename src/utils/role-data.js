@@ -132,7 +132,7 @@ export const MyRoleData = [{
   }, {
     path: 'standardList', meta: { title: '标品列表', roles: [305] }
   }, {
-    path: 'setCategory', meta: { title: '品类管理', roles: [306] }
+    path: 'category', meta: { title: '品类管理', roles: [306] }
   }, {
     path: 'attributeList', meta: { title: '属性管理', roles: [307] }
   }]
@@ -158,6 +158,8 @@ export const MyRoleData = [{
     path: 'alarm', meta: { title: '预警信息', roles: [1101] }
   }, {
     path: 'groupInfo', meta: { title: '公司信息', roles: [1102] }
+  }, {
+    path: 'department', meta: { title: '部门信息', roles: [1107] }
   }, {
     path: 'storageAddress', meta: { title: '仓库地址', roles: [1103] }
   }, {

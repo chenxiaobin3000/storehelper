@@ -15,6 +15,9 @@ export default {
     path: 'groupInfo', component: () => import('@/views/system/groupInfo'),
     name: 'system_groupInfo', meta: { title: '公司信息', roles: [1102] }
   }, {
+    path: 'department', component: () => import('@/views/system/department'),
+    name: 'system_department', meta: { title: '部门信息', roles: [1107] }
+  }, {
     path: 'storageAddress', component: () => import('@/views/system/storageAddress'),
     name: 'system_storageAddress', meta: { title: '仓库地址', roles: [1103] }
   }, {

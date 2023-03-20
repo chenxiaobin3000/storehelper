@@ -24,8 +24,8 @@ export default {
     path: 'standardList', component: () => import('@/views/commodity/standardList'),
     name: 'commodity_standardList', meta: { title: '标品列表', roles: [305] }
   }, {
-    path: 'setCategory', component: () => import('@/views/commodity/setCategory'),
-    name: 'commodity_setCategory', meta: { title: '品类管理', roles: [306] }
+    path: 'category', component: () => import('@/views/commodity/category'),
+    name: 'commodity_category', meta: { title: '品类管理', roles: [306] }
   }, {
     path: 'attributeList', component: () => import('@/views/commodity/attributeList'),
     name: 'commodity_attributeList', meta: { title: '属性管理', roles: [307] }

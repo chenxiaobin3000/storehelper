@@ -13,7 +13,7 @@
       </el-table-column>
       <el-table-column label="部门" width="140px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.part.name }}</span>
+          <span>{{ row.depart ? row.depart.name : '' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="公司角色" width="160px" align="center">
@@ -51,7 +51,9 @@
           <el-input v-model="temp.phone" />
         </el-form-item>
         <el-form-item label="部门" prop="department">
-          <el-input v-model="temp.part.name" />
+          <el-select v-model="temp.depart.id" class="filter-item" placeholder="请选择部门">
+            <el-option v-for="item in departmentList" :key="item.id" :label="item.label" :value="item.id" />
+          </el-select>
         </el-form-item>
         <el-form-item label="角色" prop="role">
           <el-select v-model="temp.role.id" class="filter-item" placeholder="请选择角色">
@@ -103,6 +105,7 @@
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
 import { getUserList, addUser, setUser, delUser } from '@/api/user'
+import { getGroupDepartmentTree, setUserDepartment } from '@/api/department'
 import { getGroupRole, setUserRole } from '@/api/role'
 import { getGroupRoleMp, setUserRoleMp } from '@/api/rolemp'
 
@@ -115,6 +118,7 @@ export default {
       list: null,
       total: 0,
       loading: false,
+      departmentList: [],
       oldRole: '', // 保存修改界面的旧角色id
       listQuery: {
         id: 0,
@@ -152,10 +156,12 @@ export default {
     }
   },
   async created() {
-    this.listQuery.id = this.$store.getters.userdata.user.id
+    this.userdata = this.$store.getters.userdata
+    this.listQuery.id = this.userdata.user.id
     this.resetTemp()
     this.resetTempMp()
     await this.getUserList()
+    await this.getDepartmentList()
     await this.getGroupRole()
     await this.getGroupRoleMp()
   },
@@ -165,7 +171,7 @@ export default {
         id: 0,
         name: '',
         phone: '',
-        part: { name: '' },
+        depart: { id: null, name: '' },
         role: { id: null, name: '' }
       }
     },
@@ -173,6 +179,7 @@ export default {
       this.tempMp = {
         id: 0,
         name: '',
+        depart: { id: null, name: '' },
         role: { id: null, name: '' }
       }
     },
@@ -184,9 +191,6 @@ export default {
         this.total = response.data.data.total
         this.list = response.data.data.list
         this.list.forEach(v => {
-          if (v.part == null) {
-            v.part = { name: '' }
-          }
           if (v.role == null) {
             v.role = { id: 0, name: '无' }
           }
@@ -200,16 +204,31 @@ export default {
         Promise.reject(error)
       })
     },
+    getDepartmentList() {
+      getGroupDepartmentTree({
+        id: this.userdata.user.id
+      }).then(response => {
+        this.generator(response.data.data.list)
+      })
+    },
+    generator(tree) {
+      tree.forEach(v => {
+        this.departmentList.push(v)
+        if (v.children != null) {
+          this.generator(v.children)
+        }
+      })
+    },
     getGroupRole() {
       getGroupRole({
-        id: this.listQuery.id
+        id: this.userdata.user.id
       }).then(response => {
         this.grouproles = response.data.data.list
       })
     },
     getGroupRoleMp() {
       getGroupRoleMp({
-        id: this.listQuery.id
+        id: this.userdata.user.id
       }).then(response => {
         this.grouproleMps = response.data.data.list
         if (this.grouproleMps.length > 0) {
@@ -224,7 +243,7 @@ export default {
     },
     createData() {
       addUser({
-        id: this.listQuery.id,
+        id: this.userdata.user.id,
         account: this.temp.name,
         phone: this.temp.phone,
         rid: this.temp.role.id
@@ -236,6 +255,9 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row)
+      if (this.temp.depart == null) {
+        this.temp.depart = { id: null, name: '' }
+      }
       this.oldRole = this.temp.role.id
       this.dialogStatus = 'update'
       this.dialogVisible = true
@@ -243,7 +265,7 @@ export default {
     updateData() {
       if (this.oldRole !== this.temp.role.id) {
         setUserRole({
-          id: this.listQuery.id,
+          id: this.userdata.user.id,
           uid: this.temp.id,
           rid: this.temp.role.id
         }).then(response => {
@@ -253,9 +275,10 @@ export default {
         this.setUser()
       }
     },
-    setUser() {
+    async setUser() {
+      await this.setUserDepartment()
       setUser({
-        id: this.listQuery.id,
+        id: this.userdata.user.id,
         uid: this.temp.id,
         name: this.temp.name,
         phone: this.temp.phone
@@ -265,6 +288,14 @@ export default {
         this.dialogVisible = false
       })
     },
+    setUserDepartment() {
+      setUserDepartment({
+        id: this.userdata.user.id,
+        uid: this.temp.id,
+        gid: this.userdata.group.id,
+        did: this.temp.depart.id
+      }).then(response => {})
+    },
     handleDelete(row) {
       this.$confirm('确定要删除吗?', '提示', {
         confirmButtonText: '确定',
@@ -272,7 +303,7 @@ export default {
         type: 'warning'
       }).then(() => {
         delUser({
-          id: this.listQuery.id,
+          id: this.userdata.user.id,
           uid: row.id
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
@@ -290,7 +321,7 @@ export default {
     },
     updateDataMp() {
       setUserRoleMp({
-        id: this.listQuery.id,
+        id: this.userdata.user.id,
         uid: this.tempMp.id,
         rid: this.tempMp.role.id
       }).then(response => {
