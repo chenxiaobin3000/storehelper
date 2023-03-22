@@ -10,6 +10,7 @@ import Layout from '@/layout'
 import agreementRouter from './modules/agreement'
 import cloudRouter from './modules/cloud'
 import commodityRouter from './modules/commodity'
+import dockRouter from './modules/dock'
 import financeRouter from './modules/finance'
 import marketRouter from './modules/market'
 import productRouter from './modules/product'
@@ -80,6 +81,7 @@ export const asyncRoutes = [
   stockRouter,
   supplierRouter,
   reportRouter,
+  dockRouter,
   commodityRouter,
   financeRouter,
   userRouter,

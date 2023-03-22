@@ -9,9 +9,16 @@ export const MyRoleData = [{
   }, {
     path: 'saleReturn', meta: { title: '售后明细', roles: [505] }
   }, {
-    path: 'commodity', meta: { title: '对接模板', roles: [503] }
-  }, {
     path: 'input', meta: { title: '价格录入', roles: [504] }
+  }]
+}, {
+  path: '/dock', meta: { title: '平台管理', roles: [450] },
+  children: [{
+    path: 'account', meta: { title: '账号明细', roles: [451] }
+  }, {
+    path: 'cloud', meta: { title: '云仓明细', roles: [452] }
+  }, {
+    path: 'commodity', meta: { title: '商品明细', roles: [453] }
   }]
 }, {
   path: '/purchase', meta: { title: '采购管理', roles: [250] },

@@ -35,11 +35,6 @@
           <span>{{ row.attribute }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="单位" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.unit }}克</span>
-        </template>
-      </el-table-column>
       <el-table-column label="价格" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.price }}元</span>
@@ -83,9 +78,6 @@
         </el-form-item>
         <el-form-item label="价格" prop="price">
           <span>{{ temp.price }}</span>
-        </el-form-item>
-        <el-form-item label="单位" prop="unit">
-          <span>{{ temp.unit }}</span>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <span>{{ temp.remark }}</span>

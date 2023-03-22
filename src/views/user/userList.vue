@@ -248,6 +248,13 @@ export default {
         phone: this.temp.phone,
         rid: this.temp.role.id
       }).then(response => {
+        console.log(response.data.data.id)
+        setUserDepartment({
+          id: this.userdata.user.id,
+          uid: response.data.data.id,
+          gid: this.userdata.group.id,
+          did: this.temp.depart.id
+        }).then(response => {})
         this.$message({ type: 'success', message: '新增成功!' })
         this.getUserList()
         this.dialogVisible = false

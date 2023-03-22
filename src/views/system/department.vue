@@ -169,7 +169,7 @@ export default {
       setDepartment({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
-        cid: this.temp.id,
+        pid: this.temp.id,
         name: this.temp.label,
         parent: this.temp.parent,
         level: this.temp.level
@@ -187,7 +187,7 @@ export default {
       }).then(() => {
         delDepartment({
           id: this.userdata.user.id,
-          cid: row.data.id
+          pid: row.data.id
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
           this.getDepartmentList()

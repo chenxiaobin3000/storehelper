@@ -13,12 +13,12 @@
       </el-table-column>
       <el-table-column label="联系人" width="80px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.contact.name }}</span>
+          <span>{{ row.contact }}</span>
         </template>
       </el-table-column>
       <el-table-column label="联系电话" width="120px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.contact.phone }}</span>
+          <span>{{ row.phone }}</span>
         </template>
       </el-table-column>
       <el-table-column label="地址" align="center">
@@ -45,11 +45,11 @@
         <el-form-item label="云仓名称" prop="name">
           <el-input v-model="temp.name" />
         </el-form-item>
-        <el-form-item label="联系电话" prop="phone">
-          <el-input v-model="temp.contact.phone" />
-        </el-form-item>
         <el-form-item label="联系人" prop="contact">
-          <span>{{ temp.contact.name }}</span>
+          <el-input v-model="temp.contact" />
+        </el-form-item>
+        <el-form-item label="联系电话" prop="phone">
+          <el-input v-model="temp.phone" />
         </el-form-item>
         <el-form-item label="云仓地区" prop="code">
           <el-cascader v-model="temp.region" size="large" style="width: 80%;" :options="regionOptions" />
@@ -75,7 +75,6 @@ import { mapState } from 'vuex'
 import { regionData, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
 import { getGroupCloud, addCloud, setCloud, delCloud } from '@/api/cloud'
-import { getUserByPhone } from '@/api/user'
 
 export default {
   components: { Pagination },
@@ -85,7 +84,6 @@ export default {
       list: null,
       total: 0,
       loading: false,
-      oldPhone: '', // 保存修改界面的旧手机号
       listQuery: {
         id: 0,
         page: 1,
@@ -97,8 +95,8 @@ export default {
       dialogVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '修改仓库信息',
-        create: '新增仓库'
+        update: '修改云仓信息',
+        create: '新增云仓'
       }
     }
   },
@@ -131,12 +129,9 @@ export default {
         id: 0,
         name: '',
         region: [],
-        address: '',
-        contact: {
-          id: 0,
-          name: '',
-          phone: ''
-        }
+        contact: '',
+        phone: '',
+        address: ''
       }
     },
     getGroupCloud() {
@@ -162,32 +157,25 @@ export default {
     },
     createData() {
       if (!this.temp.region || this.temp.region.length <= 0) {
-        this.$message({ type: 'error', message: '请选择仓库地区' })
+        this.$message({ type: 'error', message: '请选择云仓地区' })
         return
       }
-      // 先从手机号获取联系人信息
-      getUserByPhone({
+      addCloud({
         id: this.listQuery.id,
-        phone: this.temp.contact.phone
+        gid: this.userdata.group.id,
+        area: this.temp.region.join(''),
+        name: this.temp.name,
+        contact: this.temp.contact,
+        phone: this.temp.phone,
+        address: this.temp.address
       }).then(response => {
-        // 正式新增
-        addCloud({
-          id: this.listQuery.id,
-          gid: this.userdata.group.id,
-          area: this.temp.region.join(''),
-          contact: response.data.data.id,
-          name: this.temp.name,
-          address: this.temp.address
-        }).then(response => {
-          this.$message({ type: 'success', message: '新增成功!' })
-          this.getGroupCloud()
-          this.dialogVisible = false
-        })
+        this.$message({ type: 'success', message: '新增成功!' })
+        this.getGroupCloud()
+        this.dialogVisible = false
       })
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row)
-      this.oldPhone = this.temp.contact.phone
       const temp = []
       temp.push(row.area.slice(0, 6))
       temp.push(row.area.slice(6, 12))
@@ -198,30 +186,17 @@ export default {
     },
     updateData() {
       if (!this.temp.region || this.temp.region.length <= 0) {
-        this.$message({ type: 'error', message: '请选择仓库地区' })
+        this.$message({ type: 'error', message: '请选择云仓地区' })
         return
       }
-      // 先判断手机号有没改
-      if (this.temp.contact.phone !== this.oldPhone) {
-        // 先从手机号获取联系人信息
-        getUserByPhone({
-          id: this.listQuery.id,
-          phone: this.temp.contact.Phone
-        }).then(response => {
-          this.setCloud(response.data.data.id)
-        })
-      } else {
-        this.setCloud(this.temp.contact.id)
-      }
-    },
-    setCloud(id) {
       setCloud({
         id: this.listQuery.id,
         gid: this.userdata.group.id,
         sid: this.temp.id,
         area: this.temp.region.join(''),
-        contact: id,
         name: this.temp.name,
+        contact: this.temp.contact,
+        phone: this.temp.phone,
         address: this.temp.address
       }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
