@@ -113,7 +113,6 @@ export default {
     },
     getCloudList() {
       this.loading = true
-      console.log(this.listQuery)
       getCloudDetail(
         this.listQuery
       ).then(response => {

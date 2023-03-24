@@ -12,6 +12,9 @@ export default {
     path: 'report', component: () => import('@/views/commodity/report'),
     name: 'commodity_report', meta: { title: '销售数据', roles: [301] }
   }, {
+    path: 'standardList', component: () => import('@/views/commodity/standardList'),
+    name: 'commodity_standardList', meta: { title: '标品列表', roles: [305] }
+  }, {
     path: 'commodityList', component: () => import('@/views/commodity/commodityList'),
     name: 'commodity_commodityList', meta: { title: '商品列表', roles: [302] }
   }, {
@@ -20,9 +23,6 @@ export default {
   }, {
     path: 'originalList', component: () => import('@/views/commodity/originalList'),
     name: 'commodity_originalList', meta: { title: '原料列表', roles: [304] }
-  }, {
-    path: 'standardList', component: () => import('@/views/commodity/standardList'),
-    name: 'commodity_standardList', meta: { title: '标品列表', roles: [305] }
   }, {
     path: 'category', component: () => import('@/views/commodity/category'),
     name: 'commodity_category', meta: { title: '品类管理', roles: [306] }

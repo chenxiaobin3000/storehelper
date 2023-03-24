@@ -248,7 +248,6 @@ export default {
         phone: this.temp.phone,
         rid: this.temp.role.id
       }).then(response => {
-        console.log(response.data.data.id)
         setUserDepartment({
           id: this.userdata.user.id,
           uid: response.data.data.id,

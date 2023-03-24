@@ -4,6 +4,9 @@
       <el-select v-model="listQuery.mid" class="filter-item" @change="handleSelect">
         <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
+      <el-select v-model="listQuery.sid" class="filter-item" @change="handleSelect">
+        <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
       <el-select v-model="ctype" class="filter-item" @change="handleSelect">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
@@ -100,6 +103,7 @@ import { mapState } from 'vuex'
 import { filterMarket } from '@/utils/market-data'
 import Pagination from '@/components/Pagination'
 import { setMarketCommodity, delMarketCommodity, getMarketCommodity, setMarketStandard, delMarketStandard, getMarketStandard } from '@/api/market'
+import { getGroupAllCloud } from '@/api/cloud'
 import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 
@@ -109,6 +113,7 @@ export default {
     return {
       userdata: {},
       moptions: [],
+      soptions: [],
       ctype: 1,
       options: [{
         value: 1, label: '商品'
@@ -122,8 +127,10 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
+        gid: 0,
         page: 1,
         limit: 20,
+        sid: 0,
         mid: 0,
         search: null
       },
@@ -150,11 +157,12 @@ export default {
     this.userdata = this.$store.getters.userdata
     this.moptions = filterMarket(this.userdata.market, false)
     this.listQuery.id = this.userdata.user.id
+    this.listQuery.gid = this.userdata.group.id
     this.listQuery.mid = 1
     this.resetTemp()
     await this.getCategoryList()
     await this.getGroupAttrTemp()
-    await this.getCommodityList()
+    await this.getGroupAllCloud()
   },
   methods: {
     resetTemp() {
@@ -174,6 +182,19 @@ export default {
       this.listQuery.page = 1
       this.listQuery.limit = 20
       this.getCommodityList()
+    },
+    getGroupAllCloud() {
+      getGroupAllCloud({
+        id: this.userdata.user.id
+      }).then(response => {
+        if (response.data.data.list && response.data.data.list.length > 0) {
+          response.data.data.list.forEach(v => {
+            this.soptions.push({ value: v.id, label: v.name })
+          })
+          this.listQuery.sid = response.data.data.list[0].id
+          this.getCommodityList()
+        }
+      })
     },
     getCommodityList() {
       this.loading = true

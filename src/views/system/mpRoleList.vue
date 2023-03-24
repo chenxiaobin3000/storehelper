@@ -28,15 +28,7 @@
           <el-input v-model="temp.description" />
         </el-form-item>
         <el-form-item label="权限">
-          <el-tree
-            ref="tree"
-            :check-strictly="checkStrictly"
-            :data="routes"
-            :props="defaultProps"
-            show-checkbox
-            node-key="path"
-            class="permission-tree"
-          />
+          <el-tree ref="tree" :check-strictly="checkStrictly" :data="routes" :props="defaultProps" show-checkbox node-key="path" class="permission-tree" />
         </el-form-item>
       </el-form>
       <div style="text-align:right;">
@@ -52,10 +44,10 @@
 </template>
 
 <script>
-import path from 'path'
 import { mapState } from 'vuex'
 import { deepClone } from '@/utils'
 import MpRoleData from '@/utils/mp-role-data'
+import { treeGenerate } from '@/utils/tree'
 import { getRoleMpList, addRoleMp, delRoleMp, setRoleMp, getRoleMp } from '@/api/rolemp'
 
 export default {
@@ -108,7 +100,7 @@ export default {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
     this.listQuery.gid = this.userdata.group.id
-    this.routes = this.generateRoutes(MpRoleData)
+    this.routes = treeGenerate.generateRoutes(MpRoleData)
     this.getRoleMps()
   },
   methods: {
@@ -136,49 +128,9 @@ export default {
         Promise.reject(error)
       })
     },
-    generateRoutes(routes, basePath = '/') {
-      const res = []
-      for (let route of routes) {
-        // skip some route
-        if (route.hidden) { continue }
-
-        const onlyOneShowingChild = this.onlyOneShowingChild(route.children, route)
-        if (route.children && onlyOneShowingChild && !route.alwaysShow) {
-          route = onlyOneShowingChild
-        }
-
-        const data = {
-          path: path.resolve(basePath, route.path),
-          title: route.meta && route.meta.title
-        }
-
-        if (route.children) {
-          data.children = this.generateRoutes(route.children, data.path)
-        }
-        res.push(data)
-      }
-      return res
-    },
-    generateArr(routes, basePath = '/') {
-      let data = []
-      routes.forEach(route => {
-        const fullPath = path.resolve(basePath, route.path)
-        data.push({
-          path: fullPath,
-          title: route.meta && route.meta.title
-        })
-        if (route.children) {
-          const temp = this.generateArr(route.children, fullPath)
-          if (temp.length > 0) {
-            data = [...data, ...temp]
-          }
-        }
-      })
-      return data
-    },
     createData() {
       const checkedKeys = this.$refs.tree.getCheckedKeys()
-      this.temp.routes = this.generateTree(MpRoleData, '/', checkedKeys)
+      this.temp.routes = treeGenerate.generateTree(MpRoleData, '/', checkedKeys)
       addRoleMp({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
@@ -196,7 +148,7 @@ export default {
       if (this.temp.routes) {
         this.checkStrictly = true // 保护父子节点不相互影响
         this.$nextTick(() => {
-          const routes = this.filterAsyncRoutes(MpRoleData, this.temp.routes)
+          const routes = treeGenerate.filterAsyncRoutes(MpRoleData, this.temp.routes)
           this.$refs.tree.setCheckedNodes(this.generateArr(routes))
           this.checkStrictly = false
         })
@@ -209,8 +161,8 @@ export default {
           scope.row.routes = this.temp.routes
           this.checkStrictly = true // 保护父子节点不相互影响
           this.$nextTick(() => {
-            const routes = this.filterAsyncRoutes(MpRoleData, this.temp.routes)
-            this.$refs.tree.setCheckedNodes(this.generateArr(routes))
+            const routes = treeGenerate.filterAsyncRoutes(MpRoleData, this.temp.routes)
+            this.$refs.tree.setCheckedNodes(treeGenerate.generateArr(routes))
             this.checkStrictly = false
           })
         })
@@ -220,7 +172,7 @@ export default {
     },
     updateData() {
       const checkedKeys = this.$refs.tree.getCheckedKeys()
-      this.temp.routes = this.generateTree(MpRoleData, '/', checkedKeys)
+      this.temp.routes = treeGenerate.generateTree(MpRoleData, '/', checkedKeys)
       setRoleMp({
         id: this.userdata.user.id,
         rid: this.temp.id,
@@ -254,70 +206,6 @@ export default {
           this.getRoleMps()
         })
       })
-    },
-    generateTree(routes, basePath = '/', checkedKeys) {
-      const res = []
-      for (const route of routes) {
-        const routePath = path.resolve(basePath, route.path)
-        let sub = false
-        if (route.children) {
-          const children = this.generateTree(route.children, routePath, checkedKeys)
-          if (children && children.length > 0) {
-            children.forEach(role => {
-              res.push(role)
-            })
-            sub = true
-          }
-        }
-        if (sub || checkedKeys.includes(routePath)) {
-          if (route.meta && route.meta.roles) {
-            route.meta.roles.forEach(role => {
-              res.push(role)
-            })
-          }
-        }
-      }
-      return res
-    },
-    // 若节点只存在一个子节点，就用子节点代替父节点
-    onlyOneShowingChild(children = [], parent) {
-      let onlyOneChild = null
-      const showingChildren = children.filter(item => !item.hidden)
-
-      // When there is only one child route, the child route is displayed by default
-      if (showingChildren.length === 1) {
-        onlyOneChild = showingChildren[0]
-        onlyOneChild.path = path.resolve(parent.path, onlyOneChild.path)
-        return onlyOneChild
-      }
-
-      // Show parent if there are no child route to display
-      if (showingChildren.length === 0) {
-        onlyOneChild = { ... parent, path: '', noShowingChildren: true }
-        return onlyOneChild
-      }
-      return false
-    },
-    // 以下是从store/permision拷贝过来
-    hasPermission(roles, route) {
-      if (route.meta && route.meta.roles) {
-        return roles.some(role => route.meta.roles.includes(role))
-      } else {
-        return true
-      }
-    },
-    filterAsyncRoutes(routes, roles) {
-      const res = []
-      routes.forEach(route => {
-        const tmp = { ...route }
-        if (this.hasPermission(roles, tmp)) {
-          if (tmp.children) {
-            tmp.children = this.filterAsyncRoutes(tmp.children, roles)
-          }
-          res.push(tmp)
-        }
-      })
-      return res
     }
   }
 }

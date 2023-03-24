@@ -32,3 +32,19 @@ export function getGroupStandard(data) {
     data
   })
 }
+
+export function setStandardCloud(data) {
+  return request({
+    url: `${path}/setStandardCloud`,
+    method: 'post',
+    data
+  })
+}
+
+export function setStandardStorage(data) {
+  return request({
+    url: `${path}/setStandardStorage`,
+    method: 'post',
+    data
+  })
+}

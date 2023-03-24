@@ -16,12 +16,23 @@
           <span>{{ row.categoryName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="属性" width="160px" align="center">
+      <el-table-column label="属性" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.attribute }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center">
+      <el-table-column label="云仓" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.cloudNames }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="仓库" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.storageNames }} </span>
+          <el-button icon="el-icon-edit" size="mini" circle @click="handleSelectStorage(row)" />
+        </template>
+      </el-table-column>
+      <el-table-column label="备注" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.remark }}</span>
         </template>
@@ -82,13 +93,41 @@
         </el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="设置关联云仓/仓库" :visible.sync="dialogStorageVisible">
+      <el-form :model="tempStorage" label-position="left" label-width="60px" style="width: 100%; padding: 0 4% 0 4%;">
+        <el-form-item label="编号" prop="code">
+          <span>{{ tempStorage.code }}</span>
+        </el-form-item>
+        <el-form-item label="名称" prop="name">
+          <span>{{ tempStorage.name }}</span>
+        </el-form-item>
+        <el-form-item label="云仓" prop="cloud">
+          <el-tree ref="treeC" :check-strictly="checkStrictlyC" :data="routesC" :props="defaultProps" show-checkbox node-key="path" class="permission-tree" />
+        </el-form-item>
+        <el-form-item label="仓库" prop="storage">
+          <el-tree ref="treeS" :check-strictly="checkStrictlyS" :data="routesS" :props="defaultProps" show-checkbox node-key="path" class="permission-tree" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogStorageVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="updateStorageData()">
+          确定
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
-import { getGroupStandard, addStandard, setStandard, delStandard } from '@/api/standard'
+import { treeGenerate } from '@/utils/tree'
+import { getGroupStandard, addStandard, setStandard, delStandard, setStandardCloud, setStandardStorage } from '@/api/standard'
+import { getGroupAllCloud } from '@/api/cloud'
+import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryTree } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 
@@ -97,10 +136,16 @@ export default {
   data() {
     return {
       userdata: {},
+      routesC: [],
+      routesS: [],
+      dataC: [],
+      dataS: [],
       list: null,
       total: 0,
       categoryList: [],
       templateList: {},
+      cloudList: [],
+      storageList: [],
       loading: false,
       listQuery: {
         id: 0,
@@ -109,12 +154,20 @@ export default {
         search: null
       },
       temp: {},
+      tempStorage: {},
+      checkStrictlyC: false,
+      checkStrictlyS: false,
+      defaultProps: {
+        children: 'children',
+        label: 'title'
+      },
       dialogVisible: false,
       dialogStatus: '',
       textMap: {
         update: '修改标品信息',
         create: '新增标品'
-      }
+      },
+      dialogStorageVisible: false
     }
   },
   computed: {
@@ -134,13 +187,11 @@ export default {
       this.dialogVisible = true
     }
   },
-  async created() {
+  created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
     this.resetTemp()
-    await this.getCategoryList()
-    await this.getGroupAttrTemp()
-    await this.getStandardList()
+    this.getGroupAllCloud()
   },
   methods: {
     resetTemp() {
@@ -169,6 +220,29 @@ export default {
         this.list = []
         if (response.data.data.list && response.data.data.list.length > 0) {
           response.data.data.list.forEach(v => {
+            if (v.clouds && v.clouds.length > 0) {
+              const tmp = []
+              v.cloudNames = ''
+              v.clouds.forEach(s => {
+                tmp.push(s.sid)
+                v.cloudNames = v.cloudNames + s.name + ', '
+              })
+              v.clouds = tmp
+            } else {
+              v.clouds = []
+            }
+            if (v.storages && v.storages.length > 0) {
+              const tmp = []
+              v.storageNames = ''
+              v.storages.forEach(s => {
+                tmp.push(s.sid)
+                v.storageNames = v.storageNames + s.name + ', '
+              })
+              v.storages = tmp
+            } else {
+              v.storages = []
+            }
+
             // 品类
             this.categoryList.forEach(c => {
               if (c.id === v.cid) {
@@ -191,11 +265,34 @@ export default {
         Promise.reject(error)
       })
     },
+    getGroupAllCloud() {
+      getGroupAllCloud({
+        id: this.userdata.user.id
+      }).then(response => {
+        response.data.data.list.forEach(v => {
+          this.dataC.push({ path: '/' + v.id, meta: { title: v.name, roles: [v.id] }})
+        })
+        this.routesC = treeGenerate.generateRoutes(this.dataC)
+        this.getGroupAllStorage()
+      })
+    },
+    getGroupAllStorage() {
+      getGroupAllStorage({
+        id: this.userdata.user.id
+      }).then(response => {
+        response.data.data.list.forEach(v => {
+          this.dataS.push({ path: '/' + v.id, meta: { title: v.name, roles: [v.id] }})
+        })
+        this.routesS = treeGenerate.generateRoutes(this.dataS)
+        this.getCategoryList()
+      })
+    },
     getCategoryList() {
       getGroupCategoryTree({
         id: this.userdata.user.id
       }).then(response => {
         this.generator(response.data.data.list)
+        this.getGroupAttrTemp()
       })
     },
     generator(tree) {
@@ -212,6 +309,7 @@ export default {
         atid: 4
       }).then(response => {
         this.templateList = response.data.data.list
+        this.getStandardList()
       })
     },
     createData() {
@@ -275,6 +373,55 @@ export default {
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
           this.getStandardList()
+        })
+      })
+    },
+    handleSelectStorage(row) {
+      this.tempStorage = {
+        id: row.id,
+        code: row.code,
+        name: row.name
+      }
+      // 云仓列表
+      this.tempStorage.routesC = row.clouds
+      this.checkStrictlyC = true // 保护父子节点不相互影响
+      this.$nextTick(() => {
+        const routes = treeGenerate.filterAsyncRoutes(this.dataC, this.tempStorage.routesC)
+        this.$refs.treeC.setCheckedNodes(treeGenerate.generateArr(routes))
+        this.checkStrictlyC = false
+      })
+      // 仓库列表
+      this.tempStorage.routesS = row.storages
+      this.checkStrictlyS = true // 保护父子节点不相互影响
+      this.$nextTick(() => {
+        const routes = treeGenerate.filterAsyncRoutes(this.dataS, this.tempStorage.routesS)
+        this.$refs.treeS.setCheckedNodes(treeGenerate.generateArr(routes))
+        this.checkStrictlyS = false
+      })
+      this.dialogStorageVisible = true
+    },
+    updateStorageData() {
+      const checkedKeys = this.$refs.treeC.getCheckedKeys()
+      this.tempStorage.routesC = treeGenerate.generateTree(this.dataC, '/', checkedKeys)
+
+      setStandardCloud({
+        id: this.userdata.user.id,
+        gid: this.userdata.group.id,
+        cid: this.tempStorage.id,
+        sids: this.tempStorage.routesC
+      }).then(response => {
+        const checkedKeys = this.$refs.treeS.getCheckedKeys()
+        this.tempStorage.routesS = treeGenerate.generateTree(this.dataS, '/', checkedKeys)
+
+        setStandardStorage({
+          id: this.userdata.user.id,
+          gid: this.userdata.group.id,
+          cid: this.tempStorage.id,
+          sids: this.tempStorage.routesS
+        }).then(response => {
+          this.$message({ type: 'success', message: '修改成功!' })
+          this.getStandardList()
+          this.dialogStorageVisible = false
         })
       })
     }

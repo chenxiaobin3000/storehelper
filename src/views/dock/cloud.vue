@@ -78,7 +78,7 @@ export default {
         search: null
       },
       temp: {},
-      dialogVisible: false,
+      dialogVisible: false
     }
   },
   computed: {

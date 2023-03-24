@@ -117,7 +117,6 @@ export default {
     },
     getStockList() {
       this.loading = true
-      console.log(this.listQuery)
       getStockDetail(
         this.listQuery
       ).then(response => {

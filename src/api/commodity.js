@@ -40,3 +40,19 @@ export function setCommodityOriginal(data) {
     data
   })
 }
+
+export function setCommodityCloud(data) {
+  return request({
+    url: `${path}/setCommodityCloud`,
+    method: 'post',
+    data
+  })
+}
+
+export function setCommodityStorage(data) {
+  return request({
+    url: `${path}/setCommodityStorage`,
+    method: 'post',
+    data
+  })
+}
