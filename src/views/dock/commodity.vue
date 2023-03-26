@@ -13,39 +13,69 @@
     </div>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="平台名称" width="160px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.mname }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="编号" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.code }}</span>
+          <span>{{ row.ccode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="内部名称" width="200px" align="center">
+      <el-table-column label="名称" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.name }}</span>
+          <span>{{ row.cname }}</span>
         </template>
       </el-table-column>
       <el-table-column label="品类" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.category }}</span>
+          <span>{{ row.categoryName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="属性" width="160px" align="center">
+      <el-table-column label="属性" align="center">
         <template slot-scope="{row}">
           <span>{{ row.attribute }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="价格" width="80px" align="center">
+      <el-table-column label="成本" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.price }}元</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center">
+      <el-table-column label="库存" width="80px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.remark }}</span>
+          <span>{{ row.svalue }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="备注" width="120px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.cremark }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="云仓" width="100px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.cloud }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="平台账号" width="120px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.account }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="平台编号" width="100px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.mcode }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="平台名称" width="200px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.mname }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="平台备注" width="120px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.mremark }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="预警" width="80px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.alarm }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
@@ -64,26 +94,36 @@
 
     <el-dialog title="修改平台对接商品信息" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="平台名称" prop="name">
+        <el-form-item label="编号" prop="ccode">
+          <span>{{ temp.ccode }}</span>
+        </el-form-item>
+        <el-form-item label="名称" prop="cname">
+          <span>{{ temp.cname }}</span>
+        </el-form-item>
+        <el-form-item label="备注" prop="cremark">
+          <span>{{ temp.cremark }}</span>
+        </el-form-item>
+        <el-form-item label="平台" prop="mid">
+          <el-select v-model="listQuery.mid" class="filter-item">
+            <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="云仓" prop="sid">
+          <el-select v-model="listQuery.sid" class="filter-item">
+            <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="平台编号" prop="mcode">
+          <el-input v-model="temp.mcode" />
+        </el-form-item>
+        <el-form-item label="平台名称" prop="mname">
           <el-input v-model="temp.mname" />
         </el-form-item>
-        <el-form-item label="编号" prop="name">
-          <span>{{ temp.code }}</span>
+        <el-form-item label="平台备注" prop="mremark">
+          <el-input v-model="temp.mremark" />
         </el-form-item>
-        <el-form-item label="内部名称" prop="name">
-          <span>{{ temp.name }}</span>
-        </el-form-item>
-        <el-form-item label="品类" prop="category">
-          <span>{{ temp.category }}</span>
-        </el-form-item>
-        <el-form-item label="属性" prop="attribute">
-          <span>{{ temp.attribute }}</span>
-        </el-form-item>
-        <el-form-item label="价格" prop="price">
-          <span>{{ temp.price }}</span>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <span>{{ temp.remark }}</span>
+        <el-form-item label="预警价格" prop="alarm">
+          <el-input v-model="temp.alarm" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -155,14 +195,11 @@ export default {
   },
   async created() {
     this.userdata = this.$store.getters.userdata
-    this.moptions = filterMarket(this.userdata.market, false)
+    this.moptions = filterMarket(this.userdata.market, true)
     this.listQuery.id = this.userdata.user.id
     this.listQuery.gid = this.userdata.group.id
-    this.listQuery.mid = 1
     this.resetTemp()
-    await this.getCategoryList()
-    await this.getGroupAttrTemp()
-    await this.getGroupAllCloud()
+    this.getCategoryList()
   },
   methods: {
     resetTemp() {
@@ -228,8 +265,8 @@ export default {
         list.forEach(v => {
           // 品类
           this.categoryList.forEach(c => {
-            if (c.id === v.cid) {
-              v.category = c.name
+            if (c.id === v.category) {
+              v.categoryName = c.name
             }
           })
           // 属性
@@ -247,6 +284,7 @@ export default {
         id: this.userdata.user.id
       }).then(response => {
         this.categoryList = response.data.data.list
+        this.getGroupAttrTemp()
       })
     },
     getGroupAttrTemp() {
@@ -255,20 +293,20 @@ export default {
         atid: this.ctype
       }).then(response => {
         this.templateList = response.data.data.list
+        this.getGroupAllCloud()
       })
     },
     handleUpdate(row) {
       this.temp = {
-        mname: row.mname,
         id: row.id,
         cid: row.cid,
-        code: row.code,
-        name: row.name,
-        category: row.category,
-        attribute: row.attribute,
-        price: row.price,
-        unit: row.unit,
-        remark: row.remark
+        ccode: row.ccode,
+        cname: row.cname,
+        cremark: row.cremark,
+        mcode: row.mcode,
+        mname: row.mname,
+        mremark: row.mremark,
+        alarm: row.alarm
       }
       this.dialogVisible = true
     },
@@ -276,10 +314,13 @@ export default {
       const data = {
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
+        sid: this.listQuery.sid,
         mid: this.listQuery.mid,
-        cid: this.temp.id,
+        cid: this.temp.cid,
+        code: this.temp.mcode,
         name: this.temp.mname,
-        price: 0
+        remark: this.temp.mremark,
+        price: this.temp.alarm
       }
       if (this.ctype === 1) {
         setMarketCommodity(data).then(response => {
@@ -304,8 +345,9 @@ export default {
         const data = {
           id: this.userdata.user.id,
           gid: this.userdata.group.id,
-          mid: this.listQuery.mid,
-          cid: row.id
+          sid: row.sid,
+          mid: row.mid,
+          cid: row.cid
         }
         if (this.ctype === 1) {
           delMarketCommodity(data).then(response => {

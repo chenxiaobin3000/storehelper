@@ -4,6 +4,9 @@
       <el-select v-model="listQuery.mid" class="filter-item" @change="handleSelect">
         <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
+      <el-select v-model="listQuery.sid" class="filter-item" @change="handleSelect">
+        <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
       <el-select v-model="ctype" class="filter-item" @change="handleSelect">
         <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
@@ -11,25 +14,55 @@
     </div>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
+      <el-table-column label="平台账号" width="120px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.account }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="编号" width="160px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.code }}</span>
+          <span>{{ row.ccode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="内部名称" width="200px" align="center">
+      <el-table-column label="名称" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.name }}</span>
+          <span>{{ row.cname }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="价格" width="100px" align="center">
+      <el-table-column label="备注" width="120px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.price }}元</span>
+          <span>{{ row.cremark }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="成本" width="80px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.sprice }}元</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="库存" width="80px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.svalue }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="平台编号" width="160px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.mcode }}</span>
         </template>
       </el-table-column>
       <el-table-column label="平台名称" align="center">
         <template slot-scope="{row}">
           <span>{{ row.mname }} </span>
           <el-button icon="el-icon-document-copy" size="mini" circle @click="handleCopy(row)" />
+        </template>
+      </el-table-column>
+      <el-table-column label="平台备注" width="160px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.mremark }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="预警" width="80px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.alarm }}</span>
         </template>
       </el-table-column>
       <el-table-column label="价格" width="100px" align="center">
@@ -39,7 +72,7 @@
       </el-table-column>
       <el-table-column label="销量" width="120px" align="center">
         <template slot-scope="{row}">
-          <el-input v-model="row.value" />
+          <el-input v-model="row.mvalue" />
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
@@ -64,6 +97,7 @@ import { parseTime } from '@/utils'
 import { filterMarket } from '@/utils/market-data'
 import Pagination from '@/components/Pagination'
 import { setMarketCommDetail, delMarketCommDetail, getMarketCommDetail, setMarketStanDetail, delMarketStanDetail, getMarketStanDetail } from '@/api/market'
+import { getGroupAllCloud } from '@/api/cloud'
 
 export default {
   components: { Pagination },
@@ -71,6 +105,7 @@ export default {
     return {
       userdata: {},
       moptions: [],
+      soptions: [],
       ctype: 1,
       coptions: [{
         value: 1, label: '商品'
@@ -83,8 +118,10 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
+        gid: 0,
         page: 1,
         limit: 20,
+        sid: 0,
         mid: 1,
         date: null,
         search: null
@@ -110,8 +147,9 @@ export default {
     this.userdata = this.$store.getters.userdata
     this.moptions = filterMarket(this.userdata.market, false)
     this.listQuery.id = this.userdata.user.id
+    this.listQuery.gid = this.userdata.group.id
     this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
-    this.getCommodityList()
+    this.getGroupAllCloud()
   },
   methods: {
     handleSelect() {
@@ -119,6 +157,19 @@ export default {
       this.listQuery.limit = 20
       this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
       this.getCommodityList()
+    },
+    getGroupAllCloud() {
+      getGroupAllCloud({
+        id: this.userdata.user.id
+      }).then(response => {
+        if (response.data.data.list && response.data.data.list.length > 0) {
+          response.data.data.list.forEach(v => {
+            this.soptions.push({ value: v.id, label: v.name })
+          })
+          this.listQuery.sid = response.data.data.list[0].id
+          this.getCommodityList()
+        }
+      })
     },
     getCommodityList() {
       this.loading = true
@@ -150,10 +201,11 @@ export default {
       const temp = {
         id: this.listQuery.id,
         gid: this.userdata.group.id,
+        sid: this.listQuery.sid,
         mid: this.listQuery.mid,
         did: 0,
         cid: row.cid,
-        value: row.value,
+        value: row.mvalue,
         price: row.mprice,
         date: this.listQuery.date
       }
@@ -173,10 +225,11 @@ export default {
       const temp = {
         id: this.listQuery.id,
         gid: this.userdata.group.id,
+        sid: this.listQuery.sid,
         mid: this.listQuery.mid,
         did: row.id ? row.id : 0,
         cid: row.cid,
-        value: row.value,
+        value: row.mvalue,
         price: row.mprice,
         date: this.listQuery.date
       }
