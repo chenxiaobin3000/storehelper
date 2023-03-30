@@ -6,14 +6,24 @@
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台名称" width="160px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.mname }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="账号" align="center">
+      <el-table-column label="主账号" align="center">
         <template slot-scope="{row}">
           <span>{{ row.account }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="平台" width="120px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ marketArr[row.mid] }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="子账号" align="center">
+        <template slot-scope="{row}">
+          <span style="white-space:pre-wrap">{{ row.saccount }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="子平台" width="120px" align="center">
+        <template slot-scope="{row}">
+          <span style="white-space:pre-wrap">{{ row.sname }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
@@ -35,13 +45,13 @@
         <el-form-item label="云仓" prop="name">
           <span>{{ temp.name }}</span>
         </el-form-item>
-        <el-form-item label="平台" prop="name">
-          <el-select v-model="temp.mid" class="filter-item" @change="handleSelect">
-            <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
+        <el-form-item label="主账号" prop="aid">
+          <el-select v-model="temp.aid" class="filter-item" @change="handleSelect">
+            <el-option v-for="item in aoptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="账号" prop="account">
-          <el-input v-model="temp.account" />
+        <el-form-item label="子账号" prop="saccount">
+          <span style="white-space:pre-wrap">{{ temp.saccount }}</span>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -58,16 +68,17 @@
 
 <script>
 import { mapState } from 'vuex'
-import { filterMarket } from '@/utils/market-data'
+import { marketArr } from '@/utils/market-data'
 import Pagination from '@/components/Pagination'
-import { getMarketCloudList, setMarketCloud, delMarketCloud } from '@/api/dock'
+import { getMarketAllAccount, getMarketSubAccount, getMarketCloudList, setMarketCloud, delMarketCloud } from '@/api/dock'
 
 export default {
   components: { Pagination },
   data() {
     return {
       userdata: {},
-      moptions: [],
+      aoptions: [],
+      marketArr: null,
       list: null,
       total: 0,
       loading: false,
@@ -97,25 +108,48 @@ export default {
   },
   created() {
     this.userdata = this.$store.getters.userdata
-    this.moptions = filterMarket(this.userdata.market, false)
+    this.marketArr = marketArr
     this.listQuery.id = this.userdata.user.id
     this.resetTemp()
-    this.getMarketCloudList()
+    this.getMarketAllAccount()
   },
   methods: {
     resetTemp() {
       this.temp = {
         id: 0,
         name: '',
-        mid: 0,
-        mname: '',
-        account: ''
+        aid: 0,
+        saccount: ''
       }
     },
     handleSelect() {
-      this.listQuery.page = 1
-      this.listQuery.limit = 20
-      this.getMarketCloudList()
+      this.temp.saccount = ''
+      getMarketSubAccount({
+        id: this.listQuery.id,
+        gid: this.userdata.group.id,
+        aid: this.temp.aid
+      }).then(response => {
+        if (response.data.data.list && response.data.data.list.length > 0) {
+          response.data.data.list.forEach(v => {
+            this.temp.saccount = this.temp.saccount + v.account + '\n'
+          })
+          this.$forceUpdate()
+        }
+      })
+    },
+    getMarketAllAccount() {
+      getMarketAllAccount({
+        id: this.listQuery.id,
+        gid: this.userdata.group.id,
+        cid: 0
+      }).then(response => {
+        if (response.data.data.list && response.data.data.list.length > 0) {
+          response.data.data.list.forEach(v => {
+            this.aoptions.push({ value: v.id, label: v.account })
+          })
+          this.getMarketCloudList()
+        }
+      })
     },
     getMarketCloudList() {
       this.loading = true
@@ -125,12 +159,15 @@ export default {
         this.total = response.data.data.total
         this.list = response.data.data.list
         if (this.list && this.list.length > 0) {
-          this.moptions.forEach(m => {
-            this.list.forEach(v => {
-              if (m.value === v.mid) {
-                v.mname = m.label
-              }
-            })
+          this.list.forEach(v => {
+            if (v.sub && v.sub.length > 0) {
+              v.saccount = ''
+              v.sname = ''
+              v.sub.forEach(s => {
+                v.saccount = v.saccount + s.account + '\n'
+                v.sname = v.sname + marketArr[s.mid] + '\n'
+              })
+            }
           })
         }
         this.loading = false
@@ -141,18 +178,15 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row)
-      if (this.temp.mid == null) {
-        this.temp.mid = 1
-      }
       this.dialogVisible = true
     },
     updateData() {
       setMarketCloud({
         id: this.listQuery.id,
         gid: this.userdata.group.id,
-        mid: this.temp.mid,
-        cid: this.temp.id,
-        account: this.temp.account
+        aid: this.temp.aid,
+        sid: this.temp.sid,
+        cid: this.temp.id
       }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
         this.getMarketCloudList()
@@ -168,7 +202,7 @@ export default {
         delMarketCloud({
           id: this.listQuery.id,
           gid: this.userdata.group.id,
-          sid: row.id
+          cid: row.id
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
           this.getMarketCloudList()

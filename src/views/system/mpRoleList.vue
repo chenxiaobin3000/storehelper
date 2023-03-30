@@ -149,7 +149,7 @@ export default {
         this.checkStrictly = true // 保护父子节点不相互影响
         this.$nextTick(() => {
           const routes = treeGenerate.filterAsyncRoutes(MpRoleData, this.temp.routes)
-          this.$refs.tree.setCheckedNodes(this.generateArr(routes))
+          this.$refs.tree.setCheckedNodes(treeGenerate.generateArr(routes))
           this.checkStrictly = false
         })
       } else {

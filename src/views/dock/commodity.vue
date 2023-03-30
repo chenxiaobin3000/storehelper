@@ -1,14 +1,17 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="listQuery.mid" class="filter-item" @change="handleSelect">
-        <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
+      <el-select v-model="ctype" class="filter-item" @change="handleSelect">
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleSelect">
         <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <el-select v-model="ctype" class="filter-item" @change="handleSelect">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+      <el-select v-model="listQuery.aid" class="filter-item" @change="handleAccountSelect">
+        <el-option v-for="item in aoptions" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
+      <el-select v-model="listQuery.asid" class="filter-item" @change="handleSelect">
+        <el-option v-for="item in asoptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
     </div>
 
@@ -53,9 +56,14 @@
           <span>{{ row.cloud }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台账号" width="120px" align="center">
+      <el-table-column label="账号" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.account }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="子账号" width="120px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.saccount }}</span>
         </template>
       </el-table-column>
       <el-table-column label="平台编号" width="100px" align="center">
@@ -103,14 +111,19 @@
         <el-form-item label="备注" prop="cremark">
           <span>{{ temp.cremark }}</span>
         </el-form-item>
-        <el-form-item label="平台" prop="mid">
-          <el-select v-model="listQuery.mid" class="filter-item">
-            <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="云仓" prop="sid">
           <el-select v-model="listQuery.sid" class="filter-item">
             <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="账号" prop="aid">
+          <el-select v-model="listQuery.aid" class="filter-item">
+            <el-option v-for="item in aoptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="子账号" prop="asid">
+          <el-select v-model="listQuery.asid" class="filter-item">
+            <el-option v-for="item in asoptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="平台编号" prop="mcode">
@@ -140,9 +153,9 @@
 
 <script>
 import { mapState } from 'vuex'
-import { filterMarket } from '@/utils/market-data'
 import Pagination from '@/components/Pagination'
 import { setMarketCommodity, delMarketCommodity, getMarketCommodity, setMarketStandard, delMarketStandard, getMarketStandard } from '@/api/market'
+import { getMarketAllAccount, getMarketSubAccount } from '@/api/dock'
 import { getGroupAllCloud } from '@/api/cloud'
 import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
@@ -152,8 +165,9 @@ export default {
   data() {
     return {
       userdata: {},
-      moptions: [],
       soptions: [],
+      aoptions: [],
+      asoptions: [],
       ctype: 1,
       options: [{
         value: 1, label: '商品'
@@ -171,7 +185,8 @@ export default {
         page: 1,
         limit: 20,
         sid: 0,
-        mid: 0,
+        aid: 0,
+        asid: 0,
         search: null
       },
       temp: {},
@@ -195,11 +210,10 @@ export default {
   },
   async created() {
     this.userdata = this.$store.getters.userdata
-    this.moptions = filterMarket(this.userdata.market, true)
     this.listQuery.id = this.userdata.user.id
     this.listQuery.gid = this.userdata.group.id
     this.resetTemp()
-    this.getCategoryList()
+    this.getMarketAllAccount()
   },
   methods: {
     resetTemp() {
@@ -219,6 +233,45 @@ export default {
       this.listQuery.page = 1
       this.listQuery.limit = 20
       this.getCommodityList()
+    },
+    handleAccountSelect() {
+      if (this.listQuery.aid === 0) {
+        this.listQuery.asid = 0
+        this.asoptions = [{ value: 0, label: '无' }]
+        this.getCommodityList()
+      } else {
+        getMarketSubAccount({
+          id: this.listQuery.id,
+          gid: this.listQuery.gid,
+          aid: this.listQuery.aid
+        }).then(response => {
+          this.listQuery.asid = 0
+          this.asoptions = [{ value: 0, label: '无' }]
+          if (response.data.data.list && response.data.data.list.length > 0) {
+            response.data.data.list.forEach(v => {
+              this.asoptions.push({ value: v.id, label: v.account })
+            })
+            this.listQuery.asid = this.asoptions[1].value
+          }
+          this.getCommodityList()
+        })
+      }
+    },
+    getMarketAllAccount() {
+      getMarketAllAccount({
+        id: this.listQuery.id,
+        gid: this.userdata.group.id,
+        mid: 0
+      }).then(response => {
+        this.aoptions = [{ value: 0, label: '全部' }]
+        this.asoptions = [{ value: 0, label: '无' }]
+        if (response.data.data.list && response.data.data.list.length > 0) {
+          response.data.data.list.forEach(v => {
+            this.aoptions.push({ value: v.id, label: v.account })
+          })
+          this.getCategoryList()
+        }
+      })
     },
     getGroupAllCloud() {
       getGroupAllCloud({
@@ -276,6 +329,10 @@ export default {
             v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
           })
           this.list.push(v)
+          // 子账号
+          if (v.sub && v.sub.length > 0) {
+            v.saccount = v.sub.join('\n')
+          }
         })
       }
     },
@@ -297,17 +354,14 @@ export default {
       })
     },
     handleUpdate(row) {
-      this.temp = {
-        id: row.id,
-        cid: row.cid,
-        ccode: row.ccode,
-        cname: row.cname,
-        cremark: row.cremark,
-        mcode: row.mcode,
-        mname: row.mname,
-        mremark: row.mremark,
-        alarm: row.alarm
+      this.temp = Object.assign({}, row)
+      if (this.temp.mremark == null) {
+        this.temp.mremark = ''
       }
+      if (this.listQuery.aid === 0) {
+        this.listQuery.aid = 1
+      }
+      this.handleAccountSelect()
       this.dialogVisible = true
     },
     updateData() {
@@ -315,7 +369,8 @@ export default {
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
         sid: this.listQuery.sid,
-        mid: this.listQuery.mid,
+        aid: this.listQuery.aid,
+        asid: this.listQuery.asid,
         cid: this.temp.cid,
         code: this.temp.mcode,
         name: this.temp.mname,
@@ -346,7 +401,8 @@ export default {
           id: this.userdata.user.id,
           gid: this.userdata.group.id,
           sid: row.sid,
-          mid: row.mid,
+          aid: row.aid,
+          asid: row.asid,
           cid: row.cid
         }
         if (this.ctype === 1) {

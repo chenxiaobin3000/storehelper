@@ -9,6 +9,8 @@ export const marketData = [{
   meta: { title: '快驴', roles: [3] }, path: '/kuailv'
 }]
 
+export const marketArr = ['', '拼多多', '美团', '快驴']
+
 /**
  * 筛选平台标签
  */

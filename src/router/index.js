@@ -73,6 +73,7 @@ export const asyncRoutes = [
 
   /** when your routing map is too long, you can split it into small modules **/
   marketRouter,
+  dockRouter,
   purchaseRouter,
   productRouter,
   storageRouter,
@@ -81,7 +82,6 @@ export const asyncRoutes = [
   stockRouter,
   supplierRouter,
   reportRouter,
-  dockRouter,
   commodityRouter,
   financeRouter,
   userRouter,

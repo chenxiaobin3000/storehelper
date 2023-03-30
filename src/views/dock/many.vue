@@ -1,23 +1,27 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-select v-model="listQuery.mid" class="filter-item" @change="handleSelect">
-        <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
-    </div>
-
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="平台名称" width="160px" align="center">
+      <el-table-column label="主账号" width="200px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.maccount }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="平台" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.mname }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="账号" align="center">
+      <el-table-column label="子账号" align="center">
         <template slot-scope="{row}">
           <span>{{ row.account }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" width="200px" align="center">
+      <el-table-column label="平台" width="160px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.sname }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="备注" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.remark }}</span>
         </template>
@@ -34,17 +38,24 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getMarketAccountList" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getMarketManyList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="平台名称" prop="name">
-          <span>{{ temp.mname }}</span>
+        <el-form-item label="主账号" prop="name">
+          <el-select v-model="temp.aid" class="filter-item">
+            <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
         </el-form-item>
-        <el-form-item label="账号" prop="account">
+        <el-form-item label="子账号" prop="account">
           <el-input v-model="temp.account" />
         </el-form-item>
-        <el-form-item label="备注" prop="remark">
+        <el-form-item label="平台" prop="name">
+          <el-select v-model="temp.mid" class="filter-item">
+            <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="备注" prop="account">
           <el-input v-model="temp.remark" />
         </el-form-item>
       </el-form>
@@ -64,7 +75,7 @@
 import { mapState } from 'vuex'
 import { filterMarket } from '@/utils/market-data'
 import Pagination from '@/components/Pagination'
-import { addMarketAccount, setMarketAccount, delMarketAccount, getMarketAccountList } from '@/api/dock'
+import { getMarketManyList, getMarketAllAccount, addMarketMany, setMarketMany, delMarketMany } from '@/api/dock'
 
 export default {
   components: { Pagination },
@@ -72,13 +83,13 @@ export default {
     return {
       userdata: {},
       moptions: [],
+      coptions: [],
       list: null,
       total: 0,
       loading: false,
       listQuery: {
         id: 0,
         gid: 0,
-        mid: 0,
         page: 1,
         limit: 20
       },
@@ -117,28 +128,36 @@ export default {
     this.moptions = filterMarket(this.userdata.market, false)
     this.listQuery.id = this.userdata.user.id
     this.listQuery.gid = this.userdata.group.id
-    this.listQuery.mid = 1
     this.resetTemp()
-    this.getMarketAccountList()
+    this.getMarketAllAccount()
   },
   methods: {
     resetTemp() {
       this.temp = {
         id: 0,
-        mid: 0,
-        mname: '',
+        aid: '',
+        mid: 1,
         account: '',
         remark: ''
       }
     },
-    handleSelect() {
-      this.listQuery.page = 1
-      this.listQuery.limit = 20
-      this.getMarketAccountList()
+    getMarketAllAccount() {
+      getMarketAllAccount({
+        id: this.listQuery.id,
+        gid: this.listQuery.gid,
+        mid: 0
+      }).then(response => {
+        if (response.data.data.list && response.data.data.list.length > 0) {
+          response.data.data.list.forEach(v => {
+            this.coptions.push({ value: v.id, label: v.account })
+          })
+          this.getMarketManyList()
+        }
+      })
     },
-    getMarketAccountList() {
+    getMarketManyList() {
       this.loading = true
-      getMarketAccountList(
+      getMarketManyList(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total
@@ -146,8 +165,11 @@ export default {
         if (this.list && this.list.length > 0) {
           this.moptions.forEach(m => {
             this.list.forEach(v => {
-              if (m.value === v.mid) {
+              if (m.value === v.mmid) {
                 v.mname = m.label
+              }
+              if (m.value === v.smid) {
+                v.sname = m.label
               }
             })
           })
@@ -159,34 +181,39 @@ export default {
       })
     },
     createData() {
-      addMarketAccount({
-        id: this.userdata.user.id,
-        gid: this.userdata.group.id,
-        mid: this.listQuery.mid,
+      addMarketMany({
+        id: this.listQuery.id,
+        gid: this.listQuery.gid,
+        mid: this.temp.mid,
+        aid: this.temp.aid,
         account: this.temp.account,
         remark: this.temp.remark
       }).then(response => {
         this.$message({ type: 'success', message: '新增成功!' })
-        this.getMarketAccountList()
+        this.getMarketManyList()
         this.dialogVisible = false
       })
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row)
+      if (this.temp.mid == null) {
+        this.temp.mid = 1
+      }
       this.dialogStatus = 'update'
       this.dialogVisible = true
     },
     updateData() {
-      setMarketAccount({
-        id: this.userdata.user.id,
-        gid: this.userdata.group.id,
+      setMarketMany({
+        id: this.listQuery.id,
+        gid: this.listQuery.gid,
         mid: this.temp.mid,
-        aid: this.temp.id,
+        aid: this.temp.aid,
+        sub: this.temp.id,
         account: this.temp.account,
         remark: this.temp.remark
       }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
-        this.getMarketAccountList()
+        this.getMarketManyList()
         this.dialogVisible = false
       })
     },
@@ -196,14 +223,14 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delMarketAccount({
-          id: this.userdata.user.id,
-          gid: this.userdata.group.id,
-          mid: this.listQuery.mid,
-          aid: row.id
+        delMarketMany({
+          id: this.listQuery.id,
+          gid: this.listQuery.gid,
+          aid: row.aid,
+          sub: row.id
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
-          this.getMarketAccountList()
+          this.getMarketManyList()
         })
       })
     }
