@@ -41,6 +41,14 @@ export function getMarketAllAccount(data) {
   })
 }
 
+export function getMarketCloudAccount(data) {
+  return request({
+    url: `${path}/getMarketCloudAccount`,
+    method: 'post',
+    data
+  })
+}
+
 export function getMarketSubAccount(data) {
   return request({
     url: `${path}/getMarketSubAccount`,

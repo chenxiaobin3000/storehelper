@@ -4,12 +4,10 @@
       <el-select v-model="ctype" class="filter-item" @change="handleSelect">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <el-select v-model="listQuery.sid" class="filter-item" @change="handleSelect">
+      <el-select v-model="listQuery.sid" class="filter-item" @change="handleCloudSelect">
         <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <el-select v-model="listQuery.aid" class="filter-item" @change="handleAccountSelect">
-        <el-option v-for="item in aoptions" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
+      <span style="margin-left:1%;color:#606266"> 账号: {{ temp.account }} , 子账号:</span>
       <el-select v-model="listQuery.asid" class="filter-item" @change="handleSelect">
         <el-option v-for="item in asoptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
@@ -54,16 +52,6 @@
       <el-table-column label="云仓" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.cloud }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="账号" width="120px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.account }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="子账号" width="120px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.saccount }}</span>
         </template>
       </el-table-column>
       <el-table-column label="平台编号" width="100px" align="center">
@@ -112,14 +100,12 @@
           <span>{{ temp.cremark }}</span>
         </el-form-item>
         <el-form-item label="云仓" prop="sid">
-          <el-select v-model="listQuery.sid" class="filter-item">
+          <el-select v-model="listQuery.sid" class="filter-item" @change="handleCloudSelect">
             <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="账号" prop="aid">
-          <el-select v-model="listQuery.aid" class="filter-item">
-            <el-option v-for="item in aoptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
+          <span>{{ temp.account }}</span>
         </el-form-item>
         <el-form-item label="子账号" prop="asid">
           <el-select v-model="listQuery.asid" class="filter-item">
@@ -155,7 +141,7 @@
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
 import { setMarketCommodity, delMarketCommodity, getMarketCommodity, setMarketStandard, delMarketStandard, getMarketStandard } from '@/api/market'
-import { getMarketAllAccount, getMarketSubAccount } from '@/api/dock'
+import { getMarketCloudAccount, getMarketSubAccount } from '@/api/dock'
 import { getGroupAllCloud } from '@/api/cloud'
 import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
@@ -166,7 +152,6 @@ export default {
     return {
       userdata: {},
       soptions: [],
-      aoptions: [],
       asoptions: [],
       ctype: 1,
       options: [{
@@ -213,7 +198,7 @@ export default {
     this.listQuery.id = this.userdata.user.id
     this.listQuery.gid = this.userdata.group.id
     this.resetTemp()
-    this.getMarketAllAccount()
+    this.getCategoryList()
   },
   methods: {
     resetTemp() {
@@ -234,43 +219,39 @@ export default {
       this.listQuery.limit = 20
       this.getCommodityList()
     },
-    handleAccountSelect() {
-      if (this.listQuery.aid === 0) {
-        this.listQuery.asid = 0
-        this.asoptions = [{ value: 0, label: '无' }]
-        this.getCommodityList()
-      } else {
-        getMarketSubAccount({
-          id: this.listQuery.id,
-          gid: this.listQuery.gid,
-          aid: this.listQuery.aid
-        }).then(response => {
+    handleCloudSelect() {
+      this.listQuery.page = 1
+      this.listQuery.limit = 20
+      this.getMarketCloudAccount()
+    },
+    getMarketSubAccount() {
+      getMarketSubAccount({
+        id: this.listQuery.id,
+        gid: this.listQuery.gid,
+        aid: this.listQuery.aid
+      }).then(response => {
+        if (response.data.data.list && response.data.data.list.length > 0) {
+          this.asoptions = []
+          response.data.data.list.forEach(v => {
+            this.asoptions.push({ value: v.id, label: v.account })
+          })
+          this.listQuery.asid = this.asoptions[0].value
+        } else {
           this.listQuery.asid = 0
           this.asoptions = [{ value: 0, label: '无' }]
-          if (response.data.data.list && response.data.data.list.length > 0) {
-            response.data.data.list.forEach(v => {
-              this.asoptions.push({ value: v.id, label: v.account })
-            })
-            this.listQuery.asid = this.asoptions[1].value
-          }
-          this.getCommodityList()
-        })
-      }
+        }
+        this.getCommodityList()
+      })
     },
-    getMarketAllAccount() {
-      getMarketAllAccount({
+    getMarketCloudAccount() {
+      getMarketCloudAccount({
         id: this.listQuery.id,
         gid: this.userdata.group.id,
-        mid: 0
+        cid: this.listQuery.sid
       }).then(response => {
-        this.aoptions = [{ value: 0, label: '全部' }]
-        this.asoptions = [{ value: 0, label: '无' }]
-        if (response.data.data.list && response.data.data.list.length > 0) {
-          response.data.data.list.forEach(v => {
-            this.aoptions.push({ value: v.id, label: v.account })
-          })
-          this.getCategoryList()
-        }
+        this.listQuery.aid = response.data.data.aid
+        this.temp.account = response.data.data.account
+        this.getMarketSubAccount()
       })
     },
     getGroupAllCloud() {
@@ -282,7 +263,7 @@ export default {
             this.soptions.push({ value: v.id, label: v.name })
           })
           this.listQuery.sid = response.data.data.list[0].id
-          this.getCommodityList()
+          this.getMarketCloudAccount()
         }
       })
     },
@@ -358,10 +339,6 @@ export default {
       if (this.temp.mremark == null) {
         this.temp.mremark = ''
       }
-      if (this.listQuery.aid === 0) {
-        this.listQuery.aid = 1
-      }
-      this.handleAccountSelect()
       this.dialogVisible = true
     },
     updateData() {

@@ -144,8 +144,7 @@ export default {
     getMarketAllAccount() {
       getMarketAllAccount({
         id: this.listQuery.id,
-        gid: this.listQuery.gid,
-        mid: 0
+        gid: this.listQuery.gid
       }).then(response => {
         if (response.data.data.list && response.data.data.list.length > 0) {
           response.data.data.list.forEach(v => {
