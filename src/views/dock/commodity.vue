@@ -7,7 +7,7 @@
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleCloudSelect">
         <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <span style="margin-left:1%;color:#606266"> 账号: {{ temp.account }} , 子账号:</span>
+      <span class="filter-item" style="color:#606266"> 账号: {{ temp.account }}, 子账号:</span>
       <el-select v-model="listQuery.asid" class="filter-item" @change="handleSelect">
         <el-option v-for="item in asoptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>

@@ -150,7 +150,11 @@ export const MyRoleData = [{
   children: [{
     path: 'report', meta: { title: '财务总览', roles: [401] }
   }, {
-    path: 'getList', meta: { title: '财务明细', roles: [402] }
+    path: 'getList', meta: { title: '汇总明细', roles: [402] }
+  }, {
+    path: 'detail', meta: { title: '财务明细', roles: [403] }
+  }, {
+    path: 'label', meta: { title: '类目管理', roles: [404] }
   }]
 }, {
   path: '/user', meta: { title: '用户管理', roles: [1000] },
