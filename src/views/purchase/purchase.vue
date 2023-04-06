@@ -1,5 +1,12 @@
 <template>
   <div class="app-container">
+    <div class="filter-container">
+      <el-select v-model="listQuery.complete" class="filter-item" style="width:140px" @change="handleSelect">
+        <el-option v-for="item in completeList" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
+      <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
+    </div>
+
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="批次" align="center">
         <template slot-scope="{row}">
@@ -12,9 +19,25 @@
           <span>{{ row.sname }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="商品" align="center">
+      <el-table-column label="总价" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.commList }}</span>
+          <span>{{ row.price }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="现价" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.curPrice }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="应付" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.curPrice - row.payPrice }} </span>
+          <el-button icon="el-icon-edit" size="mini" circle @click="handleSelectOriginal(row)" />
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.complete ==0 ? '未完成' : '已完成' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="申请人" width="65px" align="center">
@@ -153,6 +176,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { parseTime, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
 import { getPurchaseOrder } from '@/api/order'
@@ -163,8 +187,10 @@ export default {
   data() {
     return {
       userdata: {},
+      date: new Date(),
       list: null,
       total: 0,
+      completeList: completeType,
       loading: false,
       listQuery: {
         id: 0,
@@ -172,6 +198,8 @@ export default {
         page: 1,
         limit: 20,
         review: 1, // 全部
+        complete: 0, // 未完成
+        date: null,
         search: null
       },
       temp: {},
@@ -194,8 +222,9 @@ export default {
     }
   },
   created() {
-    this.listQuery.id = this.$store.getters.userdata.user.id
     this.userdata = this.$store.getters.userdata
+    this.listQuery.id = this.userdata.user.id
+    this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
     this.resetTemp()
     this.getOrderList()
   },
@@ -208,6 +237,12 @@ export default {
         attrs: [],
         imageList: []
       }
+    },
+    handleSelect() {
+      this.listQuery.page = 1
+      this.listQuery.limit = 20
+      this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
+      this.getOrderList()
     },
     getOrderList() {
       this.loading = true

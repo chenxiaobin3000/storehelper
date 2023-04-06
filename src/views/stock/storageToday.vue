@@ -1,13 +1,13 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="listQuery.sid" style="width: 200px;" class="filter-item" @change="getStockList">
+      <el-select v-model="listQuery.sid" style="width: 200px;" class="filter-item" @change="handleSelect">
         <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <el-select v-model="listQuery.ctype" style="width: 200px;" class="filter-item" @change="getStockList">
+      <el-select v-model="listQuery.ctype" style="width: 100px;" class="filter-item" @change="handleSelect">
         <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <el-input v-model="listQuery.search" placeholder="商品名称" style="width: 200px;" class="filter-item" @keyup.enter.native="getStockList" />
+      <el-input v-model="listQuery.search" placeholder="商品名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleSelect" />
     </div>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
@@ -97,6 +97,11 @@ export default {
     this.getGroupStorage()
   },
   methods: {
+    handleSelect() {
+      this.listQuery.page = 1
+      this.listQuery.limit = 20
+      this.getStockList()
+    },
     getGroupStorage() {
       getGroupAllStorage({
         id: this.userdata.user.id

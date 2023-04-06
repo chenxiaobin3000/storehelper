@@ -6,7 +6,7 @@
       </el-select>
       <el-input v-model="temp.value" class="filter-item" style="width:160px" placeholder="请输入金额" />
       <el-input v-model="temp.remark" class="filter-item" style="width:160px" placeholder="请输入备注" />
-      <el-date-picker v-model="date" type="date" class="filter-item" @change="handleSelect" />
+      <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
       <el-button type="primary" class="button-node filter-item" @click="insertLabelDetail(true)">扣费</el-button>
       <el-button type="danger" class="button-node filter-item" style="float:right;" @click="insertLabelDetail(false)">冲正</el-button>
     </div>

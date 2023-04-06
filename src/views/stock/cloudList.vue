@@ -1,13 +1,14 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="listQuery.sid" style="width: 200px;" class="filter-item" @change="getCloudList">
+      <el-select v-model="listQuery.sid" style="width: 200px;" class="filter-item" @change="handleSelect">
         <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <el-select v-model="listQuery.ctype" style="width: 200px;" class="filter-item" @change="getCloudList">
+      <el-select v-model="listQuery.ctype" style="width: 100px;" class="filter-item" @change="handleSelect">
         <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <el-input v-model="listQuery.search" placeholder="商品名称" style="width: 200px;" class="filter-item" @keyup.enter.native="getCloudList" />
+      <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
+      <el-input v-model="listQuery.search" placeholder="商品名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleSelect" />
     </div>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
@@ -54,6 +55,13 @@ export default {
   data() {
     return {
       userdata: {},
+      soptions: [],
+      coptions: [{
+        value: 1, label: '商品'
+      }, {
+        value: 4, label: '标品'
+      }],
+      date: new Date(),
       list: null,
       total: 0,
       loading: false,
@@ -61,17 +69,11 @@ export default {
         id: 0,
         sid: 0,
         ctype: 1,
-        date: null,
         page: 1,
         limit: 20,
+        date: null,
         search: null
-      },
-      soptions: [],
-      coptions: [{
-        value: 1, label: '商品'
-      }, {
-        value: 4, label: '标品'
-      }]
+      }
     }
   },
   computed: {
@@ -90,14 +92,18 @@ export default {
     }
   },
   created() {
-    this.listQuery.id = this.$store.getters.userdata.user.id
     this.userdata = this.$store.getters.userdata
-    const today = new Date()
-    today.setDate(today.getDate() - 1)
-    this.listQuery.date = parseTime(today, '{y}-{m}-{d}')
+    this.listQuery.id = this.userdata.user.id
+    this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
     this.getGroupCloud()
   },
   methods: {
+    handleSelect() {
+      this.listQuery.page = 1
+      this.listQuery.limit = 20
+      this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
+      this.getCloudList()
+    },
     getGroupCloud() {
       getGroupAllCloud({
         id: this.userdata.user.id

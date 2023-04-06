@@ -21,6 +21,12 @@
           <span>{{ row.attribute }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="仓库" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.storageNames }} </span>
+          <el-button icon="el-icon-edit" size="mini" circle @click="handleSelectStorage(row)" />
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center">
         <template slot-scope="{row}">
           <span>{{ row.remark }}</span>
@@ -82,13 +88,37 @@
         </el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="设置关联仓库" :visible.sync="dialogStorageVisible">
+      <el-form :model="tempStorage" label-position="left" label-width="60px" style="width: 100%; padding: 0 4% 0 4%;">
+        <el-form-item label="编号" prop="code">
+          <span>{{ tempStorage.code }}</span>
+        </el-form-item>
+        <el-form-item label="名称" prop="name">
+          <span>{{ tempStorage.name }}</span>
+        </el-form-item>
+        <el-form-item label="仓库" prop="storage">
+          <el-tree ref="treeS" :check-strictly="checkStrictlyS" :data="routesS" :props="defaultProps" show-checkbox node-key="path" class="permission-tree" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogStorageVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="updateStorageData()">
+          确定
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
-import { getGroupOriginal, addOriginal, setOriginal, delOriginal } from '@/api/original'
+import { treeGenerate } from '@/utils/tree'
+import { getGroupOriginal, addOriginal, setOriginal, delOriginal, setOriginalStorage } from '@/api/original'
+import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryTree } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 
@@ -97,10 +127,13 @@ export default {
   data() {
     return {
       userdata: {},
+      routesS: [],
+      dataS: [],
       list: null,
       total: 0,
       categoryList: [],
       templateList: {},
+      storageList: [],
       loading: false,
       listQuery: {
         id: 0,
@@ -109,12 +142,19 @@ export default {
         search: null
       },
       temp: {},
+      tempStorage: {},
+      checkStrictlyS: false,
+      defaultProps: {
+        children: 'children',
+        label: 'title'
+      },
       dialogVisible: false,
       dialogStatus: '',
       textMap: {
         update: '修改原料信息',
         create: '新增原料'
-      }
+      },
+      dialogStorageVisible: false
     }
   },
   computed: {
@@ -134,13 +174,11 @@ export default {
       this.dialogVisible = true
     }
   },
-  async created() {
+  created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
     this.resetTemp()
-    await this.getCategoryList()
-    await this.getGroupAttrTemp()
-    await this.getOriginalList()
+    this.getGroupAllStorage()
   },
   methods: {
     resetTemp() {
@@ -169,6 +207,18 @@ export default {
         this.list = []
         if (response.data.data.list && response.data.data.list.length > 0) {
           response.data.data.list.forEach(v => {
+            if (v.storages && v.storages.length > 0) {
+              const tmp = []
+              v.storageNames = ''
+              v.storages.forEach(s => {
+                tmp.push(s.sid)
+                v.storageNames = v.storageNames + s.name + ', '
+              })
+              v.storages = tmp
+            } else {
+              v.storages = []
+            }
+
             // 品类
             this.categoryList.forEach(c => {
               if (c.id === v.cid) {
@@ -191,11 +241,23 @@ export default {
         Promise.reject(error)
       })
     },
+    getGroupAllStorage() {
+      getGroupAllStorage({
+        id: this.userdata.user.id
+      }).then(response => {
+        response.data.data.list.forEach(v => {
+          this.dataS.push({ path: '/' + v.id, meta: { title: v.name, roles: [v.id] }})
+        })
+        this.routesS = treeGenerate.generateRoutes(this.dataS)
+        this.getCategoryList()
+      })
+    },
     getCategoryList() {
       getGroupCategoryTree({
         id: this.userdata.user.id
       }).then(response => {
         this.generator(response.data.data.list)
+        this.getGroupAttrTemp()
       })
     },
     generator(tree) {
@@ -212,6 +274,7 @@ export default {
         atid: 3
       }).then(response => {
         this.templateList = response.data.data.list
+        this.getOriginalList()
       })
     },
     createData() {
@@ -276,6 +339,37 @@ export default {
           this.$message({ type: 'success', message: '删除成功!' })
           this.getOriginalList()
         })
+      })
+    },
+    handleSelectStorage(row) {
+      this.tempStorage = {
+        id: row.id,
+        code: row.code,
+        name: row.name
+      }
+      // 仓库列表
+      this.tempStorage.routesS = row.storages
+      this.checkStrictlyS = true // 保护父子节点不相互影响
+      this.$nextTick(() => {
+        const routes = treeGenerate.filterAsyncRoutes(this.dataS, this.tempStorage.routesS)
+        this.$refs.treeS.setCheckedNodes(treeGenerate.generateArr(routes))
+        this.checkStrictlyS = false
+      })
+      this.dialogStorageVisible = true
+    },
+    updateStorageData() {
+      const checkedKeys = this.$refs.treeS.getCheckedKeys()
+      this.tempStorage.routesS = treeGenerate.generateTree(this.dataS, '/', checkedKeys)
+
+      setOriginalStorage({
+        id: this.userdata.user.id,
+        gid: this.userdata.group.id,
+        cid: this.tempStorage.id,
+        sids: this.tempStorage.routesS
+      }).then(response => {
+        this.$message({ type: 'success', message: '修改成功!' })
+        this.getOriginalList()
+        this.dialogStorageVisible = false
       })
     }
   }

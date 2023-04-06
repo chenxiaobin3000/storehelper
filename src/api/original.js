@@ -40,3 +40,11 @@ export function getGroupAllOriginal(data) {
     data
   })
 }
+
+export function setOriginalStorage(data) {
+  return request({
+    url: `${path}/setOriginalStorage`,
+    method: 'post',
+    data
+  })
+}

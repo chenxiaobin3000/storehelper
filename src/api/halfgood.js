@@ -40,3 +40,11 @@ export function setHalfgoodOriginal(data) {
     data
   })
 }
+
+export function setHalfgoodStorage(data) {
+  return request({
+    url: `${path}/setHalfgoodStorage`,
+    method: 'post',
+    data
+  })
+}

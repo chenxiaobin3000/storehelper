@@ -164,3 +164,11 @@ export const reportCycle = [{
 }, {
   value: 4, label: '年报'
 }]
+
+export const completeType = [{
+  id: 0, label: '全部'
+}, {
+  id: 1, label: '已完成'
+}, {
+  id: 2, label: '未完成'
+}]

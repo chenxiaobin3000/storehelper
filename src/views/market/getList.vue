@@ -1,24 +1,20 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="listQuery.mid" class="filter-item" @change="handleSelect">
-        <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
-      <el-select v-model="listQuery.sid" class="filter-item" @change="handleSelect">
-        <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
       <el-select v-model="ctype" class="filter-item" @change="handleSelect">
         <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <el-date-picker v-model="date" type="date" class="filter-item" @change="handleSelect" />
+      <el-select v-model="listQuery.sid" class="filter-item" @change="handleCloudSelect">
+        <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
+      <span class="filter-item" style="color:#606266"> 账号: {{ account }}, 子账号:</span>
+      <el-select v-model="listQuery.asid" class="filter-item" @change="handleSelect">
+        <el-option v-for="item in asoptions" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
+      <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
     </div>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="平台账号" width="120px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.account }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="编号" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.ccode }}</span>
@@ -83,9 +79,9 @@
 <script>
 import { mapState } from 'vuex'
 import { parseTime } from '@/utils'
-import { filterMarket } from '@/utils/market-data'
 import Pagination from '@/components/Pagination'
 import { getMarketCommDetail, getMarketStanDetail } from '@/api/market'
+import { getMarketCloudAccount, getMarketSubAccount } from '@/api/dock'
 import { getGroupAllCloud } from '@/api/cloud'
 
 export default {
@@ -93,8 +89,9 @@ export default {
   data() {
     return {
       userdata: {},
-      moptions: [],
       soptions: [],
+      asoptions: [],
+      account: '',
       ctype: 1,
       coptions: [{
         value: 1, label: '商品'
@@ -111,7 +108,8 @@ export default {
         page: 1,
         limit: 20,
         sid: 0,
-        mid: 1,
+        aid: 0,
+        asid: 0,
         date: null,
         search: null
       }
@@ -134,7 +132,6 @@ export default {
   },
   created() {
     this.userdata = this.$store.getters.userdata
-    this.moptions = filterMarket(this.userdata.market, false)
     this.listQuery.id = this.userdata.user.id
     this.listQuery.gid = this.userdata.group.id
     this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
@@ -147,6 +144,42 @@ export default {
       this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
       this.getCommodityList()
     },
+    handleCloudSelect() {
+      this.listQuery.page = 1
+      this.listQuery.limit = 20
+      this.getMarketCloudAccount()
+    },
+    getMarketSubAccount() {
+      getMarketSubAccount({
+        id: this.listQuery.id,
+        gid: this.listQuery.gid,
+        aid: this.listQuery.aid
+      }).then(response => {
+        if (response.data.data.list && response.data.data.list.length > 0) {
+          this.asoptions = []
+          response.data.data.list.forEach(v => {
+            this.asoptions.push({ value: v.id, label: v.account })
+          })
+          this.listQuery.asid = this.asoptions[0].value
+        } else {
+          this.listQuery.asid = 0
+          this.asoptions = [{ value: 0, label: '无' }]
+        }
+        this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
+        this.getCommodityList()
+      })
+    },
+    getMarketCloudAccount() {
+      getMarketCloudAccount({
+        id: this.listQuery.id,
+        gid: this.userdata.group.id,
+        cid: this.listQuery.sid
+      }).then(response => {
+        this.listQuery.aid = response.data.data.aid
+        this.account = response.data.data.account
+        this.getMarketSubAccount()
+      })
+    },
     getGroupAllCloud() {
       getGroupAllCloud({
         id: this.userdata.user.id
@@ -156,7 +189,7 @@ export default {
             this.soptions.push({ value: v.id, label: v.name })
           })
           this.listQuery.sid = response.data.data.list[0].id
-          this.getCommodityList()
+          this.getMarketCloudAccount()
         }
       })
     },
