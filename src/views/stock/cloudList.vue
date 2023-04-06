@@ -47,7 +47,7 @@
 import { mapState } from 'vuex'
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import { getCloudDetail } from '@/api/stock'
+import { getCloudList } from '@/api/stock'
 import { getGroupAllCloud } from '@/api/cloud'
 
 export default {
@@ -119,7 +119,7 @@ export default {
     },
     getCloudList() {
       this.loading = true
-      getCloudDetail(
+      getCloudList(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total

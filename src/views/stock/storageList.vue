@@ -47,7 +47,7 @@
 import { mapState } from 'vuex'
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import { getStockDetail } from '@/api/stock'
+import { getStockList } from '@/api/stock'
 import { getGroupAllStorage } from '@/api/storage'
 
 export default {
@@ -123,7 +123,7 @@ export default {
     },
     getStockList() {
       this.loading = true
-      getStockDetail(
+      getStockList(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total

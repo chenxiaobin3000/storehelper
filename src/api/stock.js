@@ -9,14 +9,6 @@ export function getStockList(data) {
   })
 }
 
-export function getStockDetail(data) {
-  return request({
-    url: `${path}/getStockDetail`,
-    method: 'post',
-    data
-  })
-}
-
 export function getStockDay(data) {
   return request({
     url: `${path}/getStockDay`,
@@ -36,14 +28,6 @@ export function getStockWeek(data) {
 export function getCloudList(data) {
   return request({
     url: `${path}/getCloudList`,
-    method: 'post',
-    data
-  })
-}
-
-export function getCloudDetail(data) {
-  return request({
-    url: `${path}/getCloudDetail`,
     method: 'post',
     data
   })

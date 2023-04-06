@@ -92,15 +92,11 @@ export const MyRoleData = [{
   children: [{
     path: 'stroage', meta: { title: '库存总览', roles: [851] }
   }, {
-    path: 'stroageList', meta: { title: '今日库存', roles: [852] }
-  }, {
-    path: 'stroageOldList', meta: { title: '库存明细', roles: [853] }
+    path: 'stroageList', meta: { title: '库存明细', roles: [853] }
   }, {
     path: 'cloud', meta: { title: '云仓总览', roles: [854] }
   }, {
-    path: 'cloudList', meta: { title: '今日云仓', roles: [855] }
-  }, {
-    path: 'cloudOldList', meta: { title: '云仓明细', roles: [856] }
+    path: 'cloudList', meta: { title: '云仓明细', roles: [856] }
   }]
 }, {
   path: '/supplier', hidden: true, meta: { title: '供应商管理', roles: [900] },
