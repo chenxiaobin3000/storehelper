@@ -32,3 +32,35 @@ export function delReturn(data) {
     data
   })
 }
+
+export function revokePurchase2(data) {
+  return request({
+    url: `${path}/revokePurchase2`,
+    method: 'post',
+    data
+  })
+}
+
+export function delPurchase2(data) {
+  return request({
+    url: `${path}/delPurchase2`,
+    method: 'post',
+    data
+  })
+}
+
+export function revokeReturn2(data) {
+  return request({
+    url: `${path}/revokeReturn2`,
+    method: 'post',
+    data
+  })
+}
+
+export function delReturn2(data) {
+  return request({
+    url: `${path}/delReturn2`,
+    method: 'post',
+    data
+  })
+}

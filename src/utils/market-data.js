@@ -7,9 +7,13 @@ export const marketData = [{
   meta: { title: '美团', roles: [2] }, path: '/meituan'
 }, {
   meta: { title: '快驴', roles: [3] }, path: '/kuailv'
+}, {
+  meta: { title: '美莱', roles: [4] }, path: '/meilai'
+}, {
+  meta: { title: '淘菜菜', roles: [5] }, path: '/taocaicai'
 }]
 
-export const marketArr = ['', '拼多多', '美团', '快驴']
+export const marketArr = ['', '拼多多', '美团', '快驴', '美莱', '淘菜菜']
 
 /**
  * 筛选平台标签
@@ -27,6 +31,12 @@ export function filterMarket(roles, all) {
   }
   if (roles.includes(3)) {
     ret.push({ value: 3, label: '快驴' })
+  }
+  if (roles.includes(4)) {
+    ret.push({ value: 4, label: '美莱' })
+  }
+  if (roles.includes(5)) {
+    ret.push({ value: 5, label: '淘菜菜' })
   }
   return ret
 }

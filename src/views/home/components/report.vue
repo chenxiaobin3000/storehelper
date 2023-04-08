@@ -69,11 +69,11 @@ export default {
     this.roles = this.$store.getters.roles
     this.getTodayReport()
     this.row1 = [{
-      id: 1, icon: 'money', class: 'icon-1', title: '朴朴', data: 0
+      id: 1, icon: 'money', class: 'icon-1', title: '拼多多', data: 0
     }, {
       id: 2, icon: 'money', class: 'icon-2', title: '美团', data: 0
     }, {
-      id: 3, icon: 'money', class: 'icon-3', title: '拼多多', data: 0
+      id: 3, icon: 'money', class: 'icon-3', title: '快驴', data: 0
     }]
     this.row2 = [{
       id: 5, icon: 'guide', class: 'icon-1', role: 201, url: '/agreement/report', title: '履约订单', data: 0

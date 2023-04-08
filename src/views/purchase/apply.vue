@@ -14,14 +14,30 @@
           <el-button icon="el-icon-tickets" size="mini" circle @click="handleDetail(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="云仓" width="100px" align="center">
+      <el-table-column label="仓库" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.sname }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="商品" align="center">
+      <el-table-column label="总价" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.commList }}</span>
+          <span>{{ row.price }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="现价" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.curPrice }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="应付" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.curPrice - row.payPrice }} </span>
+          <el-button icon="el-icon-edit" size="mini" circle @click="handleSelectOriginal(row)" />
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.complete ==0 ? '未完成' : '已完成' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="申请人" width="65px" align="center">
@@ -63,7 +79,7 @@
         <el-form-item label="批次" prop="batch">
           <span>{{ temp.batch }}</span>
         </el-form-item>
-        <el-form-item label="云仓" prop="sname">
+        <el-form-item label="仓库" prop="sname">
           <span>{{ temp.sname }}</span>
         </el-form-item>
 
@@ -163,8 +179,8 @@ import { mapState } from 'vuex'
 import { parseTime, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
-import { getCloudOrder } from '@/api/order'
-import { revokeReturn, delReturn } from '@/api/cloud'
+import { getPurchaseOrder } from '@/api/order'
+import { revokePurchase, delPurchase } from '@/api/purchase'
 
 export default {
   components: { Pagination },
@@ -178,7 +194,7 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
-        type: 41, // 云仓采购退货
+        type: 1, // 采购仓储进货
         page: 1,
         limit: 20,
         review: 1, // 全部
@@ -206,8 +222,9 @@ export default {
     }
   },
   created() {
-    this.listQuery.id = this.$store.getters.userdata.user.id
     this.userdata = this.$store.getters.userdata
+    this.listQuery.id = this.userdata.user.id
+    this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
     this.resetTemp()
     this.getOrderList()
   },
@@ -229,7 +246,7 @@ export default {
     },
     getOrderList() {
       this.loading = true
-      getCloudOrder(
+      getPurchaseOrder(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total
@@ -264,7 +281,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        revokeReturn({
+        revokePurchase({
           id: this.userdata.user.id,
           oid: row.id
         }).then(() => {
@@ -274,15 +291,12 @@ export default {
       })
     },
     handleDelete(row) {
-      if (row.type !== 1 && row.type !== 2) {
-        this.$message({ type: 'error', message: '订单类型异常，请联系管理员!' })
-      }
       this.$confirm('确定要删除吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delReturn({
+        delPurchase({
           id: this.userdata.user.id,
           oid: row.id
         }).then(() => {
