@@ -18,10 +18,7 @@ export default {
     path: 'return', component: () => import('@/views/purchase/return'),
     name: 'purchase_return', meta: { title: '仓储退货', roles: [253] }
   }, {
-    path: 'purchase2', component: () => import('@/views/purchase/purchase2'),
-    name: 'purchase_purchase2', meta: { title: '云仓进货', roles: [254] }
-  }, {
-    path: 'return2', component: () => import('@/views/purchase/return2'),
-    name: 'purchase_return2', meta: { title: '云仓退货', roles: [255] }
+    path: 'apply', component: () => import('@/views/purchase/apply'),
+    name: 'purchase_apply', meta: { title: '订单录入', roles: [254] }
   }]
 }

@@ -141,8 +141,8 @@
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
 import { setMarketCommodity, delMarketCommodity, getMarketCommodity, setMarketStandard, delMarketStandard, getMarketStandard } from '@/api/market'
-import { getMarketCloudAccount, getMarketSubAccount } from '@/api/dock'
-import { getGroupAllCloud } from '@/api/cloud'
+import { getMarketStorageAccount, getMarketSubAccount } from '@/api/dock'
+import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 
@@ -222,7 +222,7 @@ export default {
     handleCloudSelect() {
       this.listQuery.page = 1
       this.listQuery.limit = 20
-      this.getMarketCloudAccount()
+      this.getMarketStorageAccount()
     },
     getMarketSubAccount() {
       getMarketSubAccount({
@@ -243,8 +243,8 @@ export default {
         this.getCommodityList()
       })
     },
-    getMarketCloudAccount() {
-      getMarketCloudAccount({
+    getMarketStorageAccount() {
+      getMarketStorageAccount({
         id: this.listQuery.id,
         gid: this.userdata.group.id,
         cid: this.listQuery.sid
@@ -254,8 +254,8 @@ export default {
         this.getMarketSubAccount()
       })
     },
-    getGroupAllCloud() {
-      getGroupAllCloud({
+    getGroupAllStorage() {
+      getGroupAllStorage({
         id: this.userdata.user.id
       }).then(response => {
         if (response.data.data.list && response.data.data.list.length > 0) {
@@ -263,7 +263,7 @@ export default {
             this.soptions.push({ value: v.id, label: v.name })
           })
           this.listQuery.sid = response.data.data.list[0].id
-          this.getMarketCloudAccount()
+          this.getMarketStorageAccount()
         }
       })
     },
@@ -331,7 +331,7 @@ export default {
         atid: this.ctype
       }).then(response => {
         this.templateList = response.data.data.list
-        this.getGroupAllCloud()
+        this.getGroupAllStorage()
       })
     },
     handleUpdate(row) {

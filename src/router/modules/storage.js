@@ -16,18 +16,21 @@ export default {
     name: 'storage_purchase', meta: { title: '采购进货', roles: [802] }
   }, {
     path: 'return', component: () => import('@/views/storage/return'),
-    name: 'storage_return', meta: { title: '采购退货', roles: [806] }
+    name: 'storage_return', meta: { title: '采购退货', roles: [803] }
   }, {
     path: 'dispatch', component: () => import('@/views/storage/dispatch'),
-    name: 'storage_dispatch', meta: { title: '调度出库', roles: [803] }
-  }, {
-    path: 'purchase2', component: () => import('@/views/storage/purchase2'),
-    name: 'storage_purchase2', meta: { title: '调度入库', roles: [804] }
-  }, {
-    path: 'back', component: () => import('@/views/storage/back'),
-    name: 'storage_back', meta: { title: '履约退货', roles: [807] }
+    name: 'storage_dispatch', meta: { title: '调度出库', roles: [804] }
   }, {
     path: 'loss', component: () => import('@/views/storage/loss'),
     name: 'storage_loss', meta: { title: '损耗明细', roles: [805] }
+  }, {
+    path: 'offline', component: () => import('@/views/storage/offline'),
+    name: 'storage_offline', meta: { title: '线下销售', roles: [806] }
+  }, {
+    path: 'back', component: () => import('@/views/storage/back'),
+    name: 'storage_back', meta: { title: '线下退货', roles: [807] }
+  }, {
+    path: 'apply', component: () => import('@/views/storage/apply'),
+    name: 'storage_apply', meta: { title: '订单录入', roles: [808] }
   }]
 }

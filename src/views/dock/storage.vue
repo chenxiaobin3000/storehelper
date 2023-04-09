@@ -38,7 +38,7 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getMarketCloudList" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getMarketStorageList" />
 
     <el-dialog title="修改账号信息" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
@@ -70,7 +70,7 @@
 import { mapState } from 'vuex'
 import { marketArr } from '@/utils/market-data'
 import Pagination from '@/components/Pagination'
-import { getMarketAllAccount, getMarketSubAccount, getMarketCloudList, setMarketCloud, delMarketCloud } from '@/api/dock'
+import { getMarketAllAccount, getMarketSubAccount, getMarketStorageList, setMarketStorage, delMarketStorage } from '@/api/dock'
 
 export default {
   components: { Pagination },
@@ -146,13 +146,13 @@ export default {
           response.data.data.list.forEach(v => {
             this.aoptions.push({ value: v.id, label: v.account })
           })
-          this.getMarketCloudList()
+          this.getMarketStorageList()
         }
       })
     },
-    getMarketCloudList() {
+    getMarketStorageList() {
       this.loading = true
-      getMarketCloudList(
+      getMarketStorageList(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total
@@ -180,7 +180,7 @@ export default {
       this.dialogVisible = true
     },
     updateData() {
-      setMarketCloud({
+      setMarketStorage({
         id: this.listQuery.id,
         gid: this.userdata.group.id,
         aid: this.temp.aid,
@@ -188,7 +188,7 @@ export default {
         cid: this.temp.id
       }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
-        this.getMarketCloudList()
+        this.getMarketStorageList()
         this.dialogVisible = false
       })
     },
@@ -198,13 +198,13 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delMarketCloud({
+        delMarketStorage({
           id: this.listQuery.id,
           gid: this.userdata.group.id,
           cid: row.id
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
-          this.getMarketCloudList()
+          this.getMarketStorageList()
         })
       })
     }

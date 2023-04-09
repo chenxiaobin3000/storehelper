@@ -15,8 +15,8 @@ export default {
     path: 'many', component: () => import('@/views/dock/many'),
     name: 'dock_many', meta: { title: '聚合账号', roles: [452] }
   }, {
-    path: 'cloud', component: () => import('@/views/dock/cloud'),
-    name: 'dock_cloud', meta: { title: '云仓明细', roles: [453] }
+    path: 'storage', component: () => import('@/views/dock/storage'),
+    name: 'dock_storage', meta: { title: '仓库明细', roles: [453] }
   }, {
     path: 'commodity', component: () => import('@/views/dock/commodity'),
     name: 'dock_commodity', meta: { title: '商品明细', roles: [454] }

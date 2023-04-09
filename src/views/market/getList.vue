@@ -81,8 +81,8 @@ import { mapState } from 'vuex'
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
 import { getMarketCommDetail, getMarketStanDetail } from '@/api/market'
-import { getMarketCloudAccount, getMarketSubAccount } from '@/api/dock'
-import { getGroupAllCloud } from '@/api/cloud'
+import { getMarketStorageAccount, getMarketSubAccount } from '@/api/dock'
+import { getGroupAllStorage } from '@/api/storage'
 
 export default {
   components: { Pagination },
@@ -135,7 +135,7 @@ export default {
     this.listQuery.id = this.userdata.user.id
     this.listQuery.gid = this.userdata.group.id
     this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
-    this.getGroupAllCloud()
+    this.getGroupAllStorage()
   },
   methods: {
     handleSelect() {
@@ -147,7 +147,7 @@ export default {
     handleCloudSelect() {
       this.listQuery.page = 1
       this.listQuery.limit = 20
-      this.getMarketCloudAccount()
+      this.getMarketStorageAccount()
     },
     getMarketSubAccount() {
       getMarketSubAccount({
@@ -169,8 +169,8 @@ export default {
         this.getCommodityList()
       })
     },
-    getMarketCloudAccount() {
-      getMarketCloudAccount({
+    getMarketStorageAccount() {
+      getMarketStorageAccount({
         id: this.listQuery.id,
         gid: this.userdata.group.id,
         cid: this.listQuery.sid
@@ -180,8 +180,8 @@ export default {
         this.getMarketSubAccount()
       })
     },
-    getGroupAllCloud() {
-      getGroupAllCloud({
+    getGroupAllStorage() {
+      getGroupAllStorage({
         id: this.userdata.user.id
       }).then(response => {
         if (response.data.data.list && response.data.data.list.length > 0) {
@@ -189,7 +189,7 @@ export default {
             this.soptions.push({ value: v.id, label: v.name })
           })
           this.listQuery.sid = response.data.data.list[0].id
-          this.getMarketCloudAccount()
+          this.getMarketStorageAccount()
         }
       })
     },

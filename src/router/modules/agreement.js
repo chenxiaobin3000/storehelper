@@ -14,5 +14,11 @@ export default {
   }, {
     path: 'return', component: () => import('@/views/agreement/return'),
     name: 'agreement_return', meta: { title: '退货明细', roles: [203] }
+  }, {
+    path: 'again', component: () => import('@/views/agreement/again'),
+    name: 'agreement_again', meta: { title: '退转入明细', roles: [204] }
+  }, {
+    path: 'apply', component: () => import('@/views/agreement/apply'),
+    name: 'agreement_apply', meta: { title: '订单录入', roles: [205] }
   }]
 }

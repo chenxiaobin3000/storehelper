@@ -21,13 +21,10 @@ export default {
     path: 'storageAddress', component: () => import('@/views/system/storageAddress'),
     name: 'system_storageAddress', meta: { title: '仓库地址', roles: [1103] }
   }, {
-    path: 'cloudAddress', component: () => import('@/views/system/cloudAddress'),
-    name: 'system_cloudAddress', meta: { title: '云仓地址', roles: [1104] }
-  }, {
     path: 'roleList', component: () => import('@/views/system/roleList'),
-    name: 'system_roleList', meta: { title: '角色管理', roles: [1105] }
+    name: 'system_roleList', meta: { title: '角色管理', roles: [1104] }
   }, {
     path: 'mpRoleList', component: () => import('@/views/system/mpRoleList'),
-    name: 'system_mpRoleList', meta: { title: '微信管理', roles: [1106] }
+    name: 'system_mpRoleList', meta: { title: '微信管理', roles: [1105] }
   }]
 }

@@ -24,13 +24,7 @@ export default {
     path: 'storage', component: () => import('@/views/storage/report'),
     name: 'report_storage', meta: { title: '仓储报表', roles: [705] }
   }, {
-    path: 'cloud', component: () => import('@/views/cloud/report'),
-    name: 'report_cloud', meta: { title: '云仓报表', roles: [706] }
-  }, {
     path: 'stock', component: () => import('@/views/stock/storage'),
-    name: 'report_stock', meta: { title: '仓储库存', roles: [707] }
-  }, {
-    path: 'cloudStock', component: () => import('@/views/stock/cloud'),
-    name: 'report_cloudStock', meta: { title: '云仓库存', roles: [708] }
+    name: 'report_stock', meta: { title: '仓储库存', roles: [706] }
   }]
 }

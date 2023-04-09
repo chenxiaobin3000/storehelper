@@ -126,7 +126,6 @@ import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
 import { treeGenerate } from '@/utils/tree'
 import { getGroupStandard, addStandard, setStandard, delStandard, setStandardCloud, setStandardStorage } from '@/api/standard'
-import { getGroupAllCloud } from '@/api/cloud'
 import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryTree } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
@@ -191,7 +190,7 @@ export default {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
     this.resetTemp()
-    this.getGroupAllCloud()
+    this.getGroupAllStorage()
   },
   methods: {
     resetTemp() {
@@ -263,17 +262,6 @@ export default {
       }).catch(error => {
         this.loading = false
         Promise.reject(error)
-      })
-    },
-    getGroupAllCloud() {
-      getGroupAllCloud({
-        id: this.userdata.user.id
-      }).then(response => {
-        response.data.data.list.forEach(v => {
-          this.dataC.push({ path: '/' + v.id, meta: { title: v.name, roles: [v.id] }})
-        })
-        this.routesC = treeGenerate.generateRoutes(this.dataC)
-        this.getGroupAllStorage()
       })
     },
     getGroupAllStorage() {

@@ -41,9 +41,9 @@ export function getMarketAllAccount(data) {
   })
 }
 
-export function getMarketCloudAccount(data) {
+export function getMarketStorageAccount(data) {
   return request({
-    url: `${path}/getMarketCloudAccount`,
+    url: `${path}/getMarketStorageAccount`,
     method: 'post',
     data
   })
@@ -89,25 +89,25 @@ export function getMarketManyList(data) {
   })
 }
 
-export function setMarketCloud(data) {
+export function setMarketStorage(data) {
   return request({
-    url: `${path}/setMarketCloud`,
+    url: `${path}/setMarketStorage`,
     method: 'post',
     data
   })
 }
 
-export function delMarketCloud(data) {
+export function delMarketStorage(data) {
   return request({
-    url: `${path}/delMarketCloud`,
+    url: `${path}/delMarketStorage`,
     method: 'post',
     data
   })
 }
 
-export function getMarketCloudList(data) {
+export function getMarketStorageList(data) {
   return request({
-    url: `${path}/getMarketCloudList`,
+    url: `${path}/getMarketStorageList`,
     method: 'post',
     data
   })
