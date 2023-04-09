@@ -33,17 +33,17 @@ export function getGroupCommodity(data) {
   })
 }
 
-export function setCommodityOriginal(data) {
+export function getStorageCommodity(data) {
   return request({
-    url: `${path}/setCommodityOriginal`,
+    url: `${path}/getStorageCommodity`,
     method: 'post',
     data
   })
 }
 
-export function setCommodityCloud(data) {
+export function setCommodityOriginal(data) {
   return request({
-    url: `${path}/setCommodityCloud`,
+    url: `${path}/setCommodityOriginal`,
     method: 'post',
     data
   })

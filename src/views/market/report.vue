@@ -4,7 +4,7 @@
       <el-select v-model="marketId" class="filter-item" @change="handleSelect">
         <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <el-select v-model="ctype" class="filter-item" @change="handleSelect">
+      <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
         <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-select v-model="cycle" class="filter-item" @change="handleSelect">
@@ -33,9 +33,9 @@ export default {
       coptions: [{
         value: 0, label: '全部'
       }, {
-        value: 1, label: '商品'
-      }, {
         value: 4, label: '标品'
+      }, {
+        value: 1, label: '商品'
       }],
       cycle: 1,
       options: reportCycle,

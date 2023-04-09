@@ -128,7 +128,7 @@
           <span>{{ tempStorage.name }}</span>
         </el-form-item>
         <el-form-item label="仓库" prop="storage">
-          <el-tree ref="treeS" :check-strictly="checkStrictlyS" :data="routesS" :props="defaultProps" show-checkbox node-key="path" class="permission-tree" />
+          <el-tree ref="tree" :check-strictly="checkStrictly" :data="routes" :props="defaultProps" show-checkbox node-key="path" class="permission-tree" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -148,7 +148,7 @@ import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
 import { treeGenerate } from '@/utils/tree'
 import { getGroupHalfgood, addHalfgood, setHalfgood, delHalfgood, setHalfgoodOriginal, setHalfgoodStorage } from '@/api/halfgood'
-import { getGroupAllOriginal } from '@/api/original'
+import { getGroupOriginal } from '@/api/original'
 import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryTree } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
@@ -158,8 +158,8 @@ export default {
   data() {
     return {
       userdata: {},
-      routesS: [],
-      dataS: [],
+      routes: [],
+      data: [],
       list: null,
       total: 0,
       categoryList: [],
@@ -176,7 +176,7 @@ export default {
       temp: {},
       tempOri: {},
       tempStorage: {},
-      checkStrictlyS: false,
+      checkStrictly: false,
       defaultProps: {
         children: 'children',
         label: 'title'
@@ -280,15 +280,18 @@ export default {
         id: this.userdata.user.id
       }).then(response => {
         response.data.data.list.forEach(v => {
-          this.dataS.push({ path: '/' + v.id, meta: { title: v.name, roles: [v.id] }})
+          this.data.push({ path: '/' + v.id, meta: { title: v.name, roles: [v.id] }})
         })
-        this.routesS = treeGenerate.generateRoutes(this.dataS)
+        this.routes = treeGenerate.generateRoutes(this.data)
         this.getCategoryList()
       })
     },
     getOriginalList() {
-      getGroupAllOriginal({
-        id: this.userdata.user.id
+      getGroupOriginal({
+        id: this.userdata.user.id,
+        page: 1,
+        limit: 1000,
+        search: null
       }).then(response => {
         this.originalList = response.data.data.list
         this.getHalfgoodList()
@@ -412,24 +415,23 @@ export default {
         name: row.name
       }
       // 仓库列表
-      this.tempStorage.routesS = row.storages
-      this.checkStrictlyS = true // 保护父子节点不相互影响
+      this.tempStorage.routes = row.storages
+      this.checkStrictly = true // 保护父子节点不相互影响
       this.$nextTick(() => {
-        const routes = treeGenerate.filterAsyncRoutes(this.dataS, this.tempStorage.routesS)
-        this.$refs.treeS.setCheckedNodes(treeGenerate.generateArr(routes))
-        this.checkStrictlyS = false
+        const routes = treeGenerate.filterAsyncRoutes(this.data, this.tempStorage.routes)
+        this.$refs.tree.setCheckedNodes(treeGenerate.generateArr(routes))
+        this.checkStrictly = false
       })
       this.dialogStorageVisible = true
     },
     updateStorageData() {
-      const checkedKeys = this.$refs.treeS.getCheckedKeys()
-      this.tempStorage.routesS = treeGenerate.generateTree(this.dataS, '/', checkedKeys)
-
+      const checkedKeys = this.$refs.tree.getCheckedKeys()
+      this.tempStorage.routes = treeGenerate.generateTree(this.data, '/', checkedKeys)
       setHalfgoodStorage({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
         cid: this.tempStorage.id,
-        sids: this.tempStorage.routesS
+        sids: this.tempStorage.routes
       }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
         this.getHalfgoodList()

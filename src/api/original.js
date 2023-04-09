@@ -33,6 +33,14 @@ export function getGroupOriginal(data) {
   })
 }
 
+export function getStorageOriginal(data) {
+  return request({
+    url: `${path}/getStorageOriginal`,
+    method: 'post',
+    data
+  })
+}
+
 export function getGroupAllOriginal(data) {
   return request({
     url: `${path}/getGroupAllOriginal`,

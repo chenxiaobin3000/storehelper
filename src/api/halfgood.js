@@ -33,6 +33,14 @@ export function getGroupHalfgood(data) {
   })
 }
 
+export function getStorageHalfgood(data) {
+  return request({
+    url: `${path}/getStorageHalfgood`,
+    method: 'post',
+    data
+  })
+}
+
 export function setHalfgoodOriginal(data) {
   return request({
     url: `${path}/setHalfgoodOriginal`,

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="ctype" class="filter-item" @change="handleSelect">
+      <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleCloudSelect">
@@ -153,11 +153,11 @@ export default {
       userdata: {},
       soptions: [],
       asoptions: [],
-      ctype: 1,
+      ctype: 4,
       options: [{
-        value: 1, label: '商品'
-      }, {
         value: 4, label: '标品'
+      }, {
+        value: 1, label: '商品'
       }],
       list: null,
       total: 0,

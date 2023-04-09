@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div v-if="tdata.length > 0" class="filter-container div-float" style="float:right; right:50px;">
-      <el-select v-model="ctype" class="filter-item" @change="handleSelect">
+      <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
         <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-select v-model="cycle" class="filter-item" @change="handleSelect">
@@ -24,15 +24,15 @@ export default {
   data() {
     return {
       userdata: {},
-      ctype: 1,
+      ctype: 4,
       coptions: [{
+        value: 4, label: '标品'
+      }, {
         value: 1, label: '商品'
       }, {
         value: 2, label: '半成品'
       }, {
         value: 3, label: '原料'
-      }, {
-        value: 4, label: '标品'
       }],
       cycle: 1,
       options: reportCycle,

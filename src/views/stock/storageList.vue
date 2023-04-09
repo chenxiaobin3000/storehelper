@@ -57,13 +57,13 @@ export default {
       userdata: {},
       soptions: [],
       coptions: [{
+        value: 4, label: '标品'
+      }, {
         value: 1, label: '商品'
       }, {
         value: 2, label: '半成品'
       }, {
         value: 3, label: '原料'
-      }, {
-        value: 4, label: '标品'
       }],
       date: new Date(),
       list: null,
