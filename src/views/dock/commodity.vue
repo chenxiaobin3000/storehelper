@@ -193,7 +193,7 @@ export default {
       this.$message({ type: 'error', message: '不支持新建!' })
     }
   },
-  async created() {
+  created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
     this.listQuery.gid = this.userdata.group.id

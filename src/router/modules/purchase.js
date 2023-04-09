@@ -13,10 +13,10 @@ export default {
     name: 'purchase_report', meta: { title: '采购总览', roles: [251] }
   }, {
     path: 'purchase', component: () => import('@/views/purchase/purchase'),
-    name: 'purchase_purchase', meta: { title: '仓储进货', roles: [252] }
+    name: 'purchase_purchase', meta: { title: '进货明细', roles: [252] }
   }, {
     path: 'return', component: () => import('@/views/purchase/return'),
-    name: 'purchase_return', meta: { title: '仓储退货', roles: [253] }
+    name: 'purchase_return', meta: { title: '退货明细', roles: [253] }
   }, {
     path: 'apply', component: () => import('@/views/purchase/apply'),
     name: 'purchase_apply', meta: { title: '订单录入', roles: [254] }

@@ -31,9 +31,9 @@ export const MyRoleData = [{
   children: [{
     path: 'report', meta: { title: '采购总览', roles: [251] }
   }, {
-    path: 'purchase', meta: { title: '仓储进货', roles: [252] }
+    path: 'purchase', meta: { title: '进货明细', roles: [252] }
   }, {
-    path: 'return', meta: { title: '仓储退货', roles: [253] }
+    path: 'return', meta: { title: '退货明细', roles: [253] }
   }, {
     path: 'apply', meta: { title: '订单录入', roles: [254] }
   }]

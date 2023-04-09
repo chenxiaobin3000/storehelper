@@ -1,6 +1,14 @@
 import request from '@/utils/request'
 const path = '/purchase'
 
+export function purchase(data) {
+  return request({
+    url: `${path}/purchase`,
+    method: 'post',
+    data
+  })
+}
+
 export function revokePurchase(data) {
   return request({
     url: `${path}/revokePurchase`,
@@ -12,6 +20,14 @@ export function revokePurchase(data) {
 export function delPurchase(data) {
   return request({
     url: `${path}/delPurchase`,
+    method: 'post',
+    data
+  })
+}
+
+export function returnc(data) {
+  return request({
+    url: `${path}/returnc`,
     method: 'post',
     data
   })
