@@ -22,7 +22,7 @@ export const MyRoleData = [{
   }, {
     path: 'many', meta: { title: '聚合账号', roles: [452] }
   }, {
-    path: 'storage', meta: { title: '云仓明细', roles: [453] }
+    path: 'storage', meta: { title: '仓库明细', roles: [453] }
   }, {
     path: 'commodity', meta: { title: '商品明细', roles: [454] }
   }]
@@ -31,11 +31,11 @@ export const MyRoleData = [{
   children: [{
     path: 'report', meta: { title: '采购总览', roles: [251] }
   }, {
-    path: 'purchase', meta: { title: '进货明细', roles: [252] }
+    path: 'getList', meta: { title: '采购明细', roles: [252] }
   }, {
-    path: 'return', meta: { title: '退货明细', roles: [253] }
+    path: 'purchase', meta: { title: '进货录入', roles: [253] }
   }, {
-    path: 'apply', meta: { title: '订单录入', roles: [254] }
+    path: 'return', meta: { title: '退货录入', roles: [254] }
   }]
 }, {
   path: '/product', meta: { title: '生产管理', roles: [600] },
@@ -64,19 +64,19 @@ export const MyRoleData = [{
   children: [{
     path: 'report', meta: { title: '仓储总览', roles: [801] }
   }, {
-    path: 'purchase', meta: { title: '采购进货', roles: [802] }
+    path: 'getList', meta: { title: '仓储明细', roles: [802] }
   }, {
-    path: 'return', meta: { title: '采购退货', roles: [803] }
+    path: 'purchase', meta: { title: '进货录入', roles: [803] }
   }, {
-    path: 'dispatch', meta: { title: '调度出库', roles: [804] }
+    path: 'return', meta: { title: '退货录入', roles: [804] }
   }, {
-    path: 'loss', meta: { title: '损耗明细', roles: [805] }
+    path: 'dispatch', meta: { title: '调度出库', roles: [805] }
   }, {
-    path: 'offline', meta: { title: '线下销售', roles: [806] }
+    path: 'loss', meta: { title: '损耗明细', roles: [806] }
   }, {
-    path: 'back', meta: { title: '线下退货', roles: [807] }
+    path: 'offline', meta: { title: '线下销售', roles: [807] }
   }, {
-    path: 'apply', meta: { title: '订单录入', roles: [808] }
+    path: 'back', meta: { title: '线下退货', roles: [808] }
   }]
 }, {
   path: '/stock', meta: { title: '库存管理', roles: [850] },

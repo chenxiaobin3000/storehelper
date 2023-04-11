@@ -9,6 +9,14 @@ export function purchase(data) {
   })
 }
 
+export function reviewPurchase(data) {
+  return request({
+    url: `${path}/reviewPurchase`,
+    method: 'post',
+    data
+  })
+}
+
 export function revokePurchase(data) {
   return request({
     url: `${path}/revokePurchase`,
@@ -28,6 +36,14 @@ export function delPurchase(data) {
 export function returnc(data) {
   return request({
     url: `${path}/returnc`,
+    method: 'post',
+    data
+  })
+}
+
+export function reviewReturn(data) {
+  return request({
+    url: `${path}/reviewReturn`,
     method: 'post',
     data
   })

@@ -89,7 +89,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="设置关联云仓/仓库" :visible.sync="dialogStorageVisible">
+    <el-dialog title="设置关联仓库" :visible.sync="dialogStorageVisible">
       <el-form :model="tempStorage" label-position="left" label-width="60px" style="width: 100%; padding: 0 4% 0 4%;">
         <el-form-item label="编号" prop="code">
           <span>{{ tempStorage.code }}</span>

@@ -7,10 +7,11 @@
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleCloudSelect">
         <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <span class="filter-item" style="color:#606266"> 账号: {{ account }}, 子账号:</span>
-      <el-select v-model="listQuery.asid" class="filter-item" @change="handleSelect">
+      <span class="filter-item" style="color:#606266"> 账号: {{ account }} ({{ remark }}), 子账号:</span>
+      <el-select v-model="listQuery.asid" class="filter-item" style="width:160px" @change="handleSubSelect">
         <el-option v-for="item in asoptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
+      <span class="filter-item" style="color:#606266">{{ sremark }}</span>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
     </div>
 
@@ -103,6 +104,8 @@ export default {
       soptions: [],
       asoptions: [],
       account: '',
+      remark: '',
+      sremark: '',
       ctype: 4,
       coptions: [{
         value: 4, label: '标品'
@@ -160,6 +163,14 @@ export default {
       this.listQuery.limit = 20
       this.getMarketStorageAccount()
     },
+    handleSubSelect() {
+      this.asoptions.forEach(v => {
+        if (this.listQuery.asid === v.value) {
+          this.sremark = v.remark
+        }
+      })
+      this.handleSelect()
+    },
     getMarketSubAccount() {
       getMarketSubAccount({
         id: this.listQuery.id,
@@ -169,12 +180,14 @@ export default {
         if (response.data.data.list && response.data.data.list.length > 0) {
           this.asoptions = []
           response.data.data.list.forEach(v => {
-            this.asoptions.push({ value: v.id, label: v.account })
+            this.asoptions.push({ value: v.id, label: v.account, remark: v.remark })
           })
           this.listQuery.asid = this.asoptions[0].value
+          this.sremark = this.asoptions[0].remark
         } else {
-          this.listQuery.asid = 0
           this.asoptions = [{ value: 0, label: '无' }]
+          this.listQuery.asid = 0
+          this.sremark = ''
         }
         this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
         this.getCommodityList()
@@ -186,9 +199,19 @@ export default {
         gid: this.userdata.group.id,
         cid: this.listQuery.sid
       }).then(response => {
-        this.listQuery.aid = response.data.data.aid
-        this.account = response.data.data.account
+        const data = response.data.data
+        this.listQuery.aid = data.aid
+        this.account = data.account
+        this.remark = data.remark
         this.getMarketSubAccount()
+      }).catch(error => {
+        this.account = ''
+        this.remark = ''
+        this.asoptions = [{ value: 0, label: '无' }]
+        this.listQuery.asid = 0
+        this.sremark = ''
+        this.getCommodityList()
+        Promise.reject(error)
       })
     },
     getGroupAllStorage() {

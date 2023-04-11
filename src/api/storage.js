@@ -41,6 +41,22 @@ export function getGroupAllStorage(data) {
   })
 }
 
+export function purchase(data) {
+  return request({
+    url: `${path}/purchase`,
+    method: 'post',
+    data
+  })
+}
+
+export function reviewPurchase(data) {
+  return request({
+    url: `${path}/reviewPurchase`,
+    method: 'post',
+    data
+  })
+}
+
 export function revokePurchase(data) {
   return request({
     url: `${path}/revokePurchase`,
@@ -52,6 +68,54 @@ export function revokePurchase(data) {
 export function delPurchase(data) {
   return request({
     url: `${path}/delPurchase`,
+    method: 'post',
+    data
+  })
+}
+
+export function returnc(data) {
+  return request({
+    url: `${path}/returnc`,
+    method: 'post',
+    data
+  })
+}
+
+export function reviewReturn(data) {
+  return request({
+    url: `${path}/reviewReturn`,
+    method: 'post',
+    data
+  })
+}
+
+export function revokeReturn(data) {
+  return request({
+    url: `${path}/revokeReturn`,
+    method: 'post',
+    data
+  })
+}
+
+export function delReturn(data) {
+  return request({
+    url: `${path}/delReturn`,
+    method: 'post',
+    data
+  })
+}
+
+export function dispatch(data) {
+  return request({
+    url: `${path}/dispatch`,
+    method: 'post',
+    data
+  })
+}
+
+export function reviewDispatch(data) {
+  return request({
+    url: `${path}/reviewDispatch`,
     method: 'post',
     data
   })
@@ -73,33 +137,17 @@ export function delDispatch(data) {
   })
 }
 
-export function revokePurchase2(data) {
+export function loss(data) {
   return request({
-    url: `${path}/revokePurchase2`,
+    url: `${path}/loss`,
     method: 'post',
     data
   })
 }
 
-export function delPurchase2(data) {
+export function reviewLoss(data) {
   return request({
-    url: `${path}/delPurchase2`,
-    method: 'post',
-    data
-  })
-}
-
-export function revokeAgreement(data) {
-  return request({
-    url: `${path}/revokeAgreement`,
-    method: 'post',
-    data
-  })
-}
-
-export function delAgreement(data) {
-  return request({
-    url: `${path}/delAgreement`,
+    url: `${path}/reviewLoss`,
     method: 'post',
     data
   })
@@ -121,17 +169,25 @@ export function delLoss(data) {
   })
 }
 
-export function revokeReturn(data) {
+export function reviewOffline(data) {
   return request({
-    url: `${path}/revokeReturn`,
+    url: `${path}/reviewOffline`,
     method: 'post',
     data
   })
 }
 
-export function delReturn(data) {
+export function revokeOffline(data) {
   return request({
-    url: `${path}/delReturn`,
+    url: `${path}/revokeOffline`,
+    method: 'post',
+    data
+  })
+}
+
+export function delOffline(data) {
+  return request({
+    url: `${path}/delOffline`,
     method: 'post',
     data
   })

@@ -1,6 +1,9 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
+      <el-select v-model="otype" class="filter-item" style="width:120px" @change="handleSelect">
+        <el-option v-for="item in orders" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
       <el-select v-model="listQuery.complete" class="filter-item" style="width:140px" @change="handleSelect">
         <el-option v-for="item in completeList" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
@@ -17,11 +20,27 @@
       <el-table-column label="仓库" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.sname }}</span>
+          <el-button icon="el-icon-edit" size="mini" circle @click="handleEdit(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="商品" align="center">
+      <el-table-column label="总价" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.commList }}</span>
+          <span>{{ row.price }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="现价" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.curPrice }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="应付" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.curPrice - row.payPrice }} </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.complete ==0 ? '未完成' : '已完成' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="申请人" width="65px" align="center">
@@ -46,8 +65,11 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleRevoke(row)">
+          <el-button v-if="row.review>0" type="primary" size="mini" @click="handleRevoke(row)">
             撤销审核
+          </el-button>
+          <el-button v-else type="primary" size="mini" @click="handleReview(row)">
+            审核
           </el-button>
           <el-button type="danger" size="mini" @click="handleDelete(row)">
             删除
@@ -163,14 +185,20 @@ import { mapState } from 'vuex'
 import { parseTime, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
-import { getStorageOrder } from '@/api/order'
-import { revokeOffline, delOffline } from '@/api/storage'
+import { getPurchaseOrder } from '@/api/order'
+import { reviewPurchase, revokePurchase, delPurchase, reviewReturn, revokeReturn, delReturn } from '@/api/purchase'
 
 export default {
   components: { Pagination },
   data() {
     return {
       userdata: {},
+      otype: 1,
+      orders: [{
+        value: 1, label: '采购进货单'
+      }, {
+        value: 2, label: '采购退货单'
+      }],
       date: new Date(),
       list: null,
       total: 0,
@@ -178,7 +206,7 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
-        type: 12, // 调度调度入库
+        type: 1, // 采购进货
         page: 1,
         limit: 20,
         review: 1, // 全部
@@ -186,7 +214,13 @@ export default {
         date: null,
         search: null
       },
-      temp: {},
+      temp: {
+        batch: '',
+        sname: '',
+        comms: [],
+        attrs: [],
+        imageList: []
+      },
       dialogVisible: false
     }
   },
@@ -206,22 +240,14 @@ export default {
     }
   },
   created() {
-    this.listQuery.id = this.$store.getters.userdata.user.id
     this.userdata = this.$store.getters.userdata
-    this.resetTemp()
+    this.listQuery.id = this.userdata.user.id
+    this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
     this.getOrderList()
   },
   methods: {
-    resetTemp() {
-      this.temp = {
-        batch: '',
-        sname: '',
-        comms: [],
-        attrs: [],
-        imageList: []
-      }
-    },
     handleSelect() {
+      this.listQuery.type = this.otype
       this.listQuery.page = 1
       this.listQuery.limit = 20
       this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
@@ -229,7 +255,7 @@ export default {
     },
     getOrderList() {
       this.loading = true
-      getStorageOrder(
+      getPurchaseOrder(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total
@@ -258,19 +284,54 @@ export default {
       }
       this.dialogVisible = true
     },
+    handleReview(row) {
+      this.$confirm('确定要通过吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        if (this.otype === 1) {
+          reviewPurchase({
+            id: this.userdata.user.id,
+            oid: row.id
+          }).then(() => {
+            this.$message({ type: 'success', message: '审核成功!' })
+            this.getOrderList()
+          })
+        } else {
+          reviewReturn({
+            id: this.userdata.user.id,
+            oid: row.id
+          }).then(() => {
+            this.$message({ type: 'success', message: '审核成功!' })
+            this.getOrderList()
+          })
+        }
+      })
+    },
     handleRevoke(row) {
       this.$confirm('确定要撤销吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        revokeOffline({
-          id: this.userdata.user.id,
-          oid: row.id
-        }).then(() => {
-          this.$message({ type: 'success', message: '撤销成功!' })
-          this.getOrderList()
-        })
+        if (this.otype === 1) {
+          revokePurchase({
+            id: this.userdata.user.id,
+            oid: row.id
+          }).then(() => {
+            this.$message({ type: 'success', message: '撤销成功!' })
+            this.getOrderList()
+          })
+        } else {
+          revokeReturn({
+            id: this.userdata.user.id,
+            oid: row.id
+          }).then(() => {
+            this.$message({ type: 'success', message: '撤销成功!' })
+            this.getOrderList()
+          })
+        }
       })
     },
     handleDelete(row) {
@@ -279,13 +340,23 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delOffline({
-          id: this.userdata.user.id,
-          oid: row.id
-        }).then(() => {
-          this.$message({ type: 'success', message: '删除成功!' })
-          this.getOrderList()
-        })
+        if (this.otype === 1) {
+          delPurchase({
+            id: this.userdata.user.id,
+            oid: row.id
+          }).then(() => {
+            this.$message({ type: 'success', message: '删除成功!' })
+            this.getOrderList()
+          })
+        } else {
+          delReturn({
+            id: this.userdata.user.id,
+            oid: row.id
+          }).then(() => {
+            this.$message({ type: 'success', message: '删除成功!' })
+            this.getOrderList()
+          })
+        }
       })
     }
   }

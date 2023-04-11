@@ -19,7 +19,7 @@
           <span>{{ row.sname }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="云仓" width="100px" align="center">
+      <el-table-column label="账号" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.cname }}</span>
         </template>
@@ -71,7 +71,7 @@
         <el-form-item label="仓库" prop="sname">
           <span>{{ temp.sname }}</span>
         </el-form-item>
-        <el-form-item label="云仓" prop="sname">
+        <el-form-item label="账号" prop="sname">
           <span>{{ temp.cname }}</span>
         </el-form-item>
 

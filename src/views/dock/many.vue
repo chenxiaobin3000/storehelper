@@ -6,7 +6,12 @@
           <span>{{ row.maccount }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台" width="160px" align="center">
+      <el-table-column label="备注" width="160px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.mremark }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="平台" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.mname }}</span>
         </template>
@@ -16,14 +21,14 @@
           <span>{{ row.account }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台" width="160px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.sname }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="备注" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.remark }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="子平台" width="80px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.sname }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
@@ -43,9 +48,12 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
         <el-form-item label="主账号" prop="name">
-          <el-select v-model="temp.aid" class="filter-item">
+          <el-select v-model="temp.aid" class="filter-item" @change="handleSelect">
             <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
+        </el-form-item>
+        <el-form-item label="备注" prop="saccount">
+          <span>{{ temp.mremark }}</span>
         </el-form-item>
         <el-form-item label="子账号" prop="account">
           <el-input v-model="temp.account" />
@@ -136,10 +144,19 @@ export default {
       this.temp = {
         id: 0,
         aid: '',
+        mremark: '',
         mid: 1,
         account: '',
         remark: ''
       }
+    },
+    handleSelect() {
+      // 备注
+      this.coptions.forEach(v => {
+        if (this.temp.aid === v.value) {
+          this.temp.mremark = v.remark
+        }
+      })
     },
     getMarketAllAccount() {
       getMarketAllAccount({
@@ -148,7 +165,7 @@ export default {
       }).then(response => {
         if (response.data.data.list && response.data.data.list.length > 0) {
           response.data.data.list.forEach(v => {
-            this.coptions.push({ value: v.id, label: v.account })
+            this.coptions.push({ value: v.id, label: v.account, remark: v.remark })
           })
           this.getMarketManyList()
         }

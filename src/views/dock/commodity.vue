@@ -7,10 +7,11 @@
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleCloudSelect">
         <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <span class="filter-item" style="color:#606266"> 账号: {{ temp.account }}, 子账号:</span>
-      <el-select v-model="listQuery.asid" class="filter-item" @change="handleSelect">
+      <span class="filter-item" style="color:#606266"> 账号: {{ temp.account }} ({{ temp.remark }}), 子账号:</span>
+      <el-select v-model="listQuery.asid" class="filter-item" style="width:160px" @change="handleSubSelect">
         <el-option v-for="item in asoptions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
+      <span class="filter-item" style="color:#606266">{{ temp.sremark }}</span>
     </div>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
@@ -36,7 +37,7 @@
       </el-table-column>
       <el-table-column label="成本" width="80px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.price }}元</span>
+          <span>{{ row.sprice }}元</span>
         </template>
       </el-table-column>
       <el-table-column label="库存" width="80px" align="center">
@@ -47,11 +48,6 @@
       <el-table-column label="备注" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.cremark }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="云仓" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.cloud }}</span>
         </template>
       </el-table-column>
       <el-table-column label="平台编号" width="100px" align="center">
@@ -99,13 +95,16 @@
         <el-form-item label="备注" prop="cremark">
           <span>{{ temp.cremark }}</span>
         </el-form-item>
-        <el-form-item label="云仓" prop="sid">
+        <el-form-item label="仓库" prop="sid">
           <el-select v-model="listQuery.sid" class="filter-item" @change="handleCloudSelect">
             <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="账号" prop="aid">
           <span>{{ temp.account }}</span>
+        </el-form-item>
+        <el-form-item label="备注" prop="aid">
+          <span>{{ temp.remark }}</span>
         </el-form-item>
         <el-form-item label="子账号" prop="asid">
           <el-select v-model="listQuery.asid" class="filter-item">
@@ -174,7 +173,19 @@ export default {
         asid: 0,
         search: null
       },
-      temp: {},
+      temp: {
+        cid: 0,
+        ccode: '',
+        cname: '',
+        cremark: '',
+        account: '',
+        remark: '',
+        sremark: '',
+        mcode: '',
+        mname: '',
+        mremark: '',
+        alarm: 0
+      },
       dialogVisible: false
     }
   },
@@ -197,23 +208,9 @@ export default {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
     this.listQuery.gid = this.userdata.group.id
-    this.resetTemp()
     this.getCategoryList()
   },
   methods: {
-    resetTemp() {
-      this.temp = {
-        mname: '',
-        id: 0,
-        code: '',
-        name: '',
-        category: null,
-        attribute: '',
-        price: 0,
-        unit: 0,
-        remark: ''
-      }
-    },
     handleSelect() {
       this.listQuery.page = 1
       this.listQuery.limit = 20
@@ -224,6 +221,14 @@ export default {
       this.listQuery.limit = 20
       this.getMarketStorageAccount()
     },
+    handleSubSelect() {
+      this.asoptions.forEach(v => {
+        if (this.listQuery.asid === v.value) {
+          this.temp.sremark = v.remark
+        }
+      })
+      this.handleSelect()
+    },
     getMarketSubAccount() {
       getMarketSubAccount({
         id: this.listQuery.id,
@@ -233,12 +238,14 @@ export default {
         if (response.data.data.list && response.data.data.list.length > 0) {
           this.asoptions = []
           response.data.data.list.forEach(v => {
-            this.asoptions.push({ value: v.id, label: v.account })
+            this.asoptions.push({ value: v.id, label: v.account, remark: v.remark })
           })
           this.listQuery.asid = this.asoptions[0].value
+          this.temp.sremark = this.asoptions[0].remark
         } else {
-          this.listQuery.asid = 0
           this.asoptions = [{ value: 0, label: '无' }]
+          this.listQuery.asid = 0
+          this.temp.sremark = ''
         }
         this.getCommodityList()
       })
@@ -249,9 +256,19 @@ export default {
         gid: this.userdata.group.id,
         cid: this.listQuery.sid
       }).then(response => {
-        this.listQuery.aid = response.data.data.aid
-        this.temp.account = response.data.data.account
+        const data = response.data.data
+        this.listQuery.aid = data.aid
+        this.temp.account = data.account
+        this.temp.remark = data.remark
         this.getMarketSubAccount()
+      }).catch(error => {
+        this.temp.account = ''
+        this.temp.remark = ''
+        this.asoptions = [{ value: 0, label: '无' }]
+        this.listQuery.asid = 0
+        this.temp.sremark = ''
+        this.getCommodityList()
+        Promise.reject(error)
       })
     },
     getGroupAllStorage() {
@@ -335,10 +352,17 @@ export default {
       })
     },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row)
       if (this.temp.mremark == null) {
         this.temp.mremark = ''
       }
+      this.temp.cid = row.cid
+      this.temp.ccode = row.ccode
+      this.temp.cname = row.cname
+      this.temp.cremark = row.cremark
+      this.temp.mcode = row.mcode
+      this.temp.mname = row.mname
+      this.temp.mremark = row.mremark
+      this.temp.alarm = row.alarm
       this.dialogVisible = true
     },
     updateData() {

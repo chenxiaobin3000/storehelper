@@ -1,6 +1,9 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
+      <el-select v-model="otype" class="filter-item" style="width:120px" @change="handleSelect">
+        <el-option v-for="item in orders" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
       <el-select v-model="listQuery.complete" class="filter-item" style="width:140px" @change="handleSelect">
         <el-option v-for="item in completeList" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
@@ -46,8 +49,11 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleRevoke(row)">
+          <el-button v-if="row.review>0" type="primary" size="mini" @click="handleRevoke(row)">
             撤销审核
+          </el-button>
+          <el-button v-else type="primary" size="mini" @click="handleReview(row)">
+            审核
           </el-button>
           <el-button type="danger" size="mini" @click="handleDelete(row)">
             删除
@@ -164,13 +170,32 @@ import { parseTime, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
 import { getStorageOrder } from '@/api/order'
-import { revokeOffline, delOffline } from '@/api/storage'
+import {
+  reviewPurchase, revokePurchase, delPurchase,
+  reviewReturn, revokeReturn, delReturn,
+  reviewDispatch, revokeDispatch, delDispatch,
+  reviewLoss, revokeLoss, delLoss
+} from '@/api/storage'
 
 export default {
   components: { Pagination },
   data() {
     return {
       userdata: {},
+      otype: 10,
+      orders: [{
+        value: 10, label: '采购入库单'
+      }, {
+        value: 11, label: '采购退货单'
+      }, {
+        value: 12, label: '仓储调度单'
+      }, {
+        value: 13, label: '仓储损耗单'
+      }, {
+        value: 14, label: '线下销售单'
+      }, {
+        value: 15, label: '销售退货单'
+      }],
       date: new Date(),
       list: null,
       total: 0,
@@ -178,7 +203,7 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
-        type: 12, // 调度调度入库
+        type: 10, // 采购入库
         page: 1,
         limit: 20,
         review: 1, // 全部
@@ -186,7 +211,13 @@ export default {
         date: null,
         search: null
       },
-      temp: {},
+      temp: {
+        batch: '',
+        sname: '',
+        comms: [],
+        attrs: [],
+        imageList: []
+      },
       dialogVisible: false
     }
   },
@@ -208,20 +239,11 @@ export default {
   created() {
     this.listQuery.id = this.$store.getters.userdata.user.id
     this.userdata = this.$store.getters.userdata
-    this.resetTemp()
     this.getOrderList()
   },
   methods: {
-    resetTemp() {
-      this.temp = {
-        batch: '',
-        sname: '',
-        comms: [],
-        attrs: [],
-        imageList: []
-      }
-    },
     handleSelect() {
+      this.listQuery.type = this.otype
       this.listQuery.page = 1
       this.listQuery.limit = 20
       this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
@@ -258,19 +280,100 @@ export default {
       }
       this.dialogVisible = true
     },
+    handleReview(row) {
+      this.$confirm('确定要通过吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        switch (this.otype) {
+          case 10:
+            reviewPurchase({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '审核成功!' })
+              this.getOrderList()
+            })
+            break
+          case 11:
+            reviewReturn({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '审核成功!' })
+              this.getOrderList()
+            })
+            break
+          case 12:
+            reviewDispatch({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '审核成功!' })
+              this.getOrderList()
+            })
+            break
+          case 13:
+            reviewLoss({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '审核成功!' })
+              this.getOrderList()
+            })
+            break
+          default:
+            break
+        }
+      })
+    },
     handleRevoke(row) {
       this.$confirm('确定要撤销吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        revokeOffline({
-          id: this.userdata.user.id,
-          oid: row.id
-        }).then(() => {
-          this.$message({ type: 'success', message: '撤销成功!' })
-          this.getOrderList()
-        })
+        switch (this.otype) {
+          case 10:
+            revokePurchase({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '撤销成功!' })
+              this.getOrderList()
+            })
+            break
+          case 11:
+            revokeReturn({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '撤销成功!' })
+              this.getOrderList()
+            })
+            break
+          case 12:
+            revokeDispatch({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '撤销成功!' })
+              this.getOrderList()
+            })
+            break
+          case 13:
+            revokeLoss({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '撤销成功!' })
+              this.getOrderList()
+            })
+            break
+          default:
+            break
+        }
       })
     },
     handleDelete(row) {
@@ -279,13 +382,46 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delOffline({
-          id: this.userdata.user.id,
-          oid: row.id
-        }).then(() => {
-          this.$message({ type: 'success', message: '删除成功!' })
-          this.getOrderList()
-        })
+        switch (this.otype) {
+          case 10:
+            delPurchase({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '删除成功!' })
+              this.getOrderList()
+            })
+            break
+          case 11:
+            delReturn({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '删除成功!' })
+              this.getOrderList()
+            })
+            break
+          case 12:
+            delDispatch({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '删除成功!' })
+              this.getOrderList()
+            })
+            break
+          case 13:
+            delLoss({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '删除成功!' })
+              this.getOrderList()
+            })
+            break
+          default:
+            break
+        }
       })
     }
   }

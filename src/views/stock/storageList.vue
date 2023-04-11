@@ -72,7 +72,7 @@ export default {
       listQuery: {
         id: 0,
         sid: 0,
-        ctype: 1,
+        ctype: 4,
         page: 1,
         limit: 20,
         date: null,

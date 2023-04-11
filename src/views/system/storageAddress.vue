@@ -26,6 +26,11 @@
           <span>{{ row.address }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="备注" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.remark }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
@@ -42,20 +47,23 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="仓库名称" prop="name">
+        <el-form-item label="名称" prop="name">
           <el-input v-model="temp.name" />
         </el-form-item>
         <el-form-item label="联系人" prop="contact">
           <el-input v-model="temp.contact" />
         </el-form-item>
-        <el-form-item label="联系电话" prop="phone">
+        <el-form-item label="电话" prop="phone">
           <el-input v-model="temp.phone" />
         </el-form-item>
-        <el-form-item label="仓库地区" prop="code">
+        <el-form-item label="地区" prop="code">
           <el-cascader v-model="temp.region" size="large" style="width: 80%;" :options="regionOptions" />
         </el-form-item>
-        <el-form-item label="仓库地址" prop="address">
+        <el-form-item label="地址" prop="address">
           <el-input v-model="temp.address" />
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="temp.remark" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -131,7 +139,8 @@ export default {
         region: [],
         contact: '',
         phone: '',
-        address: ''
+        address: '',
+        remark: ''
       }
     },
     getGroupStorage() {
@@ -167,7 +176,8 @@ export default {
         name: this.temp.name,
         contact: this.temp.contact,
         phone: this.temp.phone,
-        address: this.temp.address
+        address: this.temp.address,
+        remark: this.temp.remark
       }).then(response => {
         this.$message({ type: 'success', message: '新增成功!' })
         this.getGroupStorage()
@@ -198,7 +208,8 @@ export default {
         name: this.temp.name,
         contact: this.temp.contact,
         phone: this.temp.phone,
-        address: this.temp.address
+        address: this.temp.address,
+        remark: this.temp.remark
       }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
         this.getGroupStorage()

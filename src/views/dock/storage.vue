@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="云仓名称" width="200px" align="center">
+      <el-table-column label="仓库" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
@@ -11,7 +11,12 @@
           <span>{{ row.account }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台" width="120px" align="center">
+      <el-table-column label="备注" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.remark }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="平台" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ marketArr[row.mid] }}</span>
         </template>
@@ -21,7 +26,12 @@
           <span style="white-space:pre-wrap">{{ row.saccount }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="子平台" width="120px" align="center">
+      <el-table-column label="备注" width="120px" align="center">
+        <template slot-scope="{row}">
+          <span style="white-space:pre-wrap">{{ row.sremark }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="子平台" width="80px" align="center">
         <template slot-scope="{row}">
           <span style="white-space:pre-wrap">{{ row.sname }}</span>
         </template>
@@ -42,7 +52,7 @@
 
     <el-dialog title="修改账号信息" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="云仓" prop="name">
+        <el-form-item label="仓库" prop="name">
           <span>{{ temp.name }}</span>
         </el-form-item>
         <el-form-item label="主账号" prop="aid">
@@ -50,8 +60,11 @@
             <el-option v-for="item in aoptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
+        <el-form-item label="备注" prop="saccount">
+          <span>{{ temp.remark }}</span>
+        </el-form-item>
         <el-form-item label="子账号" prop="saccount">
-          <span style="white-space:pre-wrap">{{ temp.saccount }}</span>
+          <span>{{ temp.saccount }}</span>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -88,7 +101,13 @@ export default {
         limit: 20,
         search: null
       },
-      temp: {},
+      temp: {
+        id: 0,
+        name: '',
+        aid: 0,
+        remark: '',
+        saccount: ''
+      },
       dialogVisible: false
     }
   },
@@ -110,19 +129,18 @@ export default {
     this.userdata = this.$store.getters.userdata
     this.marketArr = marketArr
     this.listQuery.id = this.userdata.user.id
-    this.resetTemp()
     this.getMarketAllAccount()
   },
   methods: {
-    resetTemp() {
-      this.temp = {
-        id: 0,
-        name: '',
-        aid: 0,
-        saccount: ''
-      }
-    },
     handleSelect() {
+      // 备注
+      this.aoptions.forEach(v => {
+        if (this.temp.aid === v.value) {
+          this.temp.remark = v.remark
+        }
+      })
+
+      // 子账号选择
       this.temp.saccount = ''
       getMarketSubAccount({
         id: this.listQuery.id,
@@ -144,7 +162,7 @@ export default {
       }).then(response => {
         if (response.data.data.list && response.data.data.list.length > 0) {
           response.data.data.list.forEach(v => {
-            this.aoptions.push({ value: v.id, label: v.account })
+            this.aoptions.push({ value: v.id, label: v.account, remark: v.remark })
           })
           this.getMarketStorageList()
         }
@@ -162,9 +180,11 @@ export default {
             if (v.sub && v.sub.length > 0) {
               v.saccount = ''
               v.sname = ''
+              v.sremark = ''
               v.sub.forEach(s => {
                 v.saccount = v.saccount + s.account + '\n'
                 v.sname = v.sname + marketArr[s.mid] + '\n'
+                v.sremark = v.sremark + s.remark + '\n'
               })
             }
           })
