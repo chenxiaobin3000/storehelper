@@ -59,9 +59,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleAdd(row)">
-            添加
-          </el-button>
+          <el-button type="primary" size="mini" @click="handleAdd(row)">添加</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -119,9 +117,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="danger" size="mini" @click="handleDeleteStandard(row)">
-            删除
-          </el-button>
+          <el-button type="danger" size="mini" @click="handleDeleteStandard(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -174,9 +170,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="danger" size="mini" @click="handleDeleteCommodity(row)">
-            删除
-          </el-button>
+          <el-button type="danger" size="mini" @click="handleDeleteCommodity(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -229,9 +223,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="danger" size="mini" @click="handleDeleteHalfgood(row)">
-            删除
-          </el-button>
+          <el-button type="danger" size="mini" @click="handleDeleteHalfgood(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -284,9 +276,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="danger" size="mini" @click="handleDeleteOriginal(row)">
-            删除
-          </el-button>
+          <el-button type="danger" size="mini" @click="handleDeleteOriginal(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -338,12 +328,8 @@
         </el-table>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="applyData()">
-          确定
-        </el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="applyData()">确定</el-button>
       </div>
     </el-dialog>
   </div>

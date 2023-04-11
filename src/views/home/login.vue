@@ -46,9 +46,7 @@
         <el-checkbox v-model="checked" class="login-check">记住密码</el-checkbox>
       </div>
 
-      <el-button :loading="loading" class="login-btn" @click.native.prevent="handleLogin">
-        登  陆
-      </el-button>
+      <el-button :loading="loading" class="login-btn" @click.native.prevent="handleLogin">登  陆</el-button>
 
       <div style="position:relative">
         <div class="tips">

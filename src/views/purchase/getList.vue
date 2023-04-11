@@ -19,7 +19,7 @@
       </el-table-column>
       <el-table-column label="仓库" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.sname }}</span>
+          <span>{{ row.sname }} </span>
           <el-button icon="el-icon-edit" size="mini" circle @click="handleEdit(row)" />
         </template>
       </el-table-column>
@@ -35,7 +35,7 @@
       </el-table-column>
       <el-table-column label="应付" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.curPrice - row.payPrice }} </span>
+          <span>{{ row.curPrice - row.pay }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center">
@@ -65,15 +65,9 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button v-if="row.review>0" type="primary" size="mini" @click="handleRevoke(row)">
-            撤销审核
-          </el-button>
-          <el-button v-else type="primary" size="mini" @click="handleReview(row)">
-            审核
-          </el-button>
-          <el-button type="danger" size="mini" @click="handleDelete(row)">
-            删除
-          </el-button>
+          <el-button v-if="row.review>0" type="primary" size="mini" @click="handleRevoke(row)">撤销审核</el-button>
+          <el-button v-else type="primary" size="mini" @click="handleReview(row)">审核</el-button>
+          <el-button type="danger" size="mini" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -177,6 +171,23 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <el-dialog title="添加订单信息" :visible.sync="dialogOrderVisible">
+      <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
+        <el-form-item label="应付款" prop="pay">
+          <el-input v-model="tempOrder.pay" />
+        </el-form-item>
+        <el-form-item label="应付款" prop="pay">
+          <el-button type="primary" size="mini" @click="handleReview(row)">修改</el-button>
+        </el-form-item>
+        <el-form-item label="运费" prop="fare">
+          <el-input v-model="tempOrder.fare" />
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="tempOrder.remark" />
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -220,6 +231,11 @@ export default {
         comms: [],
         attrs: [],
         imageList: []
+      },
+      Order: {
+        pay: 0,
+        fare: 0,
+        remark: ''
       },
       dialogVisible: false
     }
