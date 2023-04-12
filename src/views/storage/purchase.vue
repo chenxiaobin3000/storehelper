@@ -60,8 +60,8 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
 
-    <div class="filter-container">
-      <span class="filter-item" style="width:100%;text-align:center">----------  采购入库单信息  ----------</span>
+    <div class="filter-container" align="center">
+      <span class="filter-item">----------  采购入库单信息  ----------</span>
     </div>
     <el-table v-if="temp.slist.length>0" v-loading="loading" :data="temp.slist" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="标品" width="100px" align="center">

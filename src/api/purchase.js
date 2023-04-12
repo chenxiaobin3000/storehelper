@@ -33,6 +33,14 @@ export function delPurchase(data) {
   })
 }
 
+export function setPurchasePay(data) {
+  return request({
+    url: `${path}/setPurchasePay`,
+    method: 'post',
+    data
+  })
+}
+
 export function returnc(data) {
   return request({
     url: `${path}/returnc`,

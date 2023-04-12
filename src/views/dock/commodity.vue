@@ -367,7 +367,7 @@ export default {
         cid: this.temp.cid,
         code: this.temp.mcode,
         name: this.temp.mname,
-        remark: this.temp.mremark,
+        remark: this.temp.mremark==null ? '' : this.temp.mremark,
         price: this.temp.alarm
       }
       if (this.ctype === 1) {

@@ -1,6 +1,38 @@
 import request from '@/utils/request'
 const path = '/order'
 
+export function addOrderFare(data) {
+  return request({
+    url: `${path}/addOrderFare`,
+    method: 'post',
+    data
+  })
+}
+
+export function delOrderFare(data) {
+  return request({
+    url: `${path}/delOrderFare`,
+    method: 'post',
+    data
+  })
+}
+
+export function addOrderRemark(data) {
+  return request({
+    url: `${path}/addOrderRemark`,
+    method: 'post',
+    data
+  })
+}
+
+export function delOrderRemark(data) {
+  return request({
+    url: `${path}/delOrderRemark`,
+    method: 'post',
+    data
+  })
+}
+
 export function getAgreementOrder(data) {
   return request({
     url: `${path}/getAgreementOrder`,

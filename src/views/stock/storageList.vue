@@ -112,11 +112,12 @@ export default {
       getGroupAllStorage({
         id: this.userdata.user.id
       }).then(response => {
-        if (response.data.data.list && response.data.data.list.length > 0) {
-          response.data.data.list.forEach(v => {
+        const data = response.data.data
+        if (data.list && data.list.length > 0) {
+          data.list.forEach(v => {
             this.soptions.push({ value: v.id, label: v.name })
           })
-          this.listQuery.sid = response.data.data.list[0].id
+          this.listQuery.sid = data.list[0].id
           this.getStockList()
         }
       })

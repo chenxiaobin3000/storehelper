@@ -113,6 +113,10 @@ export default {
               if (title.id === v.id && this.xdata[i].key === v.date) {
                 tdata[0].data[i] += v.total
                 tdata[title.idx].data[i] = v.total
+                if (i === 5) { // 给今日数据加上昨日库存
+                  tdata[0].data[6] += v.total
+                  tdata[title.idx].data[6] = v.total
+                }
                 return
               }
             }

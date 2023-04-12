@@ -11,11 +11,6 @@
           <span>{{ row.value }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="结果" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.now }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="操作人" width="180px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.user }}</span>

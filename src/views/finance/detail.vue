@@ -21,11 +21,6 @@
           <span>{{ row.value }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="结果" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.now }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="备注" align="center">
         <template slot-scope="{row}">
           <span>{{ row.remark }}</span>
