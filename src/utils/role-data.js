@@ -42,9 +42,9 @@ export const MyRoleData = [{
   children: [{
     path: 'report', meta: { title: '生产总览', roles: [601] }
   }, {
-    path: 'collect', meta: { title: '生产明细', roles: [602] }
+    path: 'getList', meta: { title: '生产明细', roles: [602] }
   }, {
-    path: 'apply', meta: { title: '订单录入', roles: [603] }
+    path: 'collect', meta: { title: '生产录入', roles: [603] }
   }]
 }, {
   path: '/agreement', meta: { title: '履约管理', roles: [200] },

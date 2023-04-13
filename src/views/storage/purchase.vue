@@ -74,12 +74,12 @@
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总价" width="80px" align="center">
+      <el-table-column label="总价" width="110px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.price" />
         </template>
       </el-table-column>
-      <el-table-column label="重量" width="80px" align="center">
+      <el-table-column label="重量" width="100px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.weight" />
         </template>
@@ -107,12 +107,12 @@
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总价" width="80px" align="center">
+      <el-table-column label="总价" width="110px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.price" />
         </template>
       </el-table-column>
-      <el-table-column label="重量" width="80px" align="center">
+      <el-table-column label="重量" width="100px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.weight" />
         </template>
@@ -140,12 +140,12 @@
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总价" width="80px" align="center">
+      <el-table-column label="总价" width="110px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.price" />
         </template>
       </el-table-column>
-      <el-table-column label="重量" width="80px" align="center">
+      <el-table-column label="重量" width="100px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.weight" />
         </template>
@@ -173,12 +173,12 @@
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总价" width="80px" align="center">
+      <el-table-column label="总价" width="110px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.price" />
         </template>
       </el-table-column>
-      <el-table-column label="重量" width="80px" align="center">
+      <el-table-column label="重量" width="100px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.weight" />
         </template>
@@ -222,12 +222,12 @@
               <span>{{ row.name }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="总价" width="80px" align="center">
+          <el-table-column label="总价" width="110px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.price }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="重量" width="80px" align="center">
+          <el-table-column label="重量" width="100px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.weight }}</span>
             </template>

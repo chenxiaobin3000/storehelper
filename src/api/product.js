@@ -1,49 +1,33 @@
 import request from '@/utils/request'
 const path = '/product'
 
-export function revokeProcess(data) {
+export function collect(data) {
   return request({
-    url: `${path}/revokeProcess`,
+    url: `${path}/collect`,
     method: 'post',
     data
   })
 }
 
-export function delProcess(data) {
+export function reviewCollect(data) {
   return request({
-    url: `${path}/delProcess`,
+    url: `${path}/reviewCollect`,
     method: 'post',
     data
   })
 }
 
-export function revokeComplete(data) {
+export function revokeCollect(data) {
   return request({
-    url: `${path}/revokeComplete`,
+    url: `${path}/revokeCollect`,
     method: 'post',
     data
   })
 }
 
-export function delComplete(data) {
+export function delCollect(data) {
   return request({
-    url: `${path}/delComplete`,
-    method: 'post',
-    data
-  })
-}
-
-export function revokeLoss(data) {
-  return request({
-    url: `${path}/revokeLoss`,
-    method: 'post',
-    data
-  })
-}
-
-export function delLoss(data) {
-  return request({
-    url: `${path}/delLoss`,
+    url: `${path}/delCollect`,
     method: 'post',
     data
   })

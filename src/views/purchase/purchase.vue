@@ -37,12 +37,12 @@
           <span>{{ row.remark }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总价" width="80px" align="center">
+      <el-table-column label="总价" width="110px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.iprice" />
         </template>
       </el-table-column>
-      <el-table-column label="重量" width="80px" align="center">
+      <el-table-column label="重量" width="100px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.iweight" />
         </template>
@@ -95,12 +95,12 @@
           <span>{{ row.remark }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总价" width="80px" align="center">
+      <el-table-column label="总价" width="110px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.price }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="重量" width="80px" align="center">
+      <el-table-column label="重量" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.weight }}</span>
         </template>
@@ -148,12 +148,12 @@
           <span>{{ row.remark }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总价" width="80px" align="center">
+      <el-table-column label="总价" width="110px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.price }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="重量" width="80px" align="center">
+      <el-table-column label="重量" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.weight }}</span>
         </template>
@@ -201,12 +201,12 @@
           <span>{{ row.remark }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总价" width="80px" align="center">
+      <el-table-column label="总价" width="110px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.price }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="重量" width="80px" align="center">
+      <el-table-column label="重量" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.weight }}</span>
         </template>
@@ -254,12 +254,12 @@
           <span>{{ row.remark }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总价" width="80px" align="center">
+      <el-table-column label="总价" width="110px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.price }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="重量" width="80px" align="center">
+      <el-table-column label="重量" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.weight }}</span>
         </template>
@@ -305,12 +305,12 @@
               <span>{{ row.name }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="总价" width="80px" align="center">
+          <el-table-column label="总价" width="110px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.price }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="重量" width="80px" align="center">
+          <el-table-column label="重量" width="100px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.weight }}</span>
             </template>
@@ -487,6 +487,12 @@ export default {
       this.list = []
       if (data.list && data.list.length > 0) {
         data.list.forEach(v => {
+          // 初始化数据
+          v.iprice = ''
+          v.iweight = ''
+          v.inorm = ''
+          v.ivalue = ''
+
           // 品类
           this.categoryList.forEach(c => {
             if (c.id === v.cid) {
@@ -537,7 +543,7 @@ export default {
               this.temp.clist.splice(i, 1)
             }
           })
-          this.temp.clist.push(row)
+          this.temp.clist.push(Object.assign({}, row))
           break
         case 2:
           this.temp.hlist.map((v, i) => {
@@ -545,7 +551,7 @@ export default {
               this.temp.hlist.splice(i, 1)
             }
           })
-          this.temp.hlist.push(row)
+          this.temp.hlist.push(Object.assign({}, row))
           break
         case 3:
           this.temp.olist.map((v, i) => {
@@ -553,7 +559,7 @@ export default {
               this.temp.olist.splice(i, 1)
             }
           })
-          this.temp.olist.push(row)
+          this.temp.olist.push(Object.assign({}, row))
           break
         case 4:
           this.temp.slist.map((v, i) => {
@@ -561,11 +567,15 @@ export default {
               this.temp.slist.splice(i, 1)
             }
           })
-          this.temp.slist.push(row)
+          this.temp.slist.push(Object.assign({}, row))
           break
         default:
           break
       }
+      row.iprice = ''
+      row.iweight = ''
+      row.inorm = ''
+      row.ivalue = ''
     },
     handleDeleteCommodity(row) {
       this.temp.clist.map((v, i) => {
