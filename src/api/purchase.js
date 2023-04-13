@@ -41,6 +41,14 @@ export function setPurchasePay(data) {
   })
 }
 
+export function setPurchaseSupplier(data) {
+  return request({
+    url: `${path}/setPurchaseSupplier`,
+    method: 'post',
+    data
+  })
+}
+
 export function returnc(data) {
   return request({
     url: `${path}/returnc`,

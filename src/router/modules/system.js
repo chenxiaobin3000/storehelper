@@ -18,8 +18,11 @@ export default {
     path: 'department', component: () => import('@/views/system/department'),
     name: 'system_department', meta: { title: '部门信息', roles: [1107] }
   }, {
-    path: 'storageAddress', component: () => import('@/views/system/storageAddress'),
-    name: 'system_storageAddress', meta: { title: '仓库地址', roles: [1103] }
+    path: 'storage', component: () => import('@/views/system/storage'),
+    name: 'system_storage', meta: { title: '仓库地址', roles: [1103] }
+  }, {
+    path: 'supplier', component: () => import('@/views/system/supplier'),
+    name: 'system_supplier', meta: { title: '供应商管理', roles: [1106] }
   }, {
     path: 'roleList', component: () => import('@/views/system/roleList'),
     name: 'system_roleList', meta: { title: '角色管理', roles: [1104] }

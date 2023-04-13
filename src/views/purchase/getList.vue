@@ -17,6 +17,12 @@
           <el-button icon="el-icon-tickets" size="mini" circle @click="handleDetail(row)" />
         </template>
       </el-table-column>
+      <el-table-column label="供应商" width="160px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.supplierName }} </span>
+          <el-button icon="el-icon-edit" size="mini" circle @click="handleSupplier(row)" />
+        </template>
+      </el-table-column>
       <el-table-column label="仓库" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.sname }} </span>
@@ -186,6 +192,19 @@
       </el-form>
     </el-dialog>
 
+    <el-dialog title="修改供应商信息" :visible.sync="dialogSupplierVisible">
+      <el-form :model="tempOrder" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
+        <el-form-item label="供应商" prop="supplier">
+          <el-select v-model="tempOrder.supplier" class="filter-item">
+            <el-option v-for="item in supplierList" :key="item.id" :label="item.label" :value="item.id" />
+          </el-select>
+        </el-form-item>
+        <div align="center">
+          <el-button type="primary" @click="updateSupplier()">修改</el-button>
+        </div>
+      </el-form>
+    </el-dialog>
+
     <el-dialog title="修改付款信息" :visible.sync="dialogPayVisible">
       <el-form :model="tempOrder" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
         <el-form-item label="已付款" prop="pay">
@@ -269,9 +288,9 @@ import { mapState } from 'vuex'
 import { parseTime, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
-import { getPurchaseOrder } from '@/api/order'
-import { reviewPurchase, revokePurchase, delPurchase, setPurchasePay, reviewReturn, revokeReturn, delReturn } from '@/api/purchase'
-import { addOrderFare, delOrderFare, addOrderRemark, delOrderRemark } from '@/api/order'
+import { reviewPurchase, revokePurchase, delPurchase, setPurchasePay, setPurchaseSupplier, reviewReturn, revokeReturn, delReturn } from '@/api/purchase'
+import { addOrderFare, delOrderFare, addOrderRemark, delOrderRemark, getPurchaseOrder } from '@/api/order'
+import { getGroupAllSupplier } from '@/api/supplier'
 
 export default {
   components: { Pagination },
@@ -288,6 +307,7 @@ export default {
       date: new Date(),
       list: null,
       total: 0,
+      supplierList: [],
       completeList: completeType,
       loading: false,
       listQuery: {
@@ -310,6 +330,7 @@ export default {
         remark: ''
       },
       tempOrder: {
+        supplier: 0,
         pay: '',
         ship: '',
         code: '',
@@ -318,6 +339,7 @@ export default {
         remark: ''
       },
       dialogVisible: false,
+      dialogSupplierVisible: false,
       dialogPayVisible: false,
       dialogFareVisible: false
     }
@@ -341,7 +363,7 @@ export default {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
     this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
-    this.getOrderList()
+    this.getGroupAllSupplier()
   },
   methods: {
     handleSelect() {
@@ -350,6 +372,19 @@ export default {
       this.listQuery.limit = 20
       this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
       this.getOrderList()
+    },
+    getGroupAllSupplier() {
+      getGroupAllSupplier({
+        id: this.userdata.user.id
+      }).then(response => {
+        if (response.data.data.total > 0) {
+          this.supplierList = [{ id: 0, label: '无' }]
+          response.data.data.list.forEach(v => {
+            this.supplierList.push({ id: v.id, label: v.name })
+          })
+        }
+        this.getOrderList()
+      })
     },
     getOrderList() {
       this.loading = true
@@ -364,6 +399,9 @@ export default {
             v.comms.forEach(c => {
               v.commList = v.commList + c.name + ','
             })
+          }
+          if (v.supplier) {
+            v.supplierName = v.supplier.name
           }
         })
         // 刷新弹出对话框
@@ -417,6 +455,25 @@ export default {
         rid: row.id
       }).then(() => {
         this.$message({ type: 'success', message: '删除成功!' })
+        this.getOrderList()
+      })
+    },
+    handleSupplier(row) {
+      this.tempOrder.id = row.id
+      if (row.supplier) {
+        this.tempOrder.supplier = row.supplier.id
+      }
+      this.dialogSupplierVisible = true
+      console.log(this.tempOrder)
+    },
+    updateSupplier() {
+      setPurchaseSupplier({
+        id: this.userdata.user.id,
+        oid: this.tempOrder.id,
+        sid: this.tempOrder.supplier
+      }).then(() => {
+        this.dialogSupplierVisible = false
+        this.$message({ type: 'success', message: '更新成功!' })
         this.getOrderList()
       })
     },

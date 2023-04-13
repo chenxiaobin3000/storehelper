@@ -56,7 +56,7 @@
         </el-form-item>
         <el-form-item label="平台" prop="name">
           <el-select v-model="temp.mid" class="filter-item">
-            <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in moptions" :key="item.id" :label="item.label" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="account">

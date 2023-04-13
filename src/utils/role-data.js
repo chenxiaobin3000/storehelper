@@ -153,7 +153,9 @@ export const MyRoleData = [{
   }, {
     path: 'department', meta: { title: '部门信息', roles: [1107] }
   }, {
-    path: 'storageAddress', meta: { title: '仓库地址', roles: [1103] }
+    path: 'storage', meta: { title: '仓库地址', roles: [1103] }
+  }, {
+    path: 'supplier', meta: { title: '供应商管理', roles: [1106] }
   }, {
     path: 'roleList', meta: { title: '角色管理', roles: [1104] }
   }, {

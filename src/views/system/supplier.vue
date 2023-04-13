@@ -1,32 +1,22 @@
 <template>
   <div class="app-container">
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="仓库名称" width="200px" align="center">
+      <el-table-column label="供应商名称" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="地区" width="180px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.areaName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="联系人" width="80px" align="center">
+      <el-table-column label="联系人" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.contact }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="联系电话" width="120px" align="center">
+      <el-table-column label="联系电话" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.phone }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="地址" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.address }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" align="center">
+      <el-table-column label="备注" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.remark }}</span>
         </template>
@@ -39,7 +29,7 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getGroupStorage" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getGroupSupplier" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
@@ -51,12 +41,6 @@
         </el-form-item>
         <el-form-item label="电话" prop="phone">
           <el-input v-model="temp.phone" />
-        </el-form-item>
-        <el-form-item label="地区" prop="code">
-          <el-cascader v-model="temp.region" size="large" style="width: 80%;" :options="regionOptions" />
-        </el-form-item>
-        <el-form-item label="地址" prop="address">
-          <el-input v-model="temp.address" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="temp.remark" />
@@ -72,9 +56,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import { regionData, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
-import { getGroupStorage, addStorage, setStorage, delStorage } from '@/api/storage'
+import { getGroupSupplier, addSupplier, setSupplier, delSupplier } from '@/api/supplier'
 
 export default {
   components: { Pagination },
@@ -91,12 +74,11 @@ export default {
         search: null
       },
       temp: {},
-      regionOptions: regionData,
       dialogVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '修改仓库信息',
-        create: '新增仓库'
+        update: '修改供应商信息',
+        create: '新增供应商'
       }
     }
   },
@@ -109,7 +91,7 @@ export default {
   watch: {
     search(newVal, oldVal) {
       this.listQuery.search = newVal
-      this.getGroupStorage()
+      this.getGroupSupplier()
     },
     create() {
       this.resetTemp()
@@ -118,38 +100,28 @@ export default {
     }
   },
   created() {
-    this.listQuery.id = this.$store.getters.userdata.user.id
     this.userdata = this.$store.getters.userdata
+    this.listQuery.id = this.userdata.user.id
     this.resetTemp()
-    this.getGroupStorage()
+    this.getGroupSupplier()
   },
   methods: {
     resetTemp() {
       this.temp = {
         id: 0,
         name: '',
-        region: [],
         contact: '',
         phone: '',
-        address: '',
         remark: ''
       }
     },
-    getGroupStorage() {
+    getGroupSupplier() {
       this.loading = true
-      getGroupStorage(
+      getGroupSupplier(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total
         this.list = response.data.data.list
-        // 处理地区码
-        this.list.forEach(v => {
-          const temp = []
-          temp.push(v.area.slice(0, 6))
-          temp.push(v.area.slice(6, 12))
-          temp.push(v.area.slice(12, 18))
-          v.areaName = CodeToText[temp[0]] + '/' + CodeToText[temp[1]] + '/' + CodeToText[temp[2]]
-        })
         this.loading = false
       }).catch(error => {
         this.loading = false
@@ -157,54 +129,36 @@ export default {
       })
     },
     createData() {
-      if (!this.temp.region || this.temp.region.length <= 0) {
-        this.$message({ type: 'error', message: '请选择仓库地区' })
-        return
-      }
-      addStorage({
+      addSupplier({
         id: this.listQuery.id,
         gid: this.userdata.group.id,
-        area: this.temp.region.join(''),
         name: this.temp.name,
         contact: this.temp.contact,
         phone: this.temp.phone,
-        address: this.temp.address,
         remark: this.temp.remark
       }).then(response => {
         this.$message({ type: 'success', message: '新增成功!' })
-        this.getGroupStorage()
+        this.getGroupSupplier()
         this.dialogVisible = false
       })
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row)
-      this.oldPhone = this.temp.contact.phone
-      const temp = []
-      temp.push(row.area.slice(0, 6))
-      temp.push(row.area.slice(6, 12))
-      temp.push(row.area.slice(12, 18))
-      this.temp.region = temp
       this.dialogStatus = 'update'
       this.dialogVisible = true
     },
     updateData() {
-      if (!this.temp.region || this.temp.region.length <= 0) {
-        this.$message({ type: 'error', message: '请选择仓库地区' })
-        return
-      }
-      setStorage({
+      setSupplier({
         id: this.listQuery.id,
         gid: this.userdata.group.id,
         sid: this.temp.id,
-        area: this.temp.region.join(''),
         name: this.temp.name,
         contact: this.temp.contact,
         phone: this.temp.phone,
-        address: this.temp.address,
         remark: this.temp.remark
       }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
-        this.getGroupStorage()
+        this.getGroupSupplier()
         this.dialogVisible = false
       })
     },
@@ -214,13 +168,13 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delStorage({
+        delSupplier({
           id: this.listQuery.id,
           gid: this.userdata.group.id,
           sid: row.id
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
-          this.getGroupStorage()
+          this.getGroupSupplier()
         })
       })
     }

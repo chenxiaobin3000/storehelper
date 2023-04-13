@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <el-select v-model="otype" class="filter-item" style="width:120px" @change="handleSelect">
-        <el-option v-for="item in orders" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in orders" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-select v-model="listQuery.complete" class="filter-item" style="width:140px" @change="handleSelect">
         <el-option v-for="item in completeList" :key="item.id" :label="item.label" :value="item.id" />
@@ -178,17 +178,17 @@ export default {
       userdata: {},
       otype: 10,
       orders: [{
-        value: 10, label: '采购入库单'
+        id: 10, label: '采购入库单'
       }, {
-        value: 11, label: '采购退货单'
+        id: 11, label: '采购退货单'
       }, {
-        value: 12, label: '仓储调度单'
+        id: 12, label: '仓储调度单'
       }, {
-        value: 13, label: '仓储损耗单'
+        id: 13, label: '仓储损耗单'
       }, {
-        value: 14, label: '线下销售单'
+        id: 14, label: '线下销售单'
       }, {
-        value: 15, label: '销售退货单'
+        id: 15, label: '销售退货单'
       }],
       date: new Date(),
       list: null,

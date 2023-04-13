@@ -21,22 +21,22 @@ export const marketArr = ['', '拼多多', '美团', '快驴', '美莱', '淘菜
 export function filterMarket(roles, all) {
   const ret = []
   if (all) {
-    ret.push({ value: 0, label: '全部' })
+    ret.push({ id: 0, label: '全部' })
   }
   if (roles.includes(1)) {
-    ret.push({ value: 1, label: '拼多多' })
+    ret.push({ id: 1, label: '拼多多' })
   }
   if (roles.includes(2)) {
-    ret.push({ value: 2, label: '美团' })
+    ret.push({ id: 2, label: '美团' })
   }
   if (roles.includes(3)) {
-    ret.push({ value: 3, label: '快驴' })
+    ret.push({ id: 3, label: '快驴' })
   }
   if (roles.includes(4)) {
-    ret.push({ value: 4, label: '美莱' })
+    ret.push({ id: 4, label: '美莱' })
   }
   if (roles.includes(5)) {
-    ret.push({ value: 5, label: '淘菜菜' })
+    ret.push({ id: 5, label: '淘菜菜' })
   }
   return ret
 }

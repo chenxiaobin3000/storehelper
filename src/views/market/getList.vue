@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
-        <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in coptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleCloudSelect">
         <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -94,9 +94,9 @@ export default {
       account: '',
       ctype: 4,
       coptions: [{
-        value: 4, label: '标品'
+        id: 4, label: '标品'
       }, {
-        value: 1, label: '商品'
+        id: 1, label: '商品'
       }],
       date: new Date(),
       list: null,

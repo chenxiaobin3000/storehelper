@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleSelect">
         <el-option v-for="item in storages" :key="item.value" :label="item.label" :value="item.value" />
@@ -355,13 +355,13 @@ export default {
       userdata: {},
       ctype: 4,
       options: [{
-        value: 4, label: '标品'
+        id: 4, label: '标品'
       }, {
-        value: 1, label: '商品'
+        id: 1, label: '商品'
       }, {
-        value: 2, label: '半成品'
+        id: 2, label: '半成品'
       }, {
-        value: 3, label: '原料'
+        id: 3, label: '原料'
       }],
       storages: [],
       date: new Date(),

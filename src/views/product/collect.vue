@@ -2,14 +2,14 @@
   <div class="app-container">
     <div class="filter-container">
       <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleSelect">
         <el-option v-for="item in storages" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" />
       <el-select v-model="iotype" class="filter-item" style="width:100px" @change="handleIOSelect">
-        <el-option v-for="item in ios" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in ios" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>
     </div>
@@ -334,21 +334,21 @@ export default {
       userdata: {},
       ctype: 4,
       options: [{
-        value: 4, label: '标品'
+        id: 4, label: '标品'
       }, {
-        value: 1, label: '商品'
+        id: 1, label: '商品'
       }, {
-        value: 2, label: '半成品'
+        id: 2, label: '半成品'
       }, {
-        value: 3, label: '原料'
+        id: 3, label: '原料'
       }],
       iotype: 0,
       ios: [{
-        value: 0, label: '出库'
+        id: 0, label: '出库'
       }, {
-        value: 1, label: '入库'
+        id: 1, label: '入库'
       }, {
-        value: 2, label: '损耗'
+        id: 2, label: '损耗'
       }],
       storages: [],
       date: new Date(),

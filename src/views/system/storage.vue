@@ -1,23 +1,32 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-select v-model="listQuery.mid" class="filter-item" @change="handleSelect">
-        <el-option v-for="item in moptions" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
-    </div>
-
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="平台名称" width="160px" align="center">
+      <el-table-column label="仓库名称" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.mname }}</span>
+          <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="账号" align="center">
+      <el-table-column label="地区" width="180px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.account }}</span>
+          <span>{{ row.areaName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" width="200px" align="center">
+      <el-table-column label="联系人" width="80px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.contact }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="联系电话" width="120px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.phone }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="地址" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.address }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="备注" align="center">
         <template slot-scope="{row}">
           <span>{{ row.remark }}</span>
         </template>
@@ -30,15 +39,24 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getMarketAccountList" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getGroupStorage" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="平台名称" prop="name">
-          <span>{{ temp.mname }}</span>
+        <el-form-item label="名称" prop="name">
+          <el-input v-model="temp.name" />
         </el-form-item>
-        <el-form-item label="账号" prop="account">
-          <el-input v-model="temp.account" />
+        <el-form-item label="联系人" prop="contact">
+          <el-input v-model="temp.contact" />
+        </el-form-item>
+        <el-form-item label="电话" prop="phone">
+          <el-input v-model="temp.phone" />
+        </el-form-item>
+        <el-form-item label="地区" prop="code">
+          <el-cascader v-model="temp.region" size="large" style="width: 80%;" :options="regionOptions" />
+        </el-form-item>
+        <el-form-item label="地址" prop="address">
+          <el-input v-model="temp.address" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="temp.remark" />
@@ -54,32 +72,31 @@
 
 <script>
 import { mapState } from 'vuex'
-import { filterMarket } from '@/utils/market-data'
+import { regionData, CodeToText } from 'element-china-area-data'
 import Pagination from '@/components/Pagination'
-import { addMarketAccount, setMarketAccount, delMarketAccount, getMarketAccountList } from '@/api/dock'
+import { getGroupStorage, addStorage, setStorage, delStorage } from '@/api/storage'
 
 export default {
   components: { Pagination },
   data() {
     return {
       userdata: {},
-      moptions: [],
       list: null,
       total: 0,
       loading: false,
       listQuery: {
         id: 0,
-        gid: 0,
-        mid: 0,
         page: 1,
-        limit: 20
+        limit: 20,
+        search: null
       },
       temp: {},
+      regionOptions: regionData,
       dialogVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '修改账号信息',
-        create: '新增账号'
+        update: '修改仓库信息',
+        create: '新增仓库'
       }
     }
   },
@@ -91,59 +108,48 @@ export default {
   },
   watch: {
     search(newVal, oldVal) {
-      this.$message({ type: 'error', message: '不支持搜索!' })
+      this.listQuery.search = newVal
+      this.getGroupStorage()
     },
     create() {
       this.resetTemp()
-      this.moptions.forEach(m => {
-        if (m.value === this.listQuery.mid) {
-          this.temp.mname = m.label
-        }
-      })
       this.dialogStatus = 'create'
       this.dialogVisible = true
     }
   },
   created() {
+    this.listQuery.id = this.$store.getters.userdata.user.id
     this.userdata = this.$store.getters.userdata
-    this.moptions = filterMarket(this.userdata.market, false)
-    this.listQuery.id = this.userdata.user.id
-    this.listQuery.gid = this.userdata.group.id
-    this.listQuery.mid = 1
     this.resetTemp()
-    this.getMarketAccountList()
+    this.getGroupStorage()
   },
   methods: {
     resetTemp() {
       this.temp = {
         id: 0,
-        mid: 0,
-        mname: '',
-        account: '',
+        name: '',
+        region: [],
+        contact: '',
+        phone: '',
+        address: '',
         remark: ''
       }
     },
-    handleSelect() {
-      this.listQuery.page = 1
-      this.listQuery.limit = 20
-      this.getMarketAccountList()
-    },
-    getMarketAccountList() {
+    getGroupStorage() {
       this.loading = true
-      getMarketAccountList(
+      getGroupStorage(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total
         this.list = response.data.data.list
-        if (this.list && this.list.length > 0) {
-          this.moptions.forEach(m => {
-            this.list.forEach(v => {
-              if (m.value === v.mid) {
-                v.mname = m.label
-              }
-            })
-          })
-        }
+        // 处理地区码
+        this.list.forEach(v => {
+          const temp = []
+          temp.push(v.area.slice(0, 6))
+          temp.push(v.area.slice(6, 12))
+          temp.push(v.area.slice(12, 18))
+          v.areaName = CodeToText[temp[0]] + '/' + CodeToText[temp[1]] + '/' + CodeToText[temp[2]]
+        })
         this.loading = false
       }).catch(error => {
         this.loading = false
@@ -151,34 +157,53 @@ export default {
       })
     },
     createData() {
-      addMarketAccount({
-        id: this.userdata.user.id,
+      if (!this.temp.region || this.temp.region.length <= 0) {
+        this.$message({ type: 'error', message: '请选择仓库地区' })
+        return
+      }
+      addStorage({
+        id: this.listQuery.id,
         gid: this.userdata.group.id,
-        mid: this.listQuery.mid,
-        account: this.temp.account,
+        area: this.temp.region.join(''),
+        name: this.temp.name,
+        contact: this.temp.contact,
+        phone: this.temp.phone,
+        address: this.temp.address,
         remark: this.temp.remark
       }).then(response => {
         this.$message({ type: 'success', message: '新增成功!' })
-        this.getMarketAccountList()
+        this.getGroupStorage()
         this.dialogVisible = false
       })
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row)
+      const temp = []
+      temp.push(row.area.slice(0, 6))
+      temp.push(row.area.slice(6, 12))
+      temp.push(row.area.slice(12, 18))
+      this.temp.region = temp
       this.dialogStatus = 'update'
       this.dialogVisible = true
     },
     updateData() {
-      setMarketAccount({
-        id: this.userdata.user.id,
+      if (!this.temp.region || this.temp.region.length <= 0) {
+        this.$message({ type: 'error', message: '请选择仓库地区' })
+        return
+      }
+      setStorage({
+        id: this.listQuery.id,
         gid: this.userdata.group.id,
-        mid: this.temp.mid,
-        aid: this.temp.id,
-        account: this.temp.account,
+        sid: this.temp.id,
+        area: this.temp.region.join(''),
+        name: this.temp.name,
+        contact: this.temp.contact,
+        phone: this.temp.phone,
+        address: this.temp.address,
         remark: this.temp.remark
       }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
-        this.getMarketAccountList()
+        this.getGroupStorage()
         this.dialogVisible = false
       })
     },
@@ -188,14 +213,13 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delMarketAccount({
-          id: this.userdata.user.id,
+        delStorage({
+          id: this.listQuery.id,
           gid: this.userdata.group.id,
-          mid: this.listQuery.mid,
-          aid: row.id
+          sid: row.id
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
-          this.getMarketAccountList()
+          this.getGroupStorage()
         })
       })
     }

@@ -156,13 +156,13 @@ export function deepClone(source) {
  * 报表周期标签
  */
 export const reportCycle = [{
-  value: 1, label: '日报'
+  id: 1, label: '日报'
 }, {
-  value: 2, label: '周报'
+  id: 2, label: '周报'
 }, {
-  value: 3, label: '月报'
+  id: 3, label: '月报'
 }, {
-  value: 4, label: '年报'
+  id: 4, label: '年报'
 }]
 
 export const completeType = [{

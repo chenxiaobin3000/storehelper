@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleCloudSelect">
         <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -146,9 +146,9 @@ export default {
       asoptions: [],
       ctype: 4,
       options: [{
-        value: 4, label: '标品'
+        id: 4, label: '标品'
       }, {
-        value: 1, label: '商品'
+        id: 1, label: '商品'
       }],
       list: null,
       total: 0,
@@ -367,7 +367,7 @@ export default {
         cid: this.temp.cid,
         code: this.temp.mcode,
         name: this.temp.mname,
-        remark: this.temp.mremark==null ? '' : this.temp.mremark,
+        remark: this.temp.mremark == null ? '' : this.temp.mremark,
         price: this.temp.alarm
       }
       if (this.ctype === 1) {

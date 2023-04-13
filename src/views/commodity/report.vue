@@ -2,13 +2,13 @@
   <div class="app-container">
     <div class="filter-container">
       <el-select v-model="listQuery.mid" class="filter-item" @change="handleSelect">
-        <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in moptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
-        <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in coptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-select v-model="listQuery.cycle" class="filter-item" @change="handleSelect">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
     </div>
 
@@ -86,9 +86,9 @@ export default {
       moptions: [],
       ctype: 4,
       coptions: [{
-        value: 4, label: '标品'
+        id: 4, label: '标品'
       }, {
-        value: 1, label: '商品'
+        id: 1, label: '商品'
       }],
       options: reportCycle,
       list: null,

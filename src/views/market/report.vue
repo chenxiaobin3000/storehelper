@@ -2,13 +2,13 @@
   <div class="app-container">
     <div v-if="tdata.length > 0" class="filter-container div-float" style="float:right; right:50px;">
       <el-select v-model="marketId" class="filter-item" @change="handleSelect">
-        <el-option v-for="item in moptions" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in moptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
-        <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in coptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-select v-model="cycle" class="filter-item" @change="handleSelect">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
     </div>
     <chart :labels="labels" :xdata="xdata" :tdata="tdata" width="100%" height="100%" />
@@ -31,11 +31,11 @@ export default {
       moptions: [],
       ctype: 0,
       coptions: [{
-        value: 0, label: '全部'
+        id: 0, label: '全部'
       }, {
-        value: 4, label: '标品'
+        id: 4, label: '标品'
       }, {
-        value: 1, label: '商品'
+        id: 1, label: '商品'
       }],
       cycle: 1,
       options: reportCycle,
