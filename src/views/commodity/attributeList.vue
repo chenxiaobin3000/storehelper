@@ -8,22 +8,22 @@
               更新模板
             </el-button>
             <el-drag-select v-model="attrTempList4" class="select-node" multiple placeholder="请选择标品属性">
-              <el-option v-for="item in attrOptions" :key="item.value" :label="item.label" :value="item.value" />
+              <el-option v-for="item in attrOptions" :key="item.id" :label="item.label" :value="item.id" />
             </el-drag-select>
           </el-form-item>
           <el-form-item label="商品属性模板">
             <el-drag-select v-model="attrTempList1" class="select-node" multiple placeholder="请选择商品属性">
-              <el-option v-for="item in attrOptions" :key="item.value" :label="item.label" :value="item.value" />
+              <el-option v-for="item in attrOptions" :key="item.id" :label="item.label" :value="item.id" />
             </el-drag-select>
           </el-form-item>
           <el-form-item label="半成品属性模板">
             <el-drag-select v-model="attrTempList2" class="select-node" multiple placeholder="请选择半成品属性">
-              <el-option v-for="item in attrOptions" :key="item.value" :label="item.label" :value="item.value" />
+              <el-option v-for="item in attrOptions" :key="item.id" :label="item.label" :value="item.id" />
             </el-drag-select>
           </el-form-item>
           <el-form-item label="原料属性模板">
             <el-drag-select v-model="attrTempList3" class="select-node" multiple placeholder="请选择原料属性">
-              <el-option v-for="item in attrOptions" :key="item.value" :label="item.label" :value="item.value" />
+              <el-option v-for="item in attrOptions" :key="item.id" :label="item.label" :value="item.id" />
             </el-drag-select>
           </el-form-item>
         </el-form>
@@ -130,7 +130,7 @@ export default {
         if (list && list.length > 0) {
           list.forEach(v => {
             this.attrList.push(v)
-            this.attrOptions.push({ value: v.name, label: v.name })
+            this.attrOptions.push({ id: v.name, label: v.name })
           })
         }
         this.getGroupAttrTemp()

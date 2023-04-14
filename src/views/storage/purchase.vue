@@ -332,7 +332,9 @@ export default {
           v.commList = ''
           if (v.comms && v.comms.length > 0) {
             v.comms.forEach(c => {
-              v.commList = v.commList + c.name + ','
+              if (v.commList.length < 20) {
+                v.commList = v.commList + c.name + ','
+              }
             })
           }
         })

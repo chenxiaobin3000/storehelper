@@ -5,7 +5,7 @@
         <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleSelect">
-        <el-option v-for="item in storages" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" />
       <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>
@@ -283,10 +283,10 @@
 
     <el-dialog title="采购进货单" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="制单日期" prop="cname">
+        <el-form-item label="制单日期" prop="date">
           <span>{{ temp.date }}</span>
         </el-form-item>
-        <el-form-item label="仓库" prop="cremark">
+        <el-form-item label="仓库" prop="storage">
           <span>{{ temp.storage }}</span>
         </el-form-item>
         <el-table v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
@@ -428,7 +428,7 @@ export default {
       }).then(response => {
         if (response.data.data.list && response.data.data.list.length > 0) {
           response.data.data.list.forEach(v => {
-            this.storages.push({ value: v.id, label: v.name })
+            this.storages.push({ id: v.id, label: v.name })
           })
           this.listQuery.sid = response.data.data.list[0].id
           this.getCommodityList()
@@ -614,7 +614,7 @@ export default {
       this.temp.norms = []
       this.temp.values = []
       this.storages.forEach(v => {
-        if (v.value === this.listQuery.sid) {
+        if (v.id === this.listQuery.sid) {
           this.temp.storage = v.label
         }
       })
@@ -636,7 +636,7 @@ export default {
     addItem(type, row) {
       let typename = null
       this.options.forEach(v => {
-        if (v.value === type) {
+        if (v.id === type) {
           typename = v.label
         }
       })

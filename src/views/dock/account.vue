@@ -96,7 +96,7 @@ export default {
     create() {
       this.resetTemp()
       this.moptions.forEach(m => {
-        if (m.value === this.listQuery.mid) {
+        if (m.id === this.listQuery.mid) {
           this.temp.mname = m.label
         }
       })
@@ -138,7 +138,7 @@ export default {
         if (this.list && this.list.length > 0) {
           this.moptions.forEach(m => {
             this.list.forEach(v => {
-              if (m.value === v.mid) {
+              if (m.id === v.mid) {
                 v.mname = m.label
               }
             })

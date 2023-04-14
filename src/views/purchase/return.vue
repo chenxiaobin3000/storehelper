@@ -202,13 +202,13 @@
 
     <el-dialog title="采购退货单" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="采购单号" prop="ccode">
+        <el-form-item label="采购单号" prop="batch">
           <span>{{ temp.batch }}</span>
         </el-form-item>
-        <el-form-item label="制单日期" prop="cname">
+        <el-form-item label="制单日期" prop="date">
           <span>{{ temp.date }}</span>
         </el-form-item>
-        <el-form-item label="仓库" prop="cremark">
+        <el-form-item label="仓库" prop="storage">
           <span>{{ temp.storage }}</span>
         </el-form-item>
         <el-table v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
@@ -337,7 +337,9 @@ export default {
           v.commList = ''
           if (v.comms && v.comms.length > 0) {
             v.comms.forEach(c => {
-              v.commList = v.commList + c.name + ','
+              if (v.commList.length < 20) {
+                v.commList = v.commList + c.name + ','
+              }
             })
           }
         })

@@ -53,7 +53,7 @@
         </el-form-item>
         <el-form-item label="主账号" prop="aid">
           <el-select v-model="temp.aid" class="filter-item" @change="handleSelect">
-            <el-option v-for="item in aoptions" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in aoptions" :key="item.id" :label="item.label" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="saccount">
@@ -127,7 +127,7 @@ export default {
     handleSelect() {
       // 备注
       this.aoptions.forEach(v => {
-        if (this.temp.aid === v.value) {
+        if (this.temp.aid === v.id) {
           this.temp.remark = v.remark
         }
       })
@@ -154,7 +154,7 @@ export default {
       }).then(response => {
         if (response.data.data.list && response.data.data.list.length > 0) {
           response.data.data.list.forEach(v => {
-            this.aoptions.push({ value: v.id, label: v.account, remark: v.remark })
+            this.aoptions.push({ id: v.id, label: v.account, remark: v.remark })
           })
           this.getMarketStorageList()
         }

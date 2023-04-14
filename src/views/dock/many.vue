@@ -45,7 +45,7 @@
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
         <el-form-item label="主账号" prop="name">
           <el-select v-model="temp.aid" class="filter-item" @change="handleSelect">
-            <el-option v-for="item in coptions" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in coptions" :key="item.id" :label="item.label" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="saccount">
@@ -115,7 +115,7 @@ export default {
     create() {
       this.resetTemp()
       this.moptions.forEach(m => {
-        if (m.value === this.listQuery.mid) {
+        if (m.id === this.listQuery.mid) {
           this.temp.mname = m.label
         }
       })
@@ -145,7 +145,7 @@ export default {
     handleSelect() {
       // 备注
       this.coptions.forEach(v => {
-        if (this.temp.aid === v.value) {
+        if (this.temp.aid === v.id) {
           this.temp.mremark = v.remark
         }
       })
@@ -157,7 +157,7 @@ export default {
       }).then(response => {
         if (response.data.data.list && response.data.data.list.length > 0) {
           response.data.data.list.forEach(v => {
-            this.coptions.push({ value: v.id, label: v.account, remark: v.remark })
+            this.coptions.push({ id: v.id, label: v.account, remark: v.remark })
           })
           this.getMarketManyList()
         }
@@ -173,10 +173,10 @@ export default {
         if (this.list && this.list.length > 0) {
           this.moptions.forEach(m => {
             this.list.forEach(v => {
-              if (m.value === v.mmid) {
+              if (m.id === v.mmid) {
                 v.mname = m.label
               }
-              if (m.value === v.smid) {
+              if (m.id === v.smid) {
                 v.sname = m.label
               }
             })

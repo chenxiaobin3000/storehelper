@@ -2,13 +2,12 @@
   <div class="app-container">
     <div class="filter-container">
       <el-select v-model="listQuery.sid" style="width: 200px;" class="filter-item" @change="handleSelect">
-        <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in soptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-select v-model="listQuery.ctype" style="width: 100px;" class="filter-item" @change="handleSelect">
         <el-option v-for="item in coptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
-      <el-input v-model="listQuery.search" placeholder="商品名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleSelect" />
     </div>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
@@ -89,7 +88,7 @@ export default {
   watch: {
     search(newVal, oldVal) {
       this.listQuery.search = newVal
-      this.getStockList()
+      this.handleSelect()
     },
     create() {
       this.$message({ type: 'error', message: '不支持新建!' })
@@ -115,7 +114,7 @@ export default {
         const data = response.data.data
         if (data.list && data.list.length > 0) {
           data.list.forEach(v => {
-            this.soptions.push({ value: v.id, label: v.name })
+            this.soptions.push({ id: v.id, label: v.name })
           })
           this.listQuery.sid = data.list[0].id
           this.getStockList()

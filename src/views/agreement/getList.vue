@@ -17,16 +17,20 @@
           <el-button icon="el-icon-tickets" size="mini" circle @click="handleDetail(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="供应商" width="160px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.supplierName }} </span>
-          <el-button icon="el-icon-edit" size="mini" circle @click="handleSupplier(row)" />
-        </template>
-      </el-table-column>
       <el-table-column label="仓库" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.sname }} </span>
           <el-button icon="el-icon-edit" size="mini" circle @click="handleFare(row)" />
+        </template>
+      </el-table-column>
+      <el-table-column label="账号" width="100px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.msaccount.length > 0 ? row.msaccount : row.maccount }} </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="备注" width="100px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.msaccount.length > 0 ? row.msremark : row.mremark }} </span>
         </template>
       </el-table-column>
       <el-table-column label="总价" align="center">
@@ -37,12 +41,6 @@
       <el-table-column label="现价" align="center">
         <template slot-scope="{row}">
           <span>{{ row.curPrice }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="应付" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.curPrice - row.pay }} </span>
-          <el-button icon="el-icon-edit" size="mini" circle @click="handlePay(row)" />
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center">
@@ -88,6 +86,12 @@
         </el-form-item>
         <el-form-item label="仓库" prop="sname">
           <span>{{ temp.sname }}</span>
+        </el-form-item>
+        <el-form-item label="账号" prop="account">
+          <span>{{ temp.account }}</span>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <span>{{ temp.remark }}</span>
         </el-form-item>
 
         <!-- 商品列表 -->
@@ -192,30 +196,6 @@
       </el-form>
     </el-dialog>
 
-    <el-dialog title="修改供应商信息" :visible.sync="dialogSupplierVisible">
-      <el-form :model="tempOrder" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="供应商" prop="supplier">
-          <el-select v-model="tempOrder.supplier" class="filter-item">
-            <el-option v-for="item in supplierList" :key="item.id" :label="item.label" :value="item.id" />
-          </el-select>
-        </el-form-item>
-        <div align="center">
-          <el-button type="primary" @click="updateSupplier()">修改</el-button>
-        </div>
-      </el-form>
-    </el-dialog>
-
-    <el-dialog title="修改付款信息" :visible.sync="dialogPayVisible">
-      <el-form :model="tempOrder" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="已付款" prop="pay">
-          <el-input v-model="tempOrder.pay" />
-        </el-form-item>
-        <div align="center">
-          <el-button type="primary" @click="updatePay()">修改</el-button>
-        </div>
-      </el-form>
-    </el-dialog>
-
     <el-dialog title="修改订单信息" :visible.sync="dialogFareVisible">
       <el-form :model="tempOrder" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
         <!-- 运费列表 -->
@@ -288,30 +268,30 @@ import { mapState } from 'vuex'
 import { parseTime, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
-import { reviewPurchase, revokePurchase, delPurchase, setPurchasePay, setPurchaseSupplier, reviewReturn, revokeReturn, delReturn } from '@/api/purchase'
-import { addOrderFare, delOrderFare, addOrderRemark, delOrderRemark, getPurchaseOrder } from '@/api/order'
-import { getGroupAllSupplier } from '@/api/supplier'
+import { reviewShipped, revokeShipped, delShipped, reviewReturn, revokeReturn, delReturn, reviewAgain, revokeAgain, delAgain } from '@/api/agreement'
+import { addOrderFare, delOrderFare, addOrderRemark, delOrderRemark, getAgreementOrder } from '@/api/order'
 
 export default {
   components: { Pagination },
   data() {
     return {
       userdata: {},
-      business: 1, // 业务类型
+      business: 4, // 业务类型
       orders: [{
-        id: 1, label: '采购进货单'
+        id: 20, label: '履约发货单'
       }, {
-        id: 2, label: '采购退货单'
+        id: 21, label: '履约退货单'
+      }, {
+        id: 22, label: '退货转入单'
       }],
       date: new Date(),
       list: null,
       total: 0,
-      supplierList: [],
       completeList: completeType,
       loading: false,
       listQuery: {
         id: 0,
-        type: 1, // 采购进货
+        type: 20, // 采购进货
         page: 1,
         limit: 20,
         review: 1, // 全部
@@ -329,8 +309,6 @@ export default {
         remark: ''
       },
       tempOrder: {
-        supplier: 0,
-        pay: '',
         ship: '',
         code: '',
         phone: '',
@@ -338,8 +316,6 @@ export default {
         remark: ''
       },
       dialogVisible: false,
-      dialogSupplierVisible: false,
-      dialogPayVisible: false,
       dialogFareVisible: false
     }
   },
@@ -362,7 +338,7 @@ export default {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
     this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
-    this.getGroupAllSupplier()
+    this.getOrderList()
   },
   methods: {
     handleSelect() {
@@ -371,22 +347,9 @@ export default {
       this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
       this.getOrderList()
     },
-    getGroupAllSupplier() {
-      getGroupAllSupplier({
-        id: this.userdata.user.id
-      }).then(response => {
-        if (response.data.data.total > 0) {
-          this.supplierList = [{ id: 0, label: '无' }]
-          response.data.data.list.forEach(v => {
-            this.supplierList.push({ id: v.id, label: v.name })
-          })
-        }
-        this.getOrderList()
-      })
-    },
     getOrderList() {
       this.loading = true
-      getPurchaseOrder(
+      getAgreementOrder(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total
@@ -399,9 +362,6 @@ export default {
                 v.commList = v.commList + c.name + ','
               }
             })
-          }
-          if (v.supplier) {
-            v.supplierName = v.supplier.name
           }
         })
         // 刷新弹出对话框
@@ -456,43 +416,6 @@ export default {
       }).then(() => {
         this.$message({ type: 'success', message: '删除成功!' })
         this.getOrderList()
-      })
-    },
-    handleSupplier(row) {
-      this.tempOrder.id = row.id
-      if (row.supplier) {
-        this.tempOrder.supplier = row.supplier.id
-      }
-      this.dialogSupplierVisible = true
-    },
-    updateSupplier() {
-      setPurchaseSupplier({
-        id: this.userdata.user.id,
-        oid: this.tempOrder.id,
-        sid: this.tempOrder.supplier
-      }).then(() => {
-        this.dialogSupplierVisible = false
-        this.$message({ type: 'success', message: '更新成功!' })
-        this.getOrderList()
-      })
-    },
-    handlePay(row) {
-      this.tempOrder.id = row.id
-      this.dialogPayVisible = true
-    },
-    updatePay() {
-      if (this.tempOrder.pay.length <= 0) {
-        this.$message({ type: 'error', message: '请填写已付款金额' })
-        return
-      }
-      setPurchasePay({
-        id: this.userdata.user.id,
-        oid: this.tempOrder.id,
-        pay: this.tempOrder.pay
-      }).then(() => {
-        this.$message({ type: 'success', message: '修改成功!' })
-        this.getOrderList()
-        this.dialogPayVisible = false
       })
     },
     handleFare(row) {
@@ -551,14 +474,20 @@ export default {
           oid: row.id
         }
         switch (this.listQuery.type) {
-          case 1:
-            reviewPurchase(data).then(() => {
+          case 20:
+            reviewShipped(data).then(() => {
               this.$message({ type: 'success', message: '审核成功!' })
               this.getOrderList()
             })
             break
-          case 2:
+          case 21:
             reviewReturn(data).then(() => {
+              this.$message({ type: 'success', message: '审核成功!' })
+              this.getOrderList()
+            })
+            break
+          case 22:
+            reviewAgain(data).then(() => {
               this.$message({ type: 'success', message: '审核成功!' })
               this.getOrderList()
             })
@@ -579,14 +508,20 @@ export default {
           oid: row.id
         }
         switch (this.listQuery.type) {
-          case 1:
-            revokePurchase(data).then(() => {
+          case 20:
+            revokeShipped(data).then(() => {
               this.$message({ type: 'success', message: '撤销成功!' })
               this.getOrderList()
             })
             break
-          case 2:
+          case 21:
             revokeReturn(data).then(() => {
+              this.$message({ type: 'success', message: '撤销成功!' })
+              this.getOrderList()
+            })
+            break
+          case 22:
+            revokeAgain(data).then(() => {
               this.$message({ type: 'success', message: '撤销成功!' })
               this.getOrderList()
             })
@@ -607,14 +542,20 @@ export default {
           oid: row.id
         }
         switch (this.listQuery.type) {
-          case 1:
-            delPurchase(data).then(() => {
+          case 20:
+            delShipped(data).then(() => {
               this.$message({ type: 'success', message: '删除成功!' })
               this.getOrderList()
             })
             break
-          case 2:
+          case 21:
             delReturn(data).then(() => {
+              this.$message({ type: 'success', message: '删除成功!' })
+              this.getOrderList()
+            })
+            break
+          case 22:
+            delAgain(data).then(() => {
               this.$message({ type: 'success', message: '删除成功!' })
               this.getOrderList()
             })

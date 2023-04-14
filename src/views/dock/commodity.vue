@@ -4,12 +4,12 @@
       <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
         <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <el-select v-model="listQuery.sid" class="filter-item" @change="handleCloudSelect">
-        <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
+      <el-select v-model="listQuery.sid" class="filter-item" @change="handleStorageSelect">
+        <el-option v-for="item in soptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <span class="filter-item" style="color:#606266"> 账号: {{ temp.account }} ({{ temp.remark }}), 子账号:</span>
       <el-select v-model="listQuery.asid" class="filter-item" style="width:160px" @change="handleSubSelect">
-        <el-option v-for="item in asoptions" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in asoptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <span class="filter-item" style="color:#606266">{{ temp.sremark }}</span>
     </div>
@@ -92,8 +92,8 @@
           <span>{{ temp.cremark }}</span>
         </el-form-item>
         <el-form-item label="仓库" prop="sid">
-          <el-select v-model="listQuery.sid" class="filter-item" @change="handleCloudSelect">
-            <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
+          <el-select v-model="listQuery.sid" class="filter-item" @change="handleStorageSelect">
+            <el-option v-for="item in soptions" :key="item.id" :label="item.label" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="账号" prop="aid">
@@ -104,7 +104,7 @@
         </el-form-item>
         <el-form-item label="子账号" prop="asid">
           <el-select v-model="listQuery.asid" class="filter-item">
-            <el-option v-for="item in asoptions" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in asoptions" :key="item.id" :label="item.label" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="平台编号" prop="mcode">
@@ -208,14 +208,14 @@ export default {
       this.listQuery.limit = 20
       this.getCommodityList()
     },
-    handleCloudSelect() {
+    handleStorageSelect() {
       this.listQuery.page = 1
       this.listQuery.limit = 20
       this.getMarketStorageAccount()
     },
     handleSubSelect() {
       this.asoptions.forEach(v => {
-        if (this.listQuery.asid === v.value) {
+        if (this.listQuery.asid === v.id) {
           this.temp.sremark = v.remark
         }
       })
@@ -230,12 +230,12 @@ export default {
         if (response.data.data.list && response.data.data.list.length > 0) {
           this.asoptions = []
           response.data.data.list.forEach(v => {
-            this.asoptions.push({ value: v.id, label: v.account, remark: v.remark })
+            this.asoptions.push({ id: v.id, label: v.account, remark: v.remark })
           })
-          this.listQuery.asid = this.asoptions[0].value
+          this.listQuery.asid = this.asoptions[0].id
           this.temp.sremark = this.asoptions[0].remark
         } else {
-          this.asoptions = [{ value: 0, label: '无' }]
+          this.asoptions = [{ id: 0, label: '无' }]
           this.listQuery.asid = 0
           this.temp.sremark = ''
         }
@@ -256,7 +256,7 @@ export default {
       }).catch(error => {
         this.temp.account = ''
         this.temp.remark = ''
-        this.asoptions = [{ value: 0, label: '无' }]
+        this.asoptions = [{ id: 0, label: '无' }]
         this.listQuery.asid = 0
         this.temp.sremark = ''
         this.getCommodityList()
@@ -269,7 +269,7 @@ export default {
       }).then(response => {
         if (response.data.data.list && response.data.data.list.length > 0) {
           response.data.data.list.forEach(v => {
-            this.soptions.push({ value: v.id, label: v.name })
+            this.soptions.push({ id: v.id, label: v.name })
           })
           this.listQuery.sid = response.data.data.list[0].id
           this.getMarketStorageAccount()

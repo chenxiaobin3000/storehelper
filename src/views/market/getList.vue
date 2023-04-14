@@ -5,11 +5,11 @@
         <el-option v-for="item in coptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleCloudSelect">
-        <el-option v-for="item in soptions" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in soptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <span class="filter-item" style="color:#606266"> 账号: {{ account }}, 子账号:</span>
       <el-select v-model="listQuery.asid" class="filter-item" @change="handleSelect">
-        <el-option v-for="item in asoptions" :key="item.value" :label="item.label" :value="item.value" />
+        <el-option v-for="item in asoptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
     </div>
@@ -158,12 +158,12 @@ export default {
         if (response.data.data.list && response.data.data.list.length > 0) {
           this.asoptions = []
           response.data.data.list.forEach(v => {
-            this.asoptions.push({ value: v.id, label: v.account })
+            this.asoptions.push({ id: v.id, label: v.account })
           })
-          this.listQuery.asid = this.asoptions[0].value
+          this.listQuery.asid = this.asoptions[0].id
         } else {
           this.listQuery.asid = 0
-          this.asoptions = [{ value: 0, label: '无' }]
+          this.asoptions = [{ id: 0, label: '无' }]
         }
         this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
         this.getCommodityList()
@@ -186,7 +186,7 @@ export default {
       }).then(response => {
         if (response.data.data.list && response.data.data.list.length > 0) {
           response.data.data.list.forEach(v => {
-            this.soptions.push({ value: v.id, label: v.name })
+            this.soptions.push({ id: v.id, label: v.name })
           })
           this.listQuery.sid = response.data.data.list[0].id
           this.getMarketStorageAccount()
