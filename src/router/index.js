@@ -15,7 +15,6 @@ import marketRouter from './modules/market'
 import productRouter from './modules/product'
 import purchaseRouter from './modules/purchase'
 import reportRouter from './modules/report'
-import stockRouter from './modules/stock'
 import storageRouter from './modules/storage'
 import superRouter from './modules/super'
 import supplierRouter from './modules/supplier'
@@ -74,10 +73,9 @@ export const asyncRoutes = [
   marketRouter,
   dockRouter,
   purchaseRouter,
-  productRouter,
   storageRouter,
+  productRouter,
   agreementRouter,
-  stockRouter,
   supplierRouter,
   reportRouter,
   commodityRouter,

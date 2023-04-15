@@ -37,12 +37,12 @@
       </el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.complete ==0 ? '未完成' : '已完成' }}</span>
+          <span>{{ row.complete == 0 ? '未完成' : '已完成' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="申请人" width="65px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.applyName }} </span>
+          <span>{{ row.applyName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="申请时间" width="155px" align="center">

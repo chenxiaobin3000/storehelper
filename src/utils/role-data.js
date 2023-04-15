@@ -62,28 +62,25 @@ export const MyRoleData = [{
 }, {
   path: '/storage', meta: { title: '仓储管理', roles: [800] },
   children: [{
-    path: 'report', meta: { title: '仓储总览', roles: [801] }
+    path: 'stockReport', meta: { title: '库存总览', roles: [801] }
   }, {
-    path: 'getList', meta: { title: '仓储明细', roles: [802] }
+    path: 'stockList', meta: { title: '库存明细', roles: [802] }
   }, {
-    path: 'purchase', meta: { title: '进货录入', roles: [803] }
+    path: 'report', meta: { title: '仓储总览', roles: [803] }
   }, {
-    path: 'return', meta: { title: '退货录入', roles: [804] }
+    path: 'getList', meta: { title: '仓储明细', roles: [804] }
   }, {
-    path: 'dispatch', meta: { title: '调度出库', roles: [805] }
+    path: 'purchase', meta: { title: '进货录入', roles: [805] }
   }, {
-    path: 'loss', meta: { title: '损耗明细', roles: [806] }
+    path: 'return', meta: { title: '退货录入', roles: [806] }
   }, {
-    path: 'offline', meta: { title: '线下销售', roles: [807] }
+    path: 'dispatch', meta: { title: '调度出库', roles: [807] }
   }, {
-    path: 'back', meta: { title: '线下退货', roles: [808] }
-  }]
-}, {
-  path: '/stock', meta: { title: '库存管理', roles: [850] },
-  children: [{
-    path: 'stroage', meta: { title: '库存总览', roles: [851] }
+    path: 'loss', meta: { title: '损耗明细', roles: [808] }
   }, {
-    path: 'stroageList', meta: { title: '库存明细', roles: [852] }
+    path: 'offline', meta: { title: '线下销售', roles: [809] }
+  }, {
+    path: 'back', meta: { title: '线下退货', roles: [810] }
   }]
 }, {
   path: '/supplier', hidden: true, meta: { title: '供应商管理', roles: [900] },

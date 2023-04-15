@@ -47,7 +47,7 @@
       </el-table-column>
       <el-table-column label="平台名称" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.mname }} </span>
+          <span>{{ row.mname }}</span>
         </template>
       </el-table-column>
       <el-table-column label="平台备注" width="160px" align="center">

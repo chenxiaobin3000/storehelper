@@ -8,12 +8,17 @@
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="批次" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.batch }} </span>
+          <span>{{ row.batch }}</span>
         </template>
       </el-table-column>
       <el-table-column label="仓库" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.sname }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="商品" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.commList }}</span>
         </template>
       </el-table-column>
       <el-table-column label="总价" align="center">
@@ -28,12 +33,12 @@
       </el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.complete ==0 ? '未完成' : '已完成' }}</span>
+          <span>{{ row.complete == 0 ? '未完成' : '已完成' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="申请人" width="65px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.applyName }} </span>
+          <span>{{ row.applyName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="申请时间" width="155px" align="center">
@@ -350,6 +355,7 @@ export default {
       this.temp.olist = []
       this.temp.slist = []
       this.temp.id = row.id
+      this.temp.batch = row.batch
       this.temp.storage = row.sname
       row.comms.forEach(v => {
         switch (v.ctype) {
@@ -406,11 +412,6 @@ export default {
       this.temp.weights = []
       this.temp.norms = []
       this.temp.values = []
-      this.list.forEach(v => {
-        if (v.id === this.temp.id) {
-          this.temp.batch = v.batch
-        }
-      })
       if (this.temp.batch.length <= 0) {
         this.$message({ type: 'error', message: '请先选择采购单!' })
         return

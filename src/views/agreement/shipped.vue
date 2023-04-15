@@ -179,10 +179,7 @@
           <span>{{ temp.storage }}</span>
         </el-form-item>
         <el-form-item label="账号" prop="account">
-          <span>{{ temp.account }}({{ temp.remark }})</span>
-        </el-form-item>
-        <el-form-item label="子账号" prop="saccount">
-          <span>{{ temp.saccount }}({{ temp.sremark }})</span>
+          <span>{{ temp.saccount.length > 0 ? temp.saccount+'('+temp.sremark+')' : temp.account+'('+temp.remark+')' }}</span>
         </el-form-item>
         <el-table v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
           <el-table-column label="类型" width="80px" align="center">

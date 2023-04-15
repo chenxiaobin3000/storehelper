@@ -192,3 +192,35 @@ export function delOffline(data) {
     data
   })
 }
+
+export function backc(data) {
+  return request({
+    url: `${path}/backc`,
+    method: 'post',
+    data
+  })
+}
+
+export function reviewBack(data) {
+  return request({
+    url: `${path}/reviewBack`,
+    method: 'post',
+    data
+  })
+}
+
+export function revokeBack(data) {
+  return request({
+    url: `${path}/revokeBack`,
+    method: 'post',
+    data
+  })
+}
+
+export function delBack(data) {
+  return request({
+    url: `${path}/delBack`,
+    method: 'post',
+    data
+  })
+}

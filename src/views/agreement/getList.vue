@@ -25,12 +25,17 @@
       </el-table-column>
       <el-table-column label="账号" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.msaccount.length > 0 ? row.msaccount : row.maccount }} </span>
+          <span>{{ row.msaccount && row.msaccount.length > 0 ? row.msaccount : row.maccount }}</span>
         </template>
       </el-table-column>
       <el-table-column label="备注" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.msaccount.length > 0 ? row.msremark : row.mremark }} </span>
+          <span>{{ row.msaccount && row.msaccount.length > 0 ? row.msremark : row.mremark }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="商品" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.commList }}</span>
         </template>
       </el-table-column>
       <el-table-column label="总价" align="center">
@@ -45,12 +50,12 @@
       </el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.complete ==0 ? '未完成' : '已完成' }}</span>
+          <span>{{ row.complete == 0 ? '未完成' : '已完成' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="申请人" width="65px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.applyName }} </span>
+          <span>{{ row.applyName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="申请时间" width="155px" align="center">
@@ -88,10 +93,7 @@
           <span>{{ temp.sname }}</span>
         </el-form-item>
         <el-form-item label="账号" prop="account">
-          <span>{{ temp.account }}</span>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <span>{{ temp.remark }}</span>
+          <span>{{ temp.maccount }}({{ temp.mremark }})</span>
         </el-form-item>
 
         <!-- 商品列表 -->
@@ -303,6 +305,8 @@ export default {
         id: 0,
         batch: '',
         sname: '',
+        maccount: '',
+        mremark: '',
         comms: [],
         attrs: [],
         imageList: [],
@@ -387,6 +391,8 @@ export default {
     },
     handleDetail(row) {
       this.temp = Object.assign({}, row)
+      this.temp.maccount = row.msaccount && row.msaccount.length > 0 ? row.msaccount : row.maccount
+      this.temp.mremark = row.msaccount && row.msaccount.length > 0 ? row.msremark : row.mremark
       this.temp.imageList = []
       if (this.temp.attrs && this.temp.attrs.length > 0) {
         this.temp.attrs.forEach(v => {

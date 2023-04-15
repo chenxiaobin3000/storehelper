@@ -24,7 +24,7 @@ export default {
     path: 'storage', component: () => import('@/views/storage/report'),
     name: 'report_storage', meta: { title: '仓储报表', roles: [705] }
   }, {
-    path: 'stock', component: () => import('@/views/stock/storage'),
-    name: 'report_stock', meta: { title: '仓储库存', roles: [706] }
+    path: 'stockReport', component: () => import('@/views/storage/stockReport'),
+    name: 'report_stockReport', meta: { title: '仓储库存', roles: [706] }
   }]
 }
