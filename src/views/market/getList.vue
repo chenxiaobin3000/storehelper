@@ -1,118 +1,343 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
-        <el-option v-for="item in coptions" :key="item.id" :label="item.label" :value="item.id" />
+      <el-select v-model="listQuery.type" class="filter-item" style="width:120px" @change="handleSelect">
+        <el-option v-for="item in orders" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <el-select v-model="listQuery.sid" class="filter-item" @change="handleCloudSelect">
-        <el-option v-for="item in soptions" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
-      <span class="filter-item" style="color:#606266"> 账号: {{ account }}, 子账号:</span>
-      <el-select v-model="listQuery.asid" class="filter-item" @change="handleSelect">
-        <el-option v-for="item in asoptions" :key="item.id" :label="item.label" :value="item.id" />
+      <el-select v-model="listQuery.complete" class="filter-item" style="width:140px" @change="handleSelect">
+        <el-option v-for="item in completeList" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
     </div>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="编号" width="160px" align="center">
+      <el-table-column label="日期" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.ccode }}</span>
+          <span>{{ row.cdate }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" width="200px" align="center">
+      <el-table-column label="批次" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.cname }}</span>
+          <span>{{ row.batch }} </span>
+          <el-button icon="el-icon-tickets" size="mini" circle @click="handleDetail(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="备注" width="120px" align="center">
+      <el-table-column label="仓库" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.cremark }}</span>
+          <span>{{ row.sname }} </span>
+          <el-button icon="el-icon-edit" size="mini" circle @click="handleFare(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="成本" width="80px" align="center">
+      <el-table-column label="账号" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.sprice }}元</span>
+          <span>{{ row.msaccount && row.msaccount.length > 0 ? row.msaccount : row.maccount }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="库存" width="80px" align="center">
+      <el-table-column label="备注" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.svalue }}</span>
+          <span>{{ row.msaccount && row.msaccount.length > 0 ? row.msremark : row.mremark }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台编号" width="160px" align="center">
+      <el-table-column label="商品" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.mcode }}</span>
+          <span>{{ row.commList }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台名称" align="center">
+      <el-table-column label="总价" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.mname }}</span>
+          <span>{{ row.price }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台备注" width="160px" align="center">
+      <el-table-column label="应收" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.mremark }}</span>
+          <span>{{ row.price - row.pay }} </span>
+          <el-button icon="el-icon-edit" size="mini" circle @click="handlePay(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="预警" width="80px" align="center">
+      <el-table-column label="状态" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.alarm }}</span>
+          <span>{{ row.complete == 0 ? '未完成' : '已完成' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="价格" width="100px" align="center">
+      <el-table-column label="申请人" width="65px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.mprice }}</span>
+          <span>{{ row.applyName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="销量" width="120px" align="center">
+      <el-table-column label="申请时间" width="155px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.mvalue }}</span>
+          <span>{{ row.applyTime }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="审核人" width="65px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.reviewName }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="审核时间" width="155px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.reviewTime }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
+        <template slot-scope="{row}">
+          <el-button v-if="row.review>0" type="primary" size="mini" @click="handleRevoke(row)">撤销审核</el-button>
+          <el-button v-else type="primary" size="mini" @click="handleReview(row)">审核</el-button>
+          <el-button type="danger" size="mini" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getOrderList" />
+
+    <el-dialog title="订单信息" :visible.sync="dialogVisible">
+      <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
+        <el-form-item label="批次" prop="batch">
+          <span>{{ temp.batch }}</span>
+        </el-form-item>
+        <el-form-item label="仓库" prop="sname">
+          <span>{{ temp.sname }}</span>
+        </el-form-item>
+
+        <!-- 商品列表 -->
+        <el-form-item v-if="temp.comms && temp.comms.length > 0" label="商品列表" prop="remarks">
+          <el-table :data="temp.comms" style="width: 100%" border stripe fit highlight-current-row>
+            <el-table-column label="编号" width="80px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.code }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="名称" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.name }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="价格" width="70px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.price }}元</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="数量" width="70px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.value }}件</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+        <el-form-item v-else label="商品列表" prop="remarks">
+          <span>没有商品</span>
+        </el-form-item>
+
+        <!-- 运费列表 -->
+        <el-form-item v-if="temp.fares && temp.fares.length > 0" label="运费列表" prop="fares">
+          <el-table :data="temp.fares" style="width: 100%" border stripe fit highlight-current-row>
+            <el-table-column label="时间" width="160px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.cdate }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="运费" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.fare }}元</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+        <el-form-item v-else label="运费列表" prop="fares">
+          <span>没有运费</span>
+        </el-form-item>
+
+        <!-- 附件列表 -->
+        <el-form-item v-if="temp.imageList && temp.imageList.length > 0">
+          <span>附件列表</span><br>
+          <el-image
+            v-for="image in temp.imageList"
+            :key="image"
+            :src="image"
+            :preview-src-list="temp.imageList"
+            style="width: 100px; height: 100px"
+          />
+        </el-form-item>
+        <el-form-item v-else label="附件列表" prop="attrs">
+          <span>没有附件</span>
+        </el-form-item>
+
+        <!-- 备注列表 -->
+        <el-form-item v-if="temp.remarks && temp.remarks.length > 0" label="备注列表" prop="remarks">
+          <el-table :data="temp.remarks" style="width: 100%" border stripe fit highlight-current-row>
+            <el-table-column label="时间" width="160px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.cdate }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="备注" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.remark }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
+              <template slot-scope="{row}">
+                <el-button type="primary" size="mini" @click="handleDeleteRemark(row)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+        <el-form-item v-else label="备注列表" prop="remarks">
+          <span>没有备注</span>
+        </el-form-item>
+
+        <!-- 追加备注 -->
+        <el-form-item label="追加备注" prop="sremark">
+          <el-input v-model="temp.remark" />
+        </el-form-item>
+        <div align="center">
+          <el-button type="primary" @click="handleAddRemark()">追加</el-button>
+        </div>
+      </el-form>
+    </el-dialog>
+
+    <el-dialog title="修改供应商信息" :visible.sync="dialogSupplierVisible">
+      <el-form :model="tempOrder" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
+        <el-form-item label="供应商" prop="supplier">
+          <el-select v-model="tempOrder.supplier" class="filter-item">
+            <el-option v-for="item in supplierList" :key="item.id" :label="item.label" :value="item.id" />
+          </el-select>
+        </el-form-item>
+        <div align="center">
+          <el-button type="primary" @click="updateSupplier()">修改</el-button>
+        </div>
+      </el-form>
+    </el-dialog>
+
+    <el-dialog title="修改付款信息" :visible.sync="dialogPayVisible">
+      <el-form :model="tempOrder" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
+        <el-form-item label="已付款" prop="pay">
+          <el-input v-model="tempOrder.pay" />
+        </el-form-item>
+        <div align="center">
+          <el-button type="primary" @click="updatePay()">修改</el-button>
+        </div>
+      </el-form>
+    </el-dialog>
+
+    <el-dialog title="修改订单信息" :visible.sync="dialogFareVisible">
+      <el-form :model="tempOrder" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
+        <!-- 运费列表 -->
+        <el-form-item v-if="tempOrder.fares && tempOrder.fares.length > 0" label="运费列表" prop="fares">
+          <el-table :data="tempOrder.fares" style="width: 100%" border stripe fit highlight-current-row>
+            <el-table-column label="物流" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.ship }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="车牌" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.code }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="电话" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.phone }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="运费" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.fare }}元</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="备注" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.remark }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="时间" width="160px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.cdate }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
+              <template slot-scope="{row}">
+                <el-button type="primary" size="mini" @click="copyFare(row)">复制</el-button>
+                <el-button type="danger" size="mini" @click="deleteFare(row)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+
+        <el-form-item label="物流" prop="ship">
+          <el-input v-model="tempOrder.ship" />
+        </el-form-item>
+        <el-form-item label="车牌" prop="code">
+          <el-input v-model="tempOrder.code" />
+        </el-form-item>
+        <el-form-item label="电话" prop="phone">
+          <el-input v-model="tempOrder.phone" />
+        </el-form-item>
+        <el-form-item label="运费" prop="fare">
+          <el-input v-model="tempOrder.fare" />
+        </el-form-item>
+        <el-form-item label="备注" prop="sremark">
+          <el-input v-model="tempOrder.remark" />
+        </el-form-item>
+        <div align="center">
+          <el-button type="primary" @click="updateFare()">追加</el-button>
+        </div>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { parseTime } from '@/utils'
+import { parseTime, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
-import { getMarketCommDetail, getMarketStanDetail } from '@/api/market'
-import { getMarketStorageAccount, getMarketSubAccount } from '@/api/dock'
-import { getGroupAllStorage } from '@/api/storage'
+import ImageSrc from '@/utils/image-src'
+import { reviewSale, revokeSale, delSale, setSalePay, reviewAfter, revokeAfter, delAfter, reviewLoss, revokeLoss, delLoss } from '@/api/sale'
+import { addOrderRemark, delOrderRemark, getSaleOrder } from '@/api/order'
 
 export default {
   components: { Pagination },
   data() {
     return {
       userdata: {},
-      soptions: [],
-      asoptions: [],
-      account: '',
-      ctype: 4,
-      coptions: [{
-        id: 4, label: '标品'
+      business: 5, // 业务类型
+      orders: [{
+        id: 30, label: '平台销售单'
       }, {
-        id: 1, label: '商品'
+        id: 31, label: '平台售后单'
+      }, {
+        id: 32, label: '平台损耗单'
       }],
       date: new Date(),
       list: null,
       total: 0,
+      supplierList: [],
+      completeList: completeType,
       loading: false,
       listQuery: {
         id: 0,
-        gid: 0,
+        type: 30, // 平台销售
         page: 1,
         limit: 20,
-        sid: 0,
-        aid: 0,
-        asid: 0,
+        review: 1, // 全部
+        complete: 0, // 未完成
         date: null,
         search: null
-      }
+      },
+      temp: {
+        id: 0,
+        batch: '',
+        sname: '',
+        comms: [],
+        attrs: [],
+        imageList: [],
+        remark: ''
+      },
+      tempOrder: {
+        pay: ''
+      },
+      dialogVisible: false,
+      dialogPayVisible: false
     }
   },
   computed: {
@@ -124,7 +349,7 @@ export default {
   watch: {
     search(newVal, oldVal) {
       this.listQuery.search = newVal
-      this.getCommodityList()
+      this.getGroupList()
     },
     create() {
       this.$message({ type: 'error', message: '不支持新建!' })
@@ -133,91 +358,268 @@ export default {
   created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
-    this.listQuery.gid = this.userdata.group.id
     this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
-    this.getGroupAllStorage()
+    this.getGroupAllSupplier()
   },
   methods: {
     handleSelect() {
       this.listQuery.page = 1
       this.listQuery.limit = 20
       this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
-      this.getCommodityList()
+      this.getOrderList()
     },
-    handleCloudSelect() {
-      this.listQuery.page = 1
-      this.listQuery.limit = 20
-      this.getMarketStorageAccount()
-    },
-    getMarketSubAccount() {
-      getMarketSubAccount({
-        id: this.listQuery.id,
-        gid: this.listQuery.gid,
-        aid: this.listQuery.aid
-      }).then(response => {
-        if (response.data.data.list && response.data.data.list.length > 0) {
-          this.asoptions = []
-          response.data.data.list.forEach(v => {
-            this.asoptions.push({ id: v.id, label: v.account })
-          })
-          this.listQuery.asid = this.asoptions[0].id
-        } else {
-          this.listQuery.asid = 0
-          this.asoptions = [{ id: 0, label: '无' }]
-        }
-        this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
-        this.getCommodityList()
-      })
-    },
-    getMarketStorageAccount() {
-      getMarketStorageAccount({
-        id: this.listQuery.id,
-        gid: this.userdata.group.id,
-        cid: this.listQuery.sid
-      }).then(response => {
-        this.listQuery.aid = response.data.data.aid
-        this.account = response.data.data.account
-        this.getMarketSubAccount()
-      })
-    },
-    getGroupAllStorage() {
-      getGroupAllStorage({
+    getGroupAllSupplier() {
+      getGroupAllSupplier({
         id: this.userdata.user.id
       }).then(response => {
-        if (response.data.data.list && response.data.data.list.length > 0) {
+        if (response.data.data.total > 0) {
+          this.supplierList = [{ id: 0, label: '无' }]
           response.data.data.list.forEach(v => {
-            this.soptions.push({ id: v.id, label: v.name })
+            this.supplierList.push({ id: v.id, label: v.name })
           })
-          this.listQuery.sid = response.data.data.list[0].id
-          this.getMarketStorageAccount()
+        }
+        this.getOrderList()
+      })
+    },
+    getOrderList() {
+      this.loading = true
+      getSaleOrder(
+        this.listQuery
+      ).then(response => {
+        this.total = response.data.data.total
+        this.list = response.data.data.list
+        this.list.forEach(v => {
+          v.commList = ''
+          if (v.comms && v.comms.length > 0) {
+            v.comms.forEach(c => {
+              if (v.commList.length < 20) {
+                v.commList = v.commList + c.name + ','
+              }
+            })
+          }
+          if (v.supplier) {
+            v.supplierName = v.supplier.name
+          }
+        })
+        // 刷新弹出对话框
+        if (this.temp.id > 0) {
+          this.list.forEach(v => {
+            if (this.temp.id === v.id) {
+              this.temp.remarks = v.remarks
+            }
+          })
+        }
+        if (this.tempOrder.id > 0) {
+          this.list.forEach(v => {
+            if (this.tempOrder.id === v.id) {
+              this.tempOrder.fares = v.fares
+            }
+          })
+        }
+        this.loading = false
+      }).catch(error => {
+        this.loading = false
+        Promise.reject(error)
+      })
+    },
+    handleDetail(row) {
+      this.temp = Object.assign({}, row)
+      this.temp.imageList = []
+      if (this.temp.attrs && this.temp.attrs.length > 0) {
+        this.temp.attrs.forEach(v => {
+          this.temp.imageList.push(ImageSrc[v.src] + v.path + '/' + v.name)
+        })
+      }
+      this.dialogVisible = true
+    },
+    handleAddRemark() {
+      addOrderRemark({
+        id: this.userdata.user.id,
+        otype: this.business,
+        oid: this.temp.id,
+        remark: this.temp.remark
+      }).then(() => {
+        this.temp.remark = ''
+        this.$message({ type: 'success', message: '更新成功!' })
+        this.getOrderList()
+      })
+    },
+    handleDeleteRemark(row) {
+      delOrderRemark({
+        id: this.userdata.user.id,
+        otype: this.business,
+        oid: this.temp.id,
+        rid: row.id
+      }).then(() => {
+        this.$message({ type: 'success', message: '删除成功!' })
+        this.getOrderList()
+      })
+    },
+    handleSupplier(row) {
+      this.tempOrder.id = row.id
+      if (row.supplier) {
+        this.tempOrder.supplier = row.supplier.id
+      }
+      this.dialogSupplierVisible = true
+    },
+    updateSupplier() {
+      setPurchaseSupplier({
+        id: this.userdata.user.id,
+        oid: this.tempOrder.id,
+        sid: this.tempOrder.supplier
+      }).then(() => {
+        this.dialogSupplierVisible = false
+        this.$message({ type: 'success', message: '更新成功!' })
+        this.getOrderList()
+      })
+    },
+    handlePay(row) {
+      this.tempOrder.id = row.id
+      this.dialogPayVisible = true
+    },
+    updatePay() {
+      if (this.tempOrder.pay.length <= 0) {
+        this.$message({ type: 'error', message: '请填写已付款金额' })
+        return
+      }
+      setPurchasePay({
+        id: this.userdata.user.id,
+        oid: this.tempOrder.id,
+        pay: this.tempOrder.pay
+      }).then(() => {
+        this.$message({ type: 'success', message: '修改成功!' })
+        this.getOrderList()
+        this.dialogPayVisible = false
+      })
+    },
+    handleFare(row) {
+      this.tempOrder = {
+        id: row.id,
+        ship: '',
+        code: '',
+        phone: '',
+        fare: '',
+        remark: '',
+        fares: row.fares
+      }
+      this.dialogFareVisible = true
+    },
+    copyFare(row) {
+      this.tempOrder.ship = row.ship
+      this.tempOrder.code = row.code
+      this.tempOrder.phone = row.phone
+      this.tempOrder.fare = row.fare
+      this.tempOrder.remark = row.remark
+    },
+    deleteFare(row) {
+      delOrderFare({
+        id: this.userdata.user.id,
+        otype: this.business,
+        oid: this.tempOrder.id,
+        fid: row.id
+      }).then(() => {
+        this.$message({ type: 'success', message: '删除成功!' })
+        this.getOrderList()
+      })
+    },
+    updateFare() {
+      addOrderFare({
+        id: this.userdata.user.id,
+        otype: this.business,
+        oid: this.tempOrder.id,
+        ship: this.tempOrder.ship,
+        code: this.tempOrder.code,
+        phone: this.tempOrder.phone,
+        fare: this.tempOrder.fare,
+        remark: this.tempOrder.remark
+      }).then(() => {
+        this.$message({ type: 'success', message: '添加成功!' })
+        this.getOrderList()
+      })
+    },
+    handleReview(row) {
+      this.$confirm('确定要审批吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const data = {
+          id: this.userdata.user.id,
+          oid: row.id
+        }
+        switch (this.listQuery.type) {
+          case 1:
+            reviewPurchase(data).then(() => {
+              this.$message({ type: 'success', message: '审核成功!' })
+              this.getOrderList()
+            })
+            break
+          case 2:
+            reviewReturn(data).then(() => {
+              this.$message({ type: 'success', message: '审核成功!' })
+              this.getOrderList()
+            })
+            break
+          default:
+            break
         }
       })
     },
-    getCommodityList() {
-      this.loading = true
-      if (this.ctype === 1) {
-        getMarketCommDetail(
-          this.listQuery
-        ).then(response => {
-          this.total = response.data.data.total
-          this.list = response.data.data.list
-          this.loading = false
-        }).catch(error => {
-          this.loading = false
-          Promise.reject(error)
-        })
-      } else {
-        getMarketStanDetail(
-          this.listQuery
-        ).then(response => {
-          this.total = response.data.data.total
-          this.list = response.data.data.list
-          this.loading = false
-        }).catch(error => {
-          this.loading = false
-          Promise.reject(error)
-        })
-      }
+    handleRevoke(row) {
+      this.$confirm('确定要撤销吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const data = {
+          id: this.userdata.user.id,
+          oid: row.id
+        }
+        switch (this.listQuery.type) {
+          case 1:
+            revokePurchase(data).then(() => {
+              this.$message({ type: 'success', message: '撤销成功!' })
+              this.getOrderList()
+            })
+            break
+          case 2:
+            revokeReturn(data).then(() => {
+              this.$message({ type: 'success', message: '撤销成功!' })
+              this.getOrderList()
+            })
+            break
+          default:
+            break
+        }
+      })
+    },
+    handleDelete(row) {
+      this.$confirm('确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const data = {
+          id: this.userdata.user.id,
+          oid: row.id
+        }
+        switch (this.listQuery.type) {
+          case 1:
+            delPurchase(data).then(() => {
+              this.$message({ type: 'success', message: '删除成功!' })
+              this.getOrderList()
+            })
+            break
+          case 2:
+            delReturn(data).then(() => {
+              this.$message({ type: 'success', message: '删除成功!' })
+              this.getOrderList()
+            })
+            break
+          default:
+            break
+        }
+      })
     }
   }
 }

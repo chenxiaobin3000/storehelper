@@ -24,6 +24,21 @@
           <span>{{ row.commList }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="出库总价" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.price }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="入库总价" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.price2 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="损耗总价" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.price3 }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="申请人" width="65px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.applyName }}</span>
