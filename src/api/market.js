@@ -97,6 +97,14 @@ export function getMarketStanDetail(data) {
   })
 }
 
+export function getMarketSaleDetail(data) {
+  return request({
+    url: `${path}/getMarketSaleDetail`,
+    method: 'post',
+    data
+  })
+}
+
 export function getCommoditySaleInfo(data) {
   return request({
     url: `${path}/getCommoditySaleInfo`,

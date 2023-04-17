@@ -66,7 +66,7 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
 
     <div class="filter-container" align="center">
-      <span class="filter-item">----------  采购入库单信息  ----------</span>
+      <span class="filter-item">----------  仓储退货单信息  ----------</span>
     </div>
     <el-table v-if="temp.slist.length>0" v-loading="loading" :data="temp.slist" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="标品" width="100px" align="center">
@@ -200,7 +200,7 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog title="采购入库单" :visible.sync="dialogVisible">
+    <el-dialog title="仓储退货单" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
         <el-form-item label="采购单号" prop="ccode">
           <span>{{ temp.batch }}</span>
@@ -271,7 +271,7 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
-        type: 1, // 采购仓储进货
+        type: 1, // 采购进货
         page: 1,
         limit: 20,
         review: 1, // 全部
@@ -413,7 +413,7 @@ export default {
       this.temp.norms = []
       this.temp.values = []
       if (this.temp.batch.length <= 0) {
-        this.$message({ type: 'error', message: '请先选择采购单!' })
+        this.$message({ type: 'error', message: '请选择采购单!' })
         return
       }
       this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')

@@ -22,7 +22,7 @@
           <span>{{ row.ccode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" align="center">
+      <el-table-column label="名称" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.cname }}</span>
         </template>
@@ -37,9 +37,10 @@
           <span>{{ row.mcode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台名称" align="center">
+      <el-table-column label="平台名称" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.mname }} </span>
+          <el-button icon="el-icon-document-copy" size="mini" circle @click="handleCopy(row)" />
         </template>
       </el-table-column>
       <el-table-column label="平台备注" width="80px" align="center">
@@ -47,14 +48,25 @@
           <span>{{ row.mremark }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="100px" align="center">
+      <el-table-column label="预警" width="60px" align="center">
         <template slot-scope="{row}">
-          <el-input v-model="row.ivalue" />
+          <span>{{ row.alarm }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
+      <el-table-column label="单价" width="100px" align="center">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleAdd(row)">添加</el-button>
+          <el-input v-model="row.mprice" />
+        </template>
+      </el-table-column>
+      <el-table-column label="销量" width="100px" align="center">
+        <template slot-scope="{row}">
+          <el-input v-model="row.mvalue" />
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
+        <template slot-scope="{row}">
+          <el-button type="primary" size="mini" @click="handleUpdate(row)">更新</el-button>
+          <el-button type="danger" size="mini" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -62,97 +74,6 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
 
     <div class="filter-container" align="center">
-      <span class="filter-item">----------  线上售后单信息  ----------</span>
-    </div>
-    <el-table v-if="temp.slist.length>0" v-loading="loading" :data="temp.slist" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="标品" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.ccode }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="名称" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.cname }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.cremark }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="平台编号" width="160px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.mcode }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="平台名称" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.mname }} </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="平台备注" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.mremark }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="件数" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.ivalue }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button type="danger" size="mini" @click="handleDeleteStandard(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <el-table v-if="temp.clist.length>0" v-loading="loading" :data="temp.clist" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="商品" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.ccode }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="名称" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.cname }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.cremark }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="平台编号" width="160px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.mcode }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="平台名称" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.mname }} </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="平台备注" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.mremark }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="件数" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.ivalue }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button type="danger" size="mini" @click="handleDeleteCommodity(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <div class="filter-container" align="center">
-      <br>
-      <br>
       <span class="filter-item">----------  履约发货单信息  ----------</span>
     </div>
     <div v-if="temp.row" class="filter-container">
@@ -241,7 +162,7 @@
 
     <pagination v-show="agreeTotal>0" :total="agreeTotal" :page.sync="listAgree.page" :limit.sync="listAgree.limit" @pagination="getAgreementList" />
 
-    <el-dialog title="线上售后单信息" :visible.sync="dialogVisible">
+    <el-dialog title="线上销售单信息" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
         <el-form-item label="制单日期" prop="date">
           <span>{{ temp.date }}</span>
@@ -271,12 +192,17 @@
               <span>{{ row.remark }}</span>
             </template>
           </el-table-column>
+          <el-table-column label="总价 / 单价" width="120px" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.all }} / {{ row.price }}</span>
+            </template>
+          </el-table-column>
           <el-table-column label="核销" width="80px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.real }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="售后 / 存量" width="100px" align="center">
+          <el-table-column label="销量 / 存量" width="100px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.value }} / {{ row.stock }}</span>
             </template>
@@ -295,11 +221,11 @@
 import { mapState } from 'vuex'
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import { getMarketCommDetail, getMarketStanDetail } from '@/api/market'
+import { setMarketCommDetail, delMarketCommDetail, getMarketCommDetail, setMarketStanDetail, delMarketStanDetail, getMarketStanDetail, getMarketSaleDetail } from '@/api/market'
 import { getMarketStorageAccount, getMarketSubAccount } from '@/api/dock'
 import { getAgreementOrder } from '@/api/order'
 import { getGroupAllStorage } from '@/api/storage'
-import { after } from '@/api/sale'
+import { sale } from '@/api/sale'
 
 export default {
   components: { Pagination },
@@ -351,11 +277,6 @@ export default {
         saccount: '',
         sremark: '',
         date: null,
-        types: [],
-        commoditys: [],
-        values: [],
-        clist: [],
-        slist: [],
         list: []
       },
       dialogVisible: false
@@ -525,40 +446,77 @@ export default {
         Promise.reject(error)
       })
     },
-    handleAdd(row) {
-      row.value = row.ivalue
-      switch (this.ctype) {
-        case 1:
-          this.temp.clist.map((v, i) => {
-            if (v.id === row.cid) {
-              this.temp.clist.splice(i, 1)
-            }
-          })
-          this.temp.clist.push(Object.assign({}, row))
-          break
-        case 4:
-          this.temp.slist.map((v, i) => {
-            if (v.id === row.cid) {
-              this.temp.slist.splice(i, 1)
-            }
-          })
-          this.temp.slist.push(Object.assign({}, row))
-          break
-        default:
-          break
+    handleCopy(row) {
+      const temp = {
+        id: this.listQuery.id,
+        gid: this.userdata.group.id,
+        sid: this.listQuery.sid,
+        aid: this.listQuery.aid,
+        asid: this.listQuery.asid,
+        did: 0,
+        cid: row.cid,
+        value: row.mvalue,
+        price: row.mprice,
+        date: this.listQuery.date
+      }
+      if (this.ctype === 1) {
+        setMarketCommDetail(temp).then(response => {
+          this.$message({ type: 'success', message: '复制成功!' })
+          this.getCommodityList()
+        })
+      } else {
+        setMarketStanDetail(temp).then(response => {
+          this.$message({ type: 'success', message: '复制成功!' })
+          this.getCommodityList()
+        })
       }
     },
-    handleDeleteCommodity(row) {
-      this.temp.clist.map((v, i) => {
-        if (v.id === row.id) {
-          this.temp.clist.splice(i, 1)
-        }
-      })
+    handleUpdate(row) {
+      const temp = {
+        id: this.listQuery.id,
+        gid: this.userdata.group.id,
+        sid: this.listQuery.sid,
+        aid: this.listQuery.aid,
+        asid: this.listQuery.asid,
+        did: row.id ? row.id : 0,
+        cid: row.cid,
+        value: row.mvalue,
+        price: row.mprice,
+        date: this.listQuery.date
+      }
+      if (this.ctype === 1) {
+        setMarketCommDetail(temp).then(response => {
+          this.$message({ type: 'success', message: '修改成功!' })
+          this.getCommodityList()
+        })
+      } else {
+        setMarketStanDetail(temp).then(response => {
+          this.$message({ type: 'success', message: '修改成功!' })
+          this.getCommodityList()
+        })
+      }
     },
-    handleDeleteStandard(row) {
-      this.temp.slist.map((v, i) => {
-        if (v.id === row.id) {
-          this.temp.slist.splice(i, 1)
+    handleDelete(row) {
+      this.$confirm('确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const temp = {
+          id: this.listQuery.id,
+          gid: this.userdata.group.id,
+          did: row.id
+        }
+        if (this.ctype === 1) {
+          delMarketCommDetail(temp).then(response => {
+            this.$message({ type: 'success', message: '删除成功!' })
+            this.getCommodityList()
+          })
+        } else {
+          delMarketStanDetail(temp).then(response => {
+            this.$message({ type: 'success', message: '删除成功!' })
+            this.getCommodityList()
+          })
         }
       })
     },
@@ -567,73 +525,51 @@ export default {
         this.$message({ type: 'error', message: '请选择履约发货单!' })
         return
       }
-      this.temp.list = []
-      this.temp.types = []
-      this.temp.commoditys = []
-      this.temp.values = []
-      this.soptions.forEach(v => {
-        if (v.id === this.listQuery.sid) {
-          this.temp.storage = v.label
+      getMarketSaleDetail(
+        this.listQuery
+      ).then(response => {
+        this.temp.list = response.data.data.list
+        if (this.temp.list.length <= 0) {
+          this.$message({ type: 'error', message: '未查询到销售数据!' })
+          return
         }
-      })
-      this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')
-      this.temp.slist.forEach(v => {
-        this.addItem(4, v)
-      })
-      this.temp.clist.forEach(v => {
-        this.addItem(1, v)
-      })
-      this.dialogVisible = true
-    },
-    addItem(type, row) {
-      // 校验履约单商品数量
-      const total = this.temp.row.comms.length
-      const comms = this.temp.row.comms
-      let find = false
-      for (let i = 0; i < total; i++) {
-        const c = comms[i]
-        if (c.ctype === type && c.cid === row.cid) {
-          if (c.curValue < row.value) {
-            row.real = c.curValue
-          } else {
-            row.real = row.value
+        this.soptions.forEach(v => {
+          if (v.id === this.listQuery.sid) {
+            this.temp.storage = v.label
           }
-          row.stock = c.curValue
-          find = true
-          break
-        }
-      }
-      if (!find) {
-        row.real = '-'
-        row.stock = '-'
-      }
+        })
+        this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')
 
-      let typename = null
-      this.coptions.forEach(v => {
-        if (v.id === type) {
-          typename = v.label
-        }
+        // 校验履约单商品数量
+        const total = this.temp.row.comms.length
+        const comms = this.temp.row.comms
+        this.temp.list.forEach(v => {
+          let find = false
+          for (let i = 0; i < total; i++) {
+            const c = comms[i]
+            if (c.ctype === v.ctype && c.cid === v.cid) {
+              if (c.curValue < v.value) {
+                v.real = c.curValue
+              } else {
+                v.real = v.value
+              }
+              v.all = v.price * v.real
+              v.stock = c.curValue
+              find = true
+              break
+            }
+          }
+          if (!find) {
+            v.all = '-'
+            v.real = '-'
+            v.stock = '-'
+          }
+        })
+        this.dialogVisible = true
       })
-      this.temp.list.push({
-        ctype: type,
-        cid: row.cid,
-        type: typename,
-        code: row.ccode,
-        name: row.cname,
-        value: row.value,
-        real: row.real,
-        stock: row.stock
-      })
-
-      if (!find) {
-        return
-      }
-      this.temp.types.push(type)
-      this.temp.commoditys.push(row.cid)
-      this.temp.values.push(row.real)
     },
     applyData() {
-      after({
+      sale({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
         sid: this.listQuery.sid,

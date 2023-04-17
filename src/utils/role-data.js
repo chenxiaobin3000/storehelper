@@ -7,11 +7,11 @@ export const MyRoleData = [{
   }, {
     path: 'getList', meta: { title: '销售明细', roles: [502] }
   }, {
-    path: 'after', meta: { title: '售后明细', roles: [504] }
+    path: 'sale', meta: { title: '销售录入', roles: [503] }
   }, {
-    path: 'loss', meta: { title: '损耗明细', roles: [505] }
+    path: 'after', meta: { title: '售后录入', roles: [504] }
   }, {
-    path: 'input', meta: { title: '价格录入', roles: [503] }
+    path: 'loss', meta: { title: '损耗录入', roles: [505] }
   }]
 }, {
   path: '/purchase', meta: { title: '采购管理', roles: [250] },
@@ -66,8 +66,6 @@ export const MyRoleData = [{
     path: 'shipped', meta: { title: '发货录入', roles: [203] }
   }, {
     path: 'return', meta: { title: '退货录入', roles: [204] }
-  }, {
-    path: 'again', meta: { title: '退转入录入', roles: [205] }
   }]
 }, {
   path: '/supplier', hidden: true, meta: { title: '供应商管理', roles: [900] },

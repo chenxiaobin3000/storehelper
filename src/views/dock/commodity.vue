@@ -15,12 +15,12 @@
     </div>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="编号" width="100px" align="center">
+      <el-table-column label="编号" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.ccode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" width="200px" align="center">
+      <el-table-column label="名称" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.cname }}</span>
         </template>
@@ -30,22 +30,12 @@
           <span>{{ row.categoryName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="属性" align="center">
+      <el-table-column label="属性" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.attribute }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="成本" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.sprice }}元</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="库存" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.svalue }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" width="120px" align="center">
+      <el-table-column label="备注" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.cremark }}</span>
         </template>
@@ -55,12 +45,12 @@
           <span>{{ row.mcode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台名称" width="200px" align="center">
+      <el-table-column label="平台名称" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.mname }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台备注" width="120px" align="center">
+      <el-table-column label="平台备注" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.mremark }}</span>
         </template>

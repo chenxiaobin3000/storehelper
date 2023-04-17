@@ -16,7 +16,7 @@
           <span>{{ row.sname }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="账号" width="100px" align="center">
+      <el-table-column label="账号" width="110px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.msaccount && row.msaccount.length > 0 ? row.msaccount : row.maccount }}</span>
         </template>
@@ -39,11 +39,6 @@
       <el-table-column label="现价" align="center">
         <template slot-scope="{row}">
           <span>{{ row.curPrice }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="应付" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.curPrice - row.pay }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center">
@@ -353,7 +348,7 @@ export default {
       this.temp.norms = []
       this.temp.values = []
       if (this.temp.batch.length <= 0) {
-        this.$message({ type: 'error', message: '请先选择履约发货单!' })
+        this.$message({ type: 'error', message: '请选择履约发货单!' })
         return
       }
       this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')

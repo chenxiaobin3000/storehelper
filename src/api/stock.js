@@ -9,6 +9,14 @@ export function getStockList(data) {
   })
 }
 
+export function getTodayStockList(data) {
+  return request({
+    url: `${path}/getTodayStockList`,
+    method: 'post',
+    data
+  })
+}
+
 export function getStockDay(data) {
   return request({
     url: `${path}/getStockDay`,

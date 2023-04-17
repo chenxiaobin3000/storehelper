@@ -23,7 +23,7 @@
           <el-button icon="el-icon-edit" size="mini" circle @click="handleFare(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="账号" width="100px" align="center">
+      <el-table-column label="账号" width="110px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.msaccount && row.msaccount.length > 0 ? row.msaccount : row.maccount }}</span>
         </template>
@@ -38,14 +38,14 @@
           <span>{{ row.commList }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总价" align="center">
+      <el-table-column label="现价 / 总价" width="120px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.price }}</span>
+          <span>{{ row.curPrice }} / {{ row.price }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="现价" align="center">
+      <el-table-column label="存量 / 总数" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.curPrice }}</span>
+          <span>{{ row.curValue }} / {{ row.value }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center">
@@ -119,9 +119,14 @@
                 <span>{{ row.weight / 1000 }}kg</span>
               </template>
             </el-table-column>
-            <el-table-column label="数量" width="70px" align="center">
+            <el-table-column label="件数" width="70px" align="center">
               <template slot-scope="{row}">
                 <span>{{ row.value }}件</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="存量" width="70px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.curValue }}件</span>
               </template>
             </el-table-column>
           </el-table>
@@ -283,8 +288,6 @@ export default {
         id: 20, label: '履约发货单'
       }, {
         id: 21, label: '履约退货单'
-      }, {
-        id: 22, label: '退货转入单'
       }],
       date: new Date(),
       list: null,

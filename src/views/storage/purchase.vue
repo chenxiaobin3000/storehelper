@@ -271,7 +271,7 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
-        type: 1, // 采购仓储进货
+        type: 1, // 采购进货
         page: 1,
         limit: 20,
         review: 1, // 全部
@@ -413,7 +413,7 @@ export default {
       this.temp.norms = []
       this.temp.values = []
       if (this.temp.batch.length <= 0) {
-        this.$message({ type: 'error', message: '请先选择采购单!' })
+        this.$message({ type: 'error', message: '请选择采购单!' })
         return
       }
       this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')

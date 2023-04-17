@@ -17,8 +17,5 @@ export default {
   }, {
     path: 'return', component: () => import('@/views/agreement/return'),
     name: 'agreement_return', meta: { title: '退货录入', roles: [204] }
-  }, {
-    path: 'again', component: () => import('@/views/agreement/again'),
-    name: 'agreement_again', meta: { title: '退转入录入', roles: [205] }
   }]
 }
