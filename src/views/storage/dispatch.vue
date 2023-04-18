@@ -78,7 +78,7 @@
             </el-table-column>
             <el-table-column label="重量" width="70px" align="center">
               <template slot-scope="{row}">
-                <span>{{ row.weight / 1000 }}kg</span>
+                <span>{{ row.weight }}kg</span>
               </template>
             </el-table-column>
             <el-table-column label="件数" width="70px" align="center">

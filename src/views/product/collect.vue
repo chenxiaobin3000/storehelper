@@ -46,7 +46,7 @@
           <el-input v-else v-model="row.iprice" />
         </template>
       </el-table-column>
-      <el-table-column label="重量" width="100px" align="center">
+      <el-table-column label="重量(kg)" width="100px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.iweight" />
         </template>
@@ -101,7 +101,7 @@
       </el-table-column>
       <el-table-column label="重量" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.weight }}</span>
+          <span>{{ row.weight }}kg</span>
         </template>
       </el-table-column>
       <el-table-column label="件数" width="80px" align="center">
@@ -149,7 +149,7 @@
       </el-table-column>
       <el-table-column label="重量" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.weight }}</span>
+          <span>{{ row.weight }}kg</span>
         </template>
       </el-table-column>
       <el-table-column label="件数" width="80px" align="center">
@@ -197,7 +197,7 @@
       </el-table-column>
       <el-table-column label="重量" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.weight }}</span>
+          <span>{{ row.weight }}kg</span>
         </template>
       </el-table-column>
       <el-table-column label="件数" width="80px" align="center">
@@ -248,7 +248,7 @@
           </el-table-column>
           <el-table-column label="重量" width="100px" align="center">
             <template slot-scope="{row}">
-              <span>{{ row.weight }}</span>
+              <span>{{ row.weight }}kg</span>
             </template>
           </el-table-column>
           <el-table-column label="件数" width="80px" align="center">
@@ -444,7 +444,7 @@ export default {
         data.list.forEach(v => {
           // 初始化数据
           v.iprice = v.sprice
-          v.iweight = v.sweight
+          v.iweight = v.sweight / 1000
           v.ivalue = v.svalue
 
           // 品类
@@ -590,7 +590,7 @@ export default {
           ioname = '出库'
           this.temp.types.push(type)
           this.temp.commoditys.push(row.id)
-          this.temp.weights.push(row.weight)
+          this.temp.weights.push(row.weight * 1000)
           this.temp.values.push(row.value)
           break
         case 1:
@@ -598,14 +598,14 @@ export default {
           this.temp.types2.push(type)
           this.temp.commoditys2.push(row.id)
           this.temp.prices2.push(row.price)
-          this.temp.weights2.push(row.weight)
+          this.temp.weights2.push(row.weight * 1000)
           this.temp.values2.push(row.value)
           break
         case 2:
           ioname = '损耗'
           this.temp.types3.push(type)
           this.temp.commoditys3.push(row.id)
-          this.temp.weights3.push(row.weight)
+          this.temp.weights3.push(row.weight * 1000)
           this.temp.values3.push(row.value)
           break
         default:

@@ -44,7 +44,7 @@
           <span>{{ row.sprice }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="重量" width="100px" align="center">
+      <el-table-column label="重量(kg)" width="100px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.iweight" />
         </template>
@@ -99,7 +99,7 @@
       </el-table-column>
       <el-table-column label="重量" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.weight }}</span>
+          <span>{{ row.weight }}kg</span>
         </template>
       </el-table-column>
       <el-table-column label="规格" width="80px" align="center">
@@ -148,7 +148,7 @@
           </el-table-column>
           <el-table-column label="重量" width="100px" align="center">
             <template slot-scope="{row}">
-              <span>{{ row.weight }}</span>
+              <span>{{ row.weight }}kg</span>
             </template>
           </el-table-column>
           <el-table-column label="规格" width="80px" align="center">
@@ -331,7 +331,7 @@ export default {
         if (list && list.length > 0) {
           list.forEach(v => {
             // 初始化数据
-            v.iweight = v.sweight
+            v.iweight = v.sweight / 1000
             v.inorm = ''
             v.ivalue = v.svalue
 
@@ -415,7 +415,7 @@ export default {
           }
         })
         this.temp.commoditys.push(v.cid)
-        this.temp.weights.push(v.weight)
+        this.temp.weights.push(v.weight * 1000)
         this.temp.norms.push(v.norm)
         this.temp.values.push(v.value)
         this.temp.list.push({

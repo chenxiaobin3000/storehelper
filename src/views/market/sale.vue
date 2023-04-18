@@ -13,6 +13,9 @@
       <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>
     </div>
 
+    <upload-excel-component :on-success="handleSuccess" :before-upload="beforeUpload" />
+    <br>
+
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="编号" width="80px" align="center">
         <template slot-scope="{row}">
@@ -218,14 +221,15 @@
 import { mapState } from 'vuex'
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import { setMarketCommDetail, delMarketCommDetail, getMarketCommDetail, getMarketSaleDetail } from '@/api/market'
+import UploadExcelComponent from '@/components/UploadExcel'
+import { setMarketCommList, setMarketCommDetail, delMarketCommDetail, getMarketCommDetail, getMarketSaleDetail } from '@/api/market'
 import { getMarketStorageAccount, getMarketSubAccount } from '@/api/dock'
 import { getAgreementOrder } from '@/api/order'
 import { getGroupAllStorage } from '@/api/storage'
 import { sale } from '@/api/sale'
 
 export default {
-  components: { Pagination },
+  components: { Pagination, UploadExcelComponent },
   data() {
     return {
       userdata: {},
@@ -328,6 +332,36 @@ export default {
     },
     handleSelectOrder(row) {
       this.temp.row = Object.assign({}, row)
+    },
+    beforeUpload(file) {
+      // 暂时不对文件做校验
+      return true
+    },
+    handleSuccess({ results, header }) {
+      const commoditys = []
+      const prices = []
+      const values = []
+      results.forEach(v => {
+        if (v['商品ID'] && v['商品ID'].length > 0) {
+          commoditys.push(v['商品ID'])
+          prices.push(v['商家报价（元）'])
+          values.push(v['商品总数'])
+        }
+      })
+      setMarketCommList({
+        id: this.listQuery.id,
+        gid: this.userdata.group.id,
+        sid: this.listQuery.sid,
+        aid: this.listQuery.aid,
+        asid: this.listQuery.asid,
+        date: this.listQuery.date,
+        commoditys: commoditys,
+        prices: prices,
+        values: values
+      }).then(response => {
+        this.$message({ type: 'success', message: '更新成功!' })
+        this.getCommodityList()
+      })
     },
     getMarketSubAccount() {
       getMarketSubAccount({

@@ -94,7 +94,7 @@
           <span>{{ row.price }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="重量" width="100px" align="center">
+      <el-table-column label="重量(kg)" width="100px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.weight" />
         </template>
@@ -153,7 +153,7 @@
           </el-table-column>
           <el-table-column label="重量" width="100px" align="center">
             <template slot-scope="{row}">
-              <span>{{ row.weight }}</span>
+              <span>{{ row.weight }}kg</span>
             </template>
           </el-table-column>
           <el-table-column label="件数" width="80px" align="center">
@@ -252,6 +252,7 @@ export default {
           v.commList = ''
           if (v.comms && v.comms.length > 0) {
             v.comms.forEach(c => {
+              c.weight = c.weight / 1000
               if (v.commList.length < 20) {
                 v.commList = v.commList + c.name + ','
               }
@@ -297,7 +298,7 @@ export default {
       this.temp.clist.forEach(v => {
         this.temp.commoditys.push(v.cid)
         this.temp.prices.push(v.price)
-        this.temp.weights.push(v.weight)
+        this.temp.weights.push(v.weight * 1000)
         this.temp.values.push(v.value)
         this.temp.list.push({
           code: v.code,

@@ -8,7 +8,9 @@
         <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" />
-      <span class="filter-item">商品：总价 = 单价 * 规格 * 件数，总重量 = 克重 * 规格 * 件数。 原料总价 = 单价 * 重量，总重量必须手动计算，直接填写。</span>
+      <el-select v-model="itype" class="filter-item" style="width:100px" @change="handleSelect">
+        <el-option v-for="item in ioptions" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
       <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>
     </div>
 
@@ -43,7 +45,7 @@
           <el-input v-model="row.iprice" />
         </template>
       </el-table-column>
-      <el-table-column label="重量" width="100px" align="center">
+      <el-table-column label="重量(kg)" width="100px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.iweight" />
         </template>
@@ -53,7 +55,7 @@
           <el-input v-model="row.inorm" />
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.ivalue" />
         </template>
@@ -103,7 +105,7 @@
       </el-table-column>
       <el-table-column label="重量" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.weight }}</span>
+          <span>{{ row.weight }}kg</span>
         </template>
       </el-table-column>
       <el-table-column label="规格" width="80px" align="center">
@@ -111,7 +113,7 @@
           <span>{{ row.norm }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.value }}</span>
         </template>
@@ -156,7 +158,7 @@
       </el-table-column>
       <el-table-column label="重量" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.weight }}</span>
+          <span>{{ row.weight }}kg</span>
         </template>
       </el-table-column>
       <el-table-column label="规格" width="80px" align="center">
@@ -164,7 +166,7 @@
           <span>{{ row.norm }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.value }}</span>
         </template>
@@ -209,7 +211,7 @@
       </el-table-column>
       <el-table-column label="重量" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.weight }}</span>
+          <span>{{ row.weight }}kg</span>
         </template>
       </el-table-column>
       <el-table-column label="规格" width="80px" align="center">
@@ -217,7 +219,7 @@
           <span>{{ row.norm }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.value }}</span>
         </template>
@@ -260,7 +262,7 @@
           </el-table-column>
           <el-table-column label="重量" width="100px" align="center">
             <template slot-scope="{row}">
-              <span>{{ row.weight }}</span>
+              <span>{{ row.weight }}kg</span>
             </template>
           </el-table-column>
           <el-table-column label="规格" width="80px" align="center">
@@ -268,12 +270,39 @@
               <span>{{ row.norm }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="件数" width="80px" align="center">
+          <el-table-column label="份数" width="80px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.value }}</span>
             </template>
           </el-table-column>
         </el-table>
+
+        <el-form-item />
+        <el-form-item label="供应商" prop="supplier">
+          <el-select v-model="tempOrder.supplier" class="filter-item">
+            <el-option v-for="item in supplierList" :key="item.id" :label="item.label" :value="item.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="订单备注" prop="sremark">
+          <el-input v-model="tempOrder.sremark" />
+        </el-form-item>
+
+        <!-- 物流 -->
+        <el-form-item label="物流" prop="ship">
+          <el-input v-model="tempOrder.ship" />
+        </el-form-item>
+        <el-form-item label="车牌" prop="code">
+          <el-input v-model="tempOrder.code" />
+        </el-form-item>
+        <el-form-item label="电话" prop="phone">
+          <el-input v-model="tempOrder.phone" />
+        </el-form-item>
+        <el-form-item label="运费" prop="fare">
+          <el-input v-model="tempOrder.fare" />
+        </el-form-item>
+        <el-form-item label="物流备注" prop="remark">
+          <el-input v-model="tempOrder.remark" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -293,13 +322,16 @@ import { getGroupAttrTemp } from '@/api/attribute'
 import { getStorageCommodity } from '@/api/commodity'
 import { getStorageHalfgood } from '@/api/halfgood'
 import { getStorageOriginal } from '@/api/original'
-import { purchase } from '@/api/purchase'
+import { getGroupAllSupplier } from '@/api/supplier'
+import { addOrderFare, addOrderRemark } from '@/api/order'
+import { purchase, setPurchaseSupplier } from '@/api/purchase'
 
 export default {
   components: { Pagination },
   data() {
     return {
       userdata: {},
+      business: 1, // 业务类型
       ctype: 1,
       options: [{
         id: 1, label: '商品'
@@ -308,10 +340,17 @@ export default {
       }, {
         id: 3, label: '原料'
       }],
+      itype: 1,
+      ioptions: [{
+        id: 1, label: '标准'
+      }, {
+        id: 2, label: '超码'
+      }],
       storages: [],
       date: new Date(),
       list: null,
       total: 0,
+      supplierList: [],
       categoryList: [],
       templateList: {},
       loading: false,
@@ -337,6 +376,15 @@ export default {
         olist: [],
         list: []
       },
+      tempOrder: {
+        supplier: 0,
+        ship: '',
+        code: '',
+        phone: '',
+        fare: 0,
+        remark: '',
+        sremark: ''
+      },
       dialogVisible: false
     }
   },
@@ -358,13 +406,26 @@ export default {
   created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
-    this.getCategoryList()
+    this.getGroupAllSupplier()
   },
   methods: {
     handleSelect() {
       this.listQuery.page = 1
       this.listQuery.limit = 20
       this.getCommodityList()
+    },
+    getGroupAllSupplier() {
+      getGroupAllSupplier({
+        id: this.userdata.user.id
+      }).then(response => {
+        if (response.data.data.total > 0) {
+          this.supplierList = [{ id: 0, label: '无' }]
+          response.data.data.list.forEach(v => {
+            this.supplierList.push({ id: v.id, label: v.name })
+          })
+        }
+        this.getCategoryList()
+      })
     },
     getGroupAllStorage() {
       getGroupAllStorage({
@@ -466,10 +527,10 @@ export default {
       })
     },
     handleAdd(row) {
-      if (this.ctype === 1) {
-        // 总价 = 单价 * 规格 * 件数，总重量 = 克重 * 规格 * 件数
-        row.price = row.iprice * row.inorm * row.ivalue
-        row.weight = row.iweight * row.inorm * row.ivalue
+      if (this.itype === 1) {
+        // 总价 = 单价 * 份数，总重量 = 克重 * 份数
+        row.price = row.iprice * row.ivalue
+        row.weight = row.iweight * row.ivalue
       } else {
         // 原料总价 = 单价 * 重量
         row.price = row.iprice * row.iweight
@@ -520,6 +581,15 @@ export default {
       this.temp.weights = []
       this.temp.norms = []
       this.temp.values = []
+      this.tempOrder = {
+        supplier: 0,
+        ship: '',
+        code: '',
+        phone: '',
+        fare: '',
+        remark: '',
+        sremark: ''
+      }
       this.storages.forEach(v => {
         if (v.id === this.listQuery.sid) {
           this.temp.storage = v.label
@@ -547,7 +617,7 @@ export default {
       this.temp.types.push(type)
       this.temp.commoditys.push(row.id)
       this.temp.prices.push(row.price)
-      this.temp.weights.push(row.weight)
+      this.temp.weights.push(row.weight * 1000)
       this.temp.norms.push(row.norm)
       this.temp.values.push(row.value)
       this.temp.list.push({
@@ -561,6 +631,20 @@ export default {
       })
     },
     applyData() {
+      if (this.tempOrder.fare > 0) {
+        if (this.tempOrder.ship.length <= 0) {
+          this.$message({ type: 'error', message: '请填写物流名称!' })
+          return
+        }
+        if (this.tempOrder.code.length <= 0) {
+          this.$message({ type: 'error', message: '请填写物流车牌!' })
+          return
+        }
+        if (this.tempOrder.phone.length <= 0) {
+          this.$message({ type: 'error', message: '请填写物流电话!' })
+          return
+        }
+      }
       purchase({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
@@ -574,6 +658,34 @@ export default {
         values: this.temp.values,
         attrs: []
       }).then(response => {
+        const id = response.data.data.id
+        if (this.tempOrder.sremark.length > 0) {
+          addOrderRemark({
+            id: this.userdata.user.id,
+            otype: this.business,
+            oid: id,
+            remark: this.tempOrder.sremark
+          })
+        }
+        if (this.tempOrder.fare > 0) {
+          addOrderFare({
+            id: this.userdata.user.id,
+            otype: this.business,
+            oid: id,
+            ship: this.tempOrder.ship,
+            code: this.tempOrder.code,
+            phone: this.tempOrder.phone,
+            fare: this.tempOrder.fare,
+            remark: this.tempOrder.remark
+          })
+        }
+        if (this.tempOrder.supplier > 0) {
+          setPurchaseSupplier({
+            id: this.userdata.user.id,
+            oid: id,
+            sid: this.tempOrder.supplier
+          })
+        }
         this.$message({ type: 'success', message: '申请成功!' })
         this.getCommodityList()
         this.dialogVisible = false

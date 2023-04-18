@@ -25,6 +25,14 @@ export function getMarketCommodity(data) {
   })
 }
 
+export function setMarketCommList(data) {
+  return request({
+    url: `${path}/setMarketCommList`,
+    method: 'post',
+    data
+  })
+}
+
 export function setMarketCommDetail(data) {
   return request({
     url: `${path}/setMarketCommDetail`,
