@@ -4,9 +4,6 @@
       <el-select v-model="marketId" class="filter-item" @change="handleSelect">
         <el-option v-for="item in moptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
-        <el-option v-for="item in coptions" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
       <el-select v-model="cycle" class="filter-item" @change="handleSelect">
         <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
@@ -29,14 +26,6 @@ export default {
       userdata: {},
       marketId: 0,
       moptions: [],
-      ctype: 0,
-      coptions: [{
-        id: 0, label: '全部'
-      }, {
-        id: 4, label: '标品'
-      }, {
-        id: 1, label: '商品'
-      }],
       cycle: 1,
       options: reportCycle,
       labels: [],
@@ -114,7 +103,6 @@ export default {
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
         mid: this.marketId,
-        type: this.ctype,
         cycle: 1
       }).then(response => {
         const tdata = [...this.tdata]

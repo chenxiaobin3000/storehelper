@@ -1,9 +1,6 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
-        <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleStorageSelect">
         <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
@@ -74,54 +71,6 @@
     <div class="filter-container" align="center">
       <span class="filter-item">----------  履约发货单信息  ----------</span>
     </div>
-    <el-table v-if="temp.slist.length>0" v-loading="loading" :data="temp.slist" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="标品" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.ccode }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="名称" width="200px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.cname }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="品类" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.categoryName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="属性" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.attribute }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" width="120px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.cremark }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="重量" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.weight }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="规格" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.norm }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.value }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button type="danger" size="mini" @click="handleDeleteStandard(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
     <el-table v-if="temp.clist.length>0" v-loading="loading" :data="temp.clist" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="商品" width="100px" align="center">
         <template slot-scope="{row}">
@@ -229,7 +178,7 @@ import Pagination from '@/components/Pagination'
 import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
-import { getMarketCommodity, getMarketStandard } from '@/api/market'
+import { getTodayStockList } from '@/api/stock'
 import { getMarketStorageAccount, getMarketSubAccount } from '@/api/dock'
 import { shipped } from '@/api/agreement'
 
@@ -238,12 +187,6 @@ export default {
   data() {
     return {
       userdata: {},
-      ctype: 4,
-      options: [{
-        id: 4, label: '标品'
-      }, {
-        id: 1, label: '商品'
-      }],
       storages: [],
       asoptions: [],
       date: new Date(),
@@ -254,12 +197,10 @@ export default {
       loading: false,
       listQuery: {
         id: 0,
-        gid: 0,
         page: 1,
         limit: 20,
         sid: 0,
-        aid: 0,
-        asid: 0,
+        ctype: 1,
         search: null
       },
       temp: {
@@ -269,14 +210,12 @@ export default {
         saccount: '',
         sremark: '',
         date: null,
-        types: [],
         commoditys: [],
         weights: [],
         norms: [],
         values: [],
         attrs: null,
         clist: [],
-        slist: [],
         list: []
       },
       dialogVisible: false
@@ -383,58 +322,43 @@ export default {
     },
     getCommodityList() {
       this.loading = true
-      if (this.ctype === 1) {
-        getMarketCommodity(
-          this.listQuery
-        ).then(response => {
-          this.total = response.data.data.total
-          this.handleRet(response.data.data.list)
-          this.loading = false
-        }).catch(error => {
-          this.loading = false
-          Promise.reject(error)
-        })
-      } else {
-        getMarketStandard(
-          this.listQuery
-        ).then(response => {
-          this.total = response.data.data.total
-          this.handleRet(response.data.data.list)
-          this.loading = false
-        }).catch(error => {
-          this.loading = false
-          Promise.reject(error)
-        })
-      }
-    },
-    handleRet(list) {
-      this.list = []
-      if (list && list.length > 0) {
-        list.forEach(v => {
-          // 初始化数据
-          v.iweight = v.sweight
-          v.inorm = ''
-          v.ivalue = v.svalue
+      getTodayStockList(
+        this.listQuery
+      ).then(response => {
+        this.list = []
+        this.total = response.data.data.total
+        const list = response.data.data.list
+        if (list && list.length > 0) {
+          list.forEach(v => {
+            // 初始化数据
+            v.iweight = v.sweight
+            v.inorm = ''
+            v.ivalue = v.svalue
 
-          // 品类
-          this.categoryList.forEach(c => {
-            if (c.id === v.category) {
-              v.categoryName = c.name
+            // 品类
+            this.categoryList.forEach(c => {
+              if (c.id === v.category) {
+                v.categoryName = c.name
+              }
+            })
+            // 属性
+            let idx = 0
+            v.attribute = ''
+            this.templateList.forEach(t => {
+              v.attribute = v.attribute + t + ': ' + (v.attrs[idx] ? v.attrs[idx++] : '') + ', '
+            })
+            this.list.push(v)
+            // 子账号
+            if (v.sub && v.sub.length > 0) {
+              v.saccount = v.sub.join('\n')
             }
           })
-          // 属性
-          let idx = 0
-          v.attribute = ''
-          this.templateList.forEach(t => {
-            v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
-          })
-          this.list.push(v)
-          // 子账号
-          if (v.sub && v.sub.length > 0) {
-            v.saccount = v.sub.join('\n')
-          }
-        })
-      }
+        }
+        this.loading = false
+      }).catch(error => {
+        this.loading = false
+        Promise.reject(error)
+      })
     },
     getCategoryList() {
       getGroupCategoryList({
@@ -447,7 +371,7 @@ export default {
     getGroupAttrTemp() {
       getGroupAttrTemp({
         id: this.userdata.user.id,
-        atid: this.ctype
+        atid: 1
       }).then(response => {
         this.templateList = response.data.data.list
         this.getGroupAllStorage()
@@ -457,26 +381,12 @@ export default {
       row.weight = row.iweight
       row.norm = row.inorm
       row.value = row.ivalue
-      switch (this.ctype) {
-        case 1:
-          this.temp.clist.map((v, i) => {
-            if (v.id === row.id) {
-              this.temp.clist.splice(i, 1)
-            }
-          })
-          this.temp.clist.push(Object.assign({}, row))
-          break
-        case 4:
-          this.temp.slist.map((v, i) => {
-            if (v.id === row.id) {
-              this.temp.slist.splice(i, 1)
-            }
-          })
-          this.temp.slist.push(Object.assign({}, row))
-          break
-        default:
-          break
-      }
+      this.temp.clist.map((v, i) => {
+        if (v.id === row.id) {
+          this.temp.clist.splice(i, 1)
+        }
+      })
+      this.temp.clist.push(Object.assign({}, row))
     },
     handleDeleteCommodity(row) {
       this.temp.clist.map((v, i) => {
@@ -485,16 +395,8 @@ export default {
         }
       })
     },
-    handleDeleteStandard(row) {
-      this.temp.slist.map((v, i) => {
-        if (v.id === row.id) {
-          this.temp.slist.splice(i, 1)
-        }
-      })
-    },
     handleApply() {
       this.temp.list = []
-      this.temp.types = []
       this.temp.commoditys = []
       this.temp.weights = []
       this.temp.norms = []
@@ -505,34 +407,27 @@ export default {
         }
       })
       this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')
-      this.temp.slist.forEach(v => {
-        this.addItem(4, v)
-      })
       this.temp.clist.forEach(v => {
-        this.addItem(1, v)
+        let typename = null
+        this.options.forEach(v2 => {
+          if (v2.id === 1) {
+            typename = v2.label
+          }
+        })
+        this.temp.commoditys.push(v.cid)
+        this.temp.weights.push(v.weight)
+        this.temp.norms.push(v.norm)
+        this.temp.values.push(v.value)
+        this.temp.list.push({
+          type: typename,
+          code: v.ccode,
+          name: v.cname,
+          weight: v.weight,
+          norm: v.norm,
+          value: v.value
+        })
       })
       this.dialogVisible = true
-    },
-    addItem(type, row) {
-      let typename = null
-      this.options.forEach(v => {
-        if (v.id === type) {
-          typename = v.label
-        }
-      })
-      this.temp.types.push(type)
-      this.temp.commoditys.push(row.cid)
-      this.temp.weights.push(row.weight)
-      this.temp.norms.push(row.norm)
-      this.temp.values.push(row.value)
-      this.temp.list.push({
-        type: typename,
-        code: row.ccode,
-        name: row.cname,
-        weight: row.weight,
-        norm: row.norm,
-        value: row.value
-      })
     },
     applyData() {
       shipped({
@@ -542,7 +437,6 @@ export default {
         aid: this.listQuery.aid,
         asid: this.listQuery.asid,
         date: this.temp.date,
-        types: this.temp.types,
         commoditys: this.temp.commoditys,
         weights: this.temp.weights,
         norms: this.temp.norms,

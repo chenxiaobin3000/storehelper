@@ -1,9 +1,6 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
-        <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleStorageSelect">
         <el-option v-for="item in soptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
@@ -121,7 +118,7 @@
 <script>
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
-import { setMarketCommodity, delMarketCommodity, getMarketCommodity, setMarketStandard, delMarketStandard, getMarketStandard } from '@/api/market'
+import { setMarketCommodity, delMarketCommodity, getMarketCommodity } from '@/api/market'
 import { getMarketStorageAccount, getMarketSubAccount } from '@/api/dock'
 import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryList } from '@/api/category'
@@ -134,12 +131,6 @@ export default {
       userdata: {},
       soptions: [],
       asoptions: [],
-      ctype: 4,
-      options: [{
-        id: 4, label: '标品'
-      }, {
-        id: 1, label: '商品'
-      }],
       list: null,
       total: 0,
       categoryList: [],
@@ -268,53 +259,38 @@ export default {
     },
     getCommodityList() {
       this.loading = true
-      if (this.ctype === 1) {
-        getMarketCommodity(
-          this.listQuery
-        ).then(response => {
-          this.total = response.data.data.total
-          this.handleRet(response.data.data.list)
-          this.loading = false
-        }).catch(error => {
-          this.loading = false
-          Promise.reject(error)
-        })
-      } else {
-        getMarketStandard(
-          this.listQuery
-        ).then(response => {
-          this.total = response.data.data.total
-          this.handleRet(response.data.data.list)
-          this.loading = false
-        }).catch(error => {
-          this.loading = false
-          Promise.reject(error)
-        })
-      }
-    },
-    handleRet(list) {
-      this.list = []
-      if (list && list.length > 0) {
-        list.forEach(v => {
-          // 品类
-          this.categoryList.forEach(c => {
-            if (c.id === v.category) {
-              v.categoryName = c.name
+      getMarketCommodity(
+        this.listQuery
+      ).then(response => {
+        this.list = []
+        this.total = response.data.data.total
+        const list = response.data.data.list
+        if (list && list.length > 0) {
+          list.forEach(v => {
+            // 品类
+            this.categoryList.forEach(c => {
+              if (c.id === v.category) {
+                v.categoryName = c.name
+              }
+            })
+            // 属性
+            let idx = 0
+            v.attribute = ''
+            this.templateList.forEach(t => {
+              v.attribute = v.attribute + t + ': ' + (v.attrs[idx] ? v.attrs[idx++] : '') + ', '
+            })
+            this.list.push(v)
+            // 子账号
+            if (v.sub && v.sub.length > 0) {
+              v.saccount = v.sub.join('\n')
             }
           })
-          // 属性
-          let idx = 0
-          v.attribute = ''
-          this.templateList.forEach(t => {
-            v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
-          })
-          this.list.push(v)
-          // 子账号
-          if (v.sub && v.sub.length > 0) {
-            v.saccount = v.sub.join('\n')
-          }
-        })
-      }
+        }
+        this.loading = false
+      }).catch(error => {
+        this.loading = false
+        Promise.reject(error)
+      })
     },
     getCategoryList() {
       getGroupCategoryList({
@@ -327,7 +303,7 @@ export default {
     getGroupAttrTemp() {
       getGroupAttrTemp({
         id: this.userdata.user.id,
-        atid: this.ctype
+        atid: 1
       }).then(response => {
         this.templateList = response.data.data.list
         this.getGroupAllStorage()
@@ -360,19 +336,11 @@ export default {
         remark: this.temp.mremark == null ? '' : this.temp.mremark,
         price: this.temp.alarm
       }
-      if (this.ctype === 1) {
-        setMarketCommodity(data).then(response => {
-          this.$message({ type: 'success', message: '修改成功!' })
-          this.getCommodityList()
-          this.dialogVisible = false
-        })
-      } else {
-        setMarketStandard(data).then(response => {
-          this.$message({ type: 'success', message: '修改成功!' })
-          this.getCommodityList()
-          this.dialogVisible = false
-        })
-      }
+      setMarketCommodity(data).then(response => {
+        this.$message({ type: 'success', message: '修改成功!' })
+        this.getCommodityList()
+        this.dialogVisible = false
+      })
     },
     handleDelete(row) {
       this.$confirm('确定要删除吗?', '提示', {
@@ -388,17 +356,10 @@ export default {
           asid: row.asid,
           cid: row.cid
         }
-        if (this.ctype === 1) {
-          delMarketCommodity(data).then(response => {
-            this.$message({ type: 'success', message: '删除成功!' })
-            this.getCommodityList()
-          })
-        } else {
-          delMarketStandard(data).then(response => {
-            this.$message({ type: 'success', message: '删除成功!' })
-            this.getCommodityList()
-          })
-        }
+        delMarketCommodity(data).then(response => {
+          this.$message({ type: 'success', message: '删除成功!' })
+          this.getCommodityList()
+        })
       })
     }
   }

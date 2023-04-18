@@ -3,15 +3,10 @@
     <el-row>
       <el-col :span="16">
         <el-form>
-          <el-form-item label="标品属性模板">
+          <el-form-item label="商品属性模板">
             <el-button type="primary" size="mini" class="button-node" @click="handleUpdateTemp()">
               更新模板
             </el-button>
-            <el-drag-select v-model="attrTempList4" class="select-node" multiple placeholder="请选择标品属性">
-              <el-option v-for="item in attrOptions" :key="item.id" :label="item.label" :value="item.id" />
-            </el-drag-select>
-          </el-form-item>
-          <el-form-item label="商品属性模板">
             <el-drag-select v-model="attrTempList1" class="select-node" multiple placeholder="请选择商品属性">
               <el-option v-for="item in attrOptions" :key="item.id" :label="item.label" :value="item.id" />
             </el-drag-select>

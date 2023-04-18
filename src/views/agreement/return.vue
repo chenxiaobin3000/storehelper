@@ -78,44 +78,6 @@
     <div class="filter-container" align="center">
       <span class="filter-item">----------  履约退货单信息  ----------</span>
     </div>
-    <el-table v-if="temp.slist.length>0" v-loading="loading" :data="temp.slist" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="标品" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.code }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="名称" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="总价" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.price }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="重量" width="100px" align="center">
-        <template slot-scope="{row}">
-          <el-input v-model="row.weight" />
-        </template>
-      </el-table-column>
-      <el-table-column label="规格" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.norm }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
-        <template slot-scope="{row}">
-          <el-input v-model="row.value" />
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button type="danger" size="mini" @click="handleDeleteStandard(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
     <el-table v-if="temp.clist.length>0" v-loading="loading" :data="temp.clist" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="商品" width="100px" align="center">
         <template slot-scope="{row}">
@@ -243,13 +205,11 @@ export default {
         account: '',
         remark: '',
         date: null,
-        types: [],
         commoditys: [],
         weights: [],
         values: [],
         attrs: null,
         clist: [],
-        slist: [],
         list: []
       },
       dialogVisible: false
@@ -306,23 +266,13 @@ export default {
     },
     handleSelectOrder(row) {
       this.temp.clist = []
-      this.temp.slist = []
       this.temp.id = row.id
       this.temp.batch = row.batch
       this.temp.storage = row.sname
       this.temp.account = row.msaccount && row.msaccount.length > 0 ? row.msaccount : row.maccount
       this.temp.remark = row.msaccount && row.msaccount.length > 0 ? row.msremark : row.mremark
       row.comms.forEach(v => {
-        switch (v.ctype) {
-          case 1:
-            this.temp.clist.push(v)
-            break
-          case 4:
-            this.temp.slist.push(v)
-            break
-          default:
-            break
-        }
+        this.temp.clist.push(v)
       })
     },
     handleDeleteCommodity(row) {
@@ -332,16 +282,8 @@ export default {
         }
       })
     },
-    handleDeleteStandard(row) {
-      this.temp.slist.map((v, i) => {
-        if (v.id === row.id) {
-          this.temp.slist.splice(i, 1)
-        }
-      })
-    },
     handleApply() {
       this.temp.list = []
-      this.temp.types = []
       this.temp.commoditys = []
       this.temp.prices = []
       this.temp.weights = []
@@ -352,45 +294,20 @@ export default {
         return
       }
       this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')
-      this.temp.slist.forEach(v => {
-        this.addItem(4, v)
-      })
       this.temp.clist.forEach(v => {
-        this.addItem(1, v)
+        this.temp.commoditys.push(v.cid)
+        this.temp.prices.push(v.price)
+        this.temp.weights.push(v.weight)
+        this.temp.values.push(v.value)
+        this.temp.list.push({
+          code: v.code,
+          name: v.name,
+          price: v.price,
+          weight: v.weight,
+          value: v.value
+        })
       })
       this.dialogVisible = true
-    },
-    addItem(type, row) {
-      let typename = null
-      switch (type) {
-        case 1:
-          typename = '商品'
-          break
-        case 2:
-          typename = '半成品'
-          break
-        case 3:
-          typename = '原料'
-          break
-        case 4:
-          typename = '标品'
-          break
-        default:
-          break
-      }
-      this.temp.types.push(type)
-      this.temp.commoditys.push(row.cid)
-      this.temp.prices.push(row.price)
-      this.temp.weights.push(row.weight)
-      this.temp.values.push(row.value)
-      this.temp.list.push({
-        type: typename,
-        code: row.code,
-        name: row.name,
-        price: row.price,
-        weight: row.weight,
-        value: row.value
-      })
     },
     applyData() {
       returnc({
@@ -398,7 +315,6 @@ export default {
         gid: this.userdata.group.id,
         rid: this.temp.id,
         date: this.temp.date,
-        types: this.temp.types,
         commoditys: this.temp.commoditys,
         weights: this.temp.weights,
         values: this.temp.values,

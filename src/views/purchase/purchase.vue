@@ -8,6 +8,7 @@
         <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" />
+      <span class="filter-item">商品：总价 = 单价 * 规格 * 件数，总重量 = 克重 * 规格 * 件数。 原料总价 = 单价 * 重量，总重量必须手动计算，直接填写。</span>
       <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>
     </div>
 
@@ -37,7 +38,7 @@
           <span>{{ row.remark }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总价" width="110px" align="center">
+      <el-table-column label="单价" width="110px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.iprice" />
         </template>
@@ -69,59 +70,6 @@
     <div class="filter-container" align="center">
       <span class="filter-item">----------  采购进货单信息  ----------</span>
     </div>
-    <el-table v-if="temp.slist.length>0" v-loading="loading" :data="temp.slist" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="标品" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.code }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="名称" width="200px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="品类" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.categoryName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="属性" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.attribute }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" width="120px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.remark }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="总价" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.price }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="重量" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.weight }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="规格" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.norm }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.value }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button type="danger" size="mini" @click="handleDeleteStandard(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
     <el-table v-if="temp.clist.length>0" v-loading="loading" :data="temp.clist" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="商品" width="100px" align="center">
         <template slot-scope="{row}">
@@ -342,7 +290,6 @@ import Pagination from '@/components/Pagination'
 import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
-import { getStorageStandard } from '@/api/standard'
 import { getStorageCommodity } from '@/api/commodity'
 import { getStorageHalfgood } from '@/api/halfgood'
 import { getStorageOriginal } from '@/api/original'
@@ -353,10 +300,8 @@ export default {
   data() {
     return {
       userdata: {},
-      ctype: 4,
+      ctype: 1,
       options: [{
-        id: 4, label: '标品'
-      }, {
         id: 1, label: '商品'
       }, {
         id: 2, label: '半成品'
@@ -390,7 +335,6 @@ export default {
         clist: [],
         hlist: [],
         olist: [],
-        slist: [],
         list: []
       },
       dialogVisible: false
@@ -468,16 +412,6 @@ export default {
             Promise.reject(error)
           })
           break
-        case 4:
-          getStorageStandard(
-            this.listQuery
-          ).then(response => {
-            this.handleRet(response.data.data)
-          }).catch(error => {
-            this.loading = false
-            Promise.reject(error)
-          })
-          break
         default:
           break
       }
@@ -503,7 +437,7 @@ export default {
           let idx = 0
           v.attribute = ''
           this.templateList.forEach(t => {
-            v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
+            v.attribute = v.attribute + t + ': ' + (v.attrs[idx] ? v.attrs[idx++] : '') + ', '
           })
           this.list.push(v)
           // 子账号
@@ -532,50 +466,30 @@ export default {
       })
     },
     handleAdd(row) {
-      row.price = row.iprice
-      row.weight = row.iweight
+      if (this.ctype === 1) {
+        // 总价 = 单价 * 规格 * 件数，总重量 = 克重 * 规格 * 件数
+        row.price = row.iprice * row.inorm * row.ivalue
+        row.weight = row.iweight * row.inorm * row.ivalue
+      } else {
+        // 原料总价 = 单价 * 重量
+        row.price = row.iprice * row.iweight
+        row.weight = row.iweight
+      }
       row.norm = row.inorm
       row.value = row.ivalue
       switch (this.ctype) {
         case 1:
-          this.temp.clist.map((v, i) => {
-            if (v.id === row.id) {
-              this.temp.clist.splice(i, 1)
-            }
-          })
           this.temp.clist.push(Object.assign({}, row))
           break
         case 2:
-          this.temp.hlist.map((v, i) => {
-            if (v.id === row.id) {
-              this.temp.hlist.splice(i, 1)
-            }
-          })
           this.temp.hlist.push(Object.assign({}, row))
           break
         case 3:
-          this.temp.olist.map((v, i) => {
-            if (v.id === row.id) {
-              this.temp.olist.splice(i, 1)
-            }
-          })
           this.temp.olist.push(Object.assign({}, row))
-          break
-        case 4:
-          this.temp.slist.map((v, i) => {
-            if (v.id === row.id) {
-              this.temp.slist.splice(i, 1)
-            }
-          })
-          this.temp.slist.push(Object.assign({}, row))
           break
         default:
           break
       }
-      row.iprice = ''
-      row.iweight = ''
-      row.inorm = ''
-      row.ivalue = ''
     },
     handleDeleteCommodity(row) {
       this.temp.clist.map((v, i) => {
@@ -598,13 +512,6 @@ export default {
         }
       })
     },
-    handleDeleteStandard(row) {
-      this.temp.slist.map((v, i) => {
-        if (v.id === row.id) {
-          this.temp.slist.splice(i, 1)
-        }
-      })
-    },
     handleApply() {
       this.temp.list = []
       this.temp.types = []
@@ -619,9 +526,6 @@ export default {
         }
       })
       this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')
-      this.temp.slist.forEach(v => {
-        this.addItem(4, v)
-      })
       this.temp.clist.forEach(v => {
         this.addItem(1, v)
       })

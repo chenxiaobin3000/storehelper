@@ -4,9 +4,6 @@
       <el-select v-model="listQuery.mid" class="filter-item" @change="handleSelect">
         <el-option v-for="item in moptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
-        <el-option v-for="item in coptions" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
       <el-select v-model="listQuery.cycle" class="filter-item" @change="handleSelect">
         <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
@@ -74,7 +71,7 @@ import { mapState } from 'vuex'
 import { parseTime, reportCycle } from '@/utils'
 import { filterMarket } from '@/utils/market-data'
 import Pagination from '@/components/Pagination'
-import { getCommoditySaleInfo, getStandardSaleInfo } from '@/api/market'
+import { getCommoditySaleInfo } from '@/api/market'
 import { getGroupCategoryTree } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 
@@ -84,12 +81,6 @@ export default {
     return {
       userdata: {},
       moptions: [],
-      ctype: 4,
-      coptions: [{
-        id: 4, label: '标品'
-      }, {
-        id: 1, label: '商品'
-      }],
       options: reportCycle,
       list: null,
       total: 0,
@@ -151,49 +142,34 @@ export default {
     },
     getCommodityList() {
       this.loading = true
-      if (this.ctype === 1) {
-        getCommoditySaleInfo(
-          this.listQuery
-        ).then(response => {
-          this.total = response.data.data.total
-          this.handleRet(response.data.data.list)
-          this.loading = false
-        }).catch(error => {
-          this.loading = false
-          Promise.reject(error)
-        })
-      } else {
-        getStandardSaleInfo(
-          this.listQuery
-        ).then(response => {
-          this.total = response.data.data.total
-          this.handleRet(response.data.data.list)
-          this.loading = false
-        }).catch(error => {
-          this.loading = false
-          Promise.reject(error)
-        })
-      }
-    },
-    handleRet(list) {
-      this.list = []
-      if (list && list.length > 0) {
-        list.forEach(v => {
-          // 品类
-          this.categoryList.forEach(c => {
-            if (c.id === v.cid) {
-              v.category = c.label
-            }
+      getCommoditySaleInfo(
+        this.listQuery
+      ).then(response => {
+        this.list = []
+        this.total = response.data.data.total
+        const list = response.data.data.list
+        if (list && list.length > 0) {
+          list.forEach(v => {
+            // 品类
+            this.categoryList.forEach(c => {
+              if (c.id === v.cid) {
+                v.category = c.label
+              }
+            })
+            // 属性
+            let idx = 0
+            v.attribute = ''
+            this.templateList.forEach(t => {
+              v.attribute = v.attribute + t + ': ' + (v.attrs[idx] ? v.attrs[idx++] : '') + ', '
+            })
+            this.list.push(v)
           })
-          // 属性
-          let idx = 0
-          v.attribute = ''
-          this.templateList.forEach(t => {
-            v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
-          })
-          this.list.push(v)
-        })
-      }
+        }
+        this.loading = false
+      }).catch(error => {
+        this.loading = false
+        Promise.reject(error)
+      })
     },
     getCategoryList() {
       getGroupCategoryTree({

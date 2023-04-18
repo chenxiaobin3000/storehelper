@@ -24,10 +24,8 @@ export default {
   data() {
     return {
       userdata: {},
-      ctype: 4,
+      ctype: 1,
       coptions: [{
-        id: 4, label: '标品'
-      }, {
         id: 1, label: '商品'
       }, {
         id: 2, label: '半成品'

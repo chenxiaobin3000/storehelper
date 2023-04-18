@@ -11,18 +11,12 @@
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="原料" width="160px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.oname }} </span>
-          <el-button icon="el-icon-edit" size="mini" circle @click="handleSelectOriginal(row)" />
-        </template>
-      </el-table-column>
       <el-table-column label="品类" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.categoryName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="属性" width="200px" align="center">
+      <el-table-column label="属性" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.attribute }}</span>
         </template>
@@ -33,7 +27,7 @@
           <el-button icon="el-icon-edit" size="mini" circle @click="handleSelectStorage(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="备注" width="160px" align="center">
+      <el-table-column label="备注" align="center">
         <template slot-scope="{row}">
           <span>{{ row.remark }}</span>
         </template>
@@ -46,7 +40,7 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getOriginalList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="60px" style="width: 100%; padding: 0 4% 0 4%;">
@@ -87,26 +81,6 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="设置关联原料" :visible.sync="dialogOriVisible">
-      <el-form :model="tempOri" label-position="left" label-width="60px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="编号" prop="code">
-          <el-input v-model="tempOri.code" />
-        </el-form-item>
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="tempOri.name" />
-        </el-form-item>
-        <el-form-item label="原料" prop="original">
-          <el-select v-model="tempOri.oid" class="filter-item" placeholder="请选择原料">
-            <el-option v-for="item in originalList" :key="item.id" :label="item.name" :value="item.id" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogOriVisible = false">取消</el-button>
-        <el-button type="primary" @click="updateOriData()">确定</el-button>
-      </div>
-    </el-dialog>
-
     <el-dialog title="设置关联仓库" :visible.sync="dialogStorageVisible">
       <el-form :model="tempStorage" label-position="left" label-width="60px" style="width: 100%; padding: 0 4% 0 4%;">
         <el-form-item label="编号" prop="code">
@@ -131,8 +105,7 @@
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
 import { treeGenerate } from '@/utils/tree'
-import { getGroupCommodity, addCommodity, setCommodity, delCommodity, setCommodityOriginal, setCommodityStorage } from '@/api/commodity'
-import { getGroupOriginal } from '@/api/original'
+import { getGroupOriginal, addOriginal, setOriginal, delOriginal, setOriginalStorage } from '@/api/original'
 import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryTree } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
@@ -148,8 +121,6 @@ export default {
       total: 0,
       categoryList: [],
       templateList: {},
-      originalList: {},
-      cloudList: [],
       storageList: [],
       loading: false,
       listQuery: {
@@ -159,7 +130,6 @@ export default {
         search: null
       },
       temp: {},
-      tempOri: {},
       tempStorage: {},
       checkStrictly: false,
       defaultProps: {
@@ -169,10 +139,9 @@ export default {
       dialogVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '修改商品信息',
-        create: '新增商品'
+        update: '修改原料信息',
+        create: '新增原料'
       },
-      dialogOriVisible: false,
       dialogStorageVisible: false
     }
   },
@@ -185,7 +154,7 @@ export default {
   watch: {
     search(newVal, oldVal) {
       this.listQuery.search = newVal
-      this.getCommodityList()
+      this.getOriginalList()
     },
     create() {
       this.resetTemp()
@@ -217,26 +186,15 @@ export default {
         })
       }
     },
-    getCommodityList() {
+    getOriginalList() {
       this.loading = true
-      getGroupCommodity(
+      getGroupOriginal(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total
         this.list = []
         if (response.data.data.list && response.data.data.list.length > 0) {
           response.data.data.list.forEach(v => {
-            if (v.clouds && v.clouds.length > 0) {
-              const tmp = []
-              v.cloudNames = ''
-              v.clouds.forEach(s => {
-                tmp.push(s.sid)
-                v.cloudNames = v.cloudNames + s.name + ', '
-              })
-              v.clouds = tmp
-            } else {
-              v.clouds = []
-            }
             if (v.storages && v.storages.length > 0) {
               const tmp = []
               v.storageNames = ''
@@ -260,7 +218,7 @@ export default {
             let idx = 0
             v.attribute = ''
             this.templateList.forEach(t => {
-              v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
+              v.attribute = v.attribute + t + ': ' + (v.attrs[idx] ? v.attrs[idx++] : '') + ', '
             })
             this.list.push(v)
           })
@@ -282,17 +240,6 @@ export default {
         this.getCategoryList()
       })
     },
-    getOriginalList() {
-      getGroupOriginal({
-        id: this.userdata.user.id,
-        page: 1,
-        limit: 1000,
-        search: null
-      }).then(response => {
-        this.originalList = response.data.data.list
-        this.getCommodityList()
-      })
-    },
     getCategoryList() {
       getGroupCategoryTree({
         id: this.userdata.user.id
@@ -312,14 +259,14 @@ export default {
     getGroupAttrTemp() {
       getGroupAttrTemp({
         id: this.userdata.user.id,
-        atid: 1
+        atid: 3
       }).then(response => {
         this.templateList = response.data.data.list
         this.getOriginalList()
       })
     },
     createData() {
-      addCommodity({
+      addOriginal({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
         code: this.temp.code,
@@ -329,7 +276,7 @@ export default {
         attrs: this.temp.attributes
       }).then(response => {
         this.$message({ type: 'success', message: '新增成功!' })
-        this.getCommodityList()
+        this.getOriginalList()
         this.dialogVisible = false
       })
     },
@@ -352,9 +299,9 @@ export default {
       this.dialogVisible = true
     },
     updateData() {
-      setCommodity({
+      setOriginal({
         id: this.userdata.user.id,
-        commid: this.temp.id,
+        oid: this.temp.id,
         gid: this.userdata.group.id,
         code: this.temp.code,
         name: this.temp.name,
@@ -363,7 +310,7 @@ export default {
         attrs: this.temp.attributes
       }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
-        this.getCommodityList()
+        this.getOriginalList()
         this.dialogVisible = false
       })
     },
@@ -373,35 +320,13 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delCommodity({
+        delOriginal({
           id: this.userdata.user.id,
-          cid: row.id
+          oid: row.id
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
-          this.getCommodityList()
+          this.getOriginalList()
         })
-      })
-    },
-    handleSelectOriginal(row) {
-      this.tempOri = {
-        id: row.id,
-        code: row.code,
-        name: row.name,
-        oid: row.oid,
-        oname: row.oname
-      }
-      this.dialogOriVisible = true
-    },
-    updateOriData() {
-      setCommodityOriginal({
-        id: this.userdata.user.id,
-        gid: this.userdata.group.id,
-        cid: this.tempOri.id,
-        oid: this.tempOri.oid
-      }).then(response => {
-        this.$message({ type: 'success', message: '修改成功!' })
-        this.getCommodityList()
-        this.dialogOriVisible = false
       })
     },
     handleSelectStorage(row) {
@@ -423,14 +348,15 @@ export default {
     updateStorageData() {
       const checkedKeys = this.$refs.tree.getCheckedKeys()
       this.tempStorage.routes = treeGenerate.generateTree(this.data, '/', checkedKeys)
-      setCommodityStorage({
+
+      setOriginalStorage({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
         cid: this.tempStorage.id,
         sids: this.tempStorage.routes
       }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
-        this.getCommodityList()
+        this.getOriginalList()
         this.dialogStorageVisible = false
       })
     }

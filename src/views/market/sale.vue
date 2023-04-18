@@ -1,9 +1,6 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
-        <el-option v-for="item in coptions" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleStorageSelect">
         <el-option v-for="item in soptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
@@ -22,7 +19,7 @@
           <span>{{ row.ccode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" width="160px" align="center">
+      <el-table-column label="名称" align="center">
         <template slot-scope="{row}">
           <span>{{ row.cname }}</span>
         </template>
@@ -37,7 +34,7 @@
           <span>{{ row.mcode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台名称" width="160px" align="center">
+      <el-table-column label="平台名称" align="center">
         <template slot-scope="{row}">
           <span>{{ row.mname }} </span>
           <el-button icon="el-icon-document-copy" size="mini" circle @click="handleCopy(row)" />
@@ -221,7 +218,7 @@
 import { mapState } from 'vuex'
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import { setMarketCommDetail, delMarketCommDetail, getMarketCommDetail, setMarketStanDetail, delMarketStanDetail, getMarketStanDetail, getMarketSaleDetail } from '@/api/market'
+import { setMarketCommDetail, delMarketCommDetail, getMarketCommDetail, getMarketSaleDetail } from '@/api/market'
 import { getMarketStorageAccount, getMarketSubAccount } from '@/api/dock'
 import { getAgreementOrder } from '@/api/order'
 import { getGroupAllStorage } from '@/api/storage'
@@ -234,12 +231,6 @@ export default {
       userdata: {},
       soptions: [],
       asoptions: [],
-      ctype: 4,
-      coptions: [{
-        id: 4, label: '标品'
-      }, {
-        id: 1, label: '商品'
-      }],
       date: new Date(),
       list: null,
       total: 0,
@@ -399,29 +390,16 @@ export default {
     },
     getCommodityList() {
       this.loading = true
-      if (this.ctype === 1) {
-        getMarketCommDetail(
-          this.listQuery
-        ).then(response => {
-          this.total = response.data.data.total
-          this.list = response.data.data.list
-          this.loading = false
-        }).catch(error => {
-          this.loading = false
-          Promise.reject(error)
-        })
-      } else {
-        getMarketStanDetail(
-          this.listQuery
-        ).then(response => {
-          this.total = response.data.data.total
-          this.list = response.data.data.list
-          this.loading = false
-        }).catch(error => {
-          this.loading = false
-          Promise.reject(error)
-        })
-      }
+      getMarketCommDetail(
+        this.listQuery
+      ).then(response => {
+        this.total = response.data.data.total
+        this.list = response.data.data.list
+        this.loading = false
+      }).catch(error => {
+        this.loading = false
+        Promise.reject(error)
+      })
     },
     getAgreementList() {
       this.agreeLoading = true
@@ -459,17 +437,10 @@ export default {
         price: row.mprice,
         date: this.listQuery.date
       }
-      if (this.ctype === 1) {
-        setMarketCommDetail(temp).then(response => {
-          this.$message({ type: 'success', message: '复制成功!' })
-          this.getCommodityList()
-        })
-      } else {
-        setMarketStanDetail(temp).then(response => {
-          this.$message({ type: 'success', message: '复制成功!' })
-          this.getCommodityList()
-        })
-      }
+      setMarketCommDetail(temp).then(response => {
+        this.$message({ type: 'success', message: '复制成功!' })
+        this.getCommodityList()
+      })
     },
     handleUpdate(row) {
       const temp = {
@@ -484,17 +455,10 @@ export default {
         price: row.mprice,
         date: this.listQuery.date
       }
-      if (this.ctype === 1) {
-        setMarketCommDetail(temp).then(response => {
-          this.$message({ type: 'success', message: '修改成功!' })
-          this.getCommodityList()
-        })
-      } else {
-        setMarketStanDetail(temp).then(response => {
-          this.$message({ type: 'success', message: '修改成功!' })
-          this.getCommodityList()
-        })
-      }
+      setMarketCommDetail(temp).then(response => {
+        this.$message({ type: 'success', message: '修改成功!' })
+        this.getCommodityList()
+      })
     },
     handleDelete(row) {
       this.$confirm('确定要删除吗?', '提示', {
@@ -507,17 +471,10 @@ export default {
           gid: this.userdata.group.id,
           did: row.id
         }
-        if (this.ctype === 1) {
-          delMarketCommDetail(temp).then(response => {
-            this.$message({ type: 'success', message: '删除成功!' })
-            this.getCommodityList()
-          })
-        } else {
-          delMarketStanDetail(temp).then(response => {
-            this.$message({ type: 'success', message: '删除成功!' })
-            this.getCommodityList()
-          })
-        }
+        delMarketCommDetail(temp).then(response => {
+          this.$message({ type: 'success', message: '删除成功!' })
+          this.getCommodityList()
+        })
       })
     },
     handleApply() {
@@ -547,7 +504,7 @@ export default {
           let find = false
           for (let i = 0; i < total; i++) {
             const c = comms[i]
-            if (c.ctype === v.ctype && c.cid === v.cid) {
+            if (c.cid === v.cid) {
               if (c.curValue < v.value) {
                 v.real = c.curValue
               } else {

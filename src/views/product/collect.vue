@@ -68,54 +68,6 @@
     <div class="filter-container" align="center">
       <span class="filter-item">----------  {{ title }}  ----------</span>
     </div>
-    <el-table v-if="temp.data[iotype].slist.length>0" v-loading="loading" :data="temp.data[iotype].slist" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="标品" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.code }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="名称" width="200px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="品类" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.categoryName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="属性" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.attribute }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" width="120px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.remark }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="总价" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.price }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="重量" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.weight }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.value }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button type="danger" size="mini" @click="handleDeleteStandard(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
     <el-table v-if="temp.data[iotype].clist.length>0" v-loading="loading" :data="temp.data[iotype].clist" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="商品" width="100px" align="center">
         <template slot-scope="{row}">
@@ -321,7 +273,6 @@ import Pagination from '@/components/Pagination'
 import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
-import { getStorageStandard } from '@/api/standard'
 import { getStorageCommodity } from '@/api/commodity'
 import { getStorageHalfgood } from '@/api/halfgood'
 import { getStorageOriginal } from '@/api/original'
@@ -332,10 +283,8 @@ export default {
   data() {
     return {
       userdata: {},
-      ctype: 4,
+      ctype: 1,
       options: [{
-        id: 4, label: '标品'
-      }, {
         id: 1, label: '商品'
       }, {
         id: 2, label: '半成品'
@@ -407,9 +356,9 @@ export default {
   created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
-    this.temp.data.push({ clist: [], hlist: [], olist: [], slist: [] }) // 出库数据
-    this.temp.data.push({ clist: [], hlist: [], olist: [], slist: [] }) // 入库数据
-    this.temp.data.push({ clist: [], hlist: [], olist: [], slist: [] }) // 损耗数据
+    this.temp.data.push({ clist: [], hlist: [], olist: [] }) // 出库数据
+    this.temp.data.push({ clist: [], hlist: [], olist: [] }) // 入库数据
+    this.temp.data.push({ clist: [], hlist: [], olist: [] }) // 损耗数据
     this.getCategoryList()
   },
   methods: {
@@ -484,16 +433,6 @@ export default {
             Promise.reject(error)
           })
           break
-        case 4:
-          getStorageStandard(
-            this.listQuery
-          ).then(response => {
-            this.handleRet(response.data.data)
-          }).catch(error => {
-            this.loading = false
-            Promise.reject(error)
-          })
-          break
         default:
           break
       }
@@ -518,7 +457,7 @@ export default {
           let idx = 0
           v.attribute = ''
           this.templateList.forEach(t => {
-            v.attribute = v.attribute + t + ': ' + v.attrs[idx++] + ', '
+            v.attribute = v.attribute + t + ': ' + (v.attrs[idx] ? v.attrs[idx++] : '') + ', '
           })
           this.list.push(v)
           // 子账号
@@ -579,14 +518,6 @@ export default {
           })
           this.temp.data[this.iotype].olist.push(Object.assign({}, row))
           break
-        case 4:
-          this.temp.data[this.iotype].slist.map((v, i) => {
-            if (v.id === row.id) {
-              this.temp.data[this.iotype].slist.splice(i, 1)
-            }
-          })
-          this.temp.data[this.iotype].slist.push(Object.assign({}, row))
-          break
         default:
           break
       }
@@ -612,13 +543,6 @@ export default {
         }
       })
     },
-    handleDeleteStandard(row) {
-      this.temp.data[this.iotype].slist.map((v, i) => {
-        if (v.id === row.id) {
-          this.temp.data[this.iotype].slist.splice(i, 1)
-        }
-      })
-    },
     handleApply() {
       this.temp.list = []
       this.temp.types = []
@@ -641,9 +565,6 @@ export default {
       })
       this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')
       for (let i = 0; i < 3; i++) {
-        this.temp.data[i].slist.forEach(v => {
-          this.addItem(i, 4, v)
-        })
         this.temp.data[i].clist.forEach(v => {
           this.addItem(i, 1, v)
         })

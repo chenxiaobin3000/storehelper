@@ -105,17 +105,15 @@ export const MyRoleData = [{
   children: [{
     path: 'report', meta: { title: '销售数据', roles: [301] }
   }, {
-    path: 'commodityList', meta: { title: '商品列表', roles: [302] }
+    path: 'commodity', meta: { title: '商品列表', roles: [302] }
   }, {
-    path: 'halfgoodList', meta: { title: '半成品列表', roles: [303] }
+    path: 'halfgood', meta: { title: '半成品列表', roles: [303] }
   }, {
-    path: 'originalList', meta: { title: '原料列表', roles: [304] }
-  }, {
-    path: 'standardList', meta: { title: '标品列表', roles: [305] }
+    path: 'original', meta: { title: '原料列表', roles: [304] }
   }, {
     path: 'category', meta: { title: '品类管理', roles: [306] }
   }, {
-    path: 'attributeList', meta: { title: '属性管理', roles: [307] }
+    path: 'attribute', meta: { title: '属性管理', roles: [307] }
   }]
 }, {
   path: '/finance', meta: { title: '财务管理', roles: [400] },

@@ -1,9 +1,6 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
-        <el-option v-for="item in coptions" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleStorageSelect">
         <el-option v-for="item in soptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
@@ -64,49 +61,6 @@
     <div class="filter-container" align="center">
       <span class="filter-item">----------  线上损耗单信息  ----------</span>
     </div>
-    <el-table v-if="temp.slist.length>0" v-loading="loading" :data="temp.slist" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="标品" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.ccode }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="名称" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.cname }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.cremark }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="平台编号" width="160px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.mcode }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="平台名称" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.mname }} </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="平台备注" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.mremark }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="件数" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.ivalue }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button type="danger" size="mini" @click="handleDeleteStandard(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
     <el-table v-if="temp.clist.length>0" v-loading="loading" :data="temp.clist" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="商品" width="100px" align="center">
         <template slot-scope="{row}">
@@ -295,7 +249,7 @@
 import { mapState } from 'vuex'
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import { getMarketCommDetail, getMarketStanDetail } from '@/api/market'
+import { getMarketCommDetail } from '@/api/market'
 import { getMarketStorageAccount, getMarketSubAccount } from '@/api/dock'
 import { getAgreementOrder } from '@/api/order'
 import { getGroupAllStorage } from '@/api/storage'
@@ -308,12 +262,6 @@ export default {
       userdata: {},
       soptions: [],
       asoptions: [],
-      ctype: 4,
-      coptions: [{
-        id: 4, label: '标品'
-      }, {
-        id: 1, label: '商品'
-      }],
       date: new Date(),
       list: null,
       total: 0,
@@ -351,11 +299,9 @@ export default {
         saccount: '',
         sremark: '',
         date: null,
-        types: [],
         commoditys: [],
         values: [],
         clist: [],
-        slist: [],
         list: []
       },
       dialogVisible: false
@@ -478,29 +424,16 @@ export default {
     },
     getCommodityList() {
       this.loading = true
-      if (this.ctype === 1) {
-        getMarketCommDetail(
-          this.listQuery
-        ).then(response => {
-          this.total = response.data.data.total
-          this.list = response.data.data.list
-          this.loading = false
-        }).catch(error => {
-          this.loading = false
-          Promise.reject(error)
-        })
-      } else {
-        getMarketStanDetail(
-          this.listQuery
-        ).then(response => {
-          this.total = response.data.data.total
-          this.list = response.data.data.list
-          this.loading = false
-        }).catch(error => {
-          this.loading = false
-          Promise.reject(error)
-        })
-      }
+      getMarketCommDetail(
+        this.listQuery
+      ).then(response => {
+        this.total = response.data.data.total
+        this.list = response.data.data.list
+        this.loading = false
+      }).catch(error => {
+        this.loading = false
+        Promise.reject(error)
+      })
     },
     getAgreementList() {
       this.agreeLoading = true
@@ -527,38 +460,17 @@ export default {
     },
     handleAdd(row) {
       row.value = row.ivalue
-      switch (this.ctype) {
-        case 1:
-          this.temp.clist.map((v, i) => {
-            if (v.id === row.cid) {
-              this.temp.clist.splice(i, 1)
-            }
-          })
-          this.temp.clist.push(Object.assign({}, row))
-          break
-        case 4:
-          this.temp.slist.map((v, i) => {
-            if (v.id === row.cid) {
-              this.temp.slist.splice(i, 1)
-            }
-          })
-          this.temp.slist.push(Object.assign({}, row))
-          break
-        default:
-          break
-      }
+      this.temp.clist.map((v, i) => {
+        if (v.id === row.cid) {
+          this.temp.clist.splice(i, 1)
+        }
+      })
+      this.temp.clist.push(Object.assign({}, row))
     },
     handleDeleteCommodity(row) {
       this.temp.clist.map((v, i) => {
         if (v.id === row.id) {
           this.temp.clist.splice(i, 1)
-        }
-      })
-    },
-    handleDeleteStandard(row) {
-      this.temp.slist.map((v, i) => {
-        if (v.id === row.id) {
-          this.temp.slist.splice(i, 1)
         }
       })
     },
@@ -568,7 +480,6 @@ export default {
         return
       }
       this.temp.list = []
-      this.temp.types = []
       this.temp.commoditys = []
       this.temp.values = []
       this.soptions.forEach(v => {
@@ -577,60 +488,45 @@ export default {
         }
       })
       this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')
-      this.temp.slist.forEach(v => {
-        this.addItem(4, v)
-      })
       this.temp.clist.forEach(v => {
-        this.addItem(1, v)
+        // 校验履约单商品数量
+        const total = this.temp.row.comms.length
+        const comms = this.temp.row.comms
+        let find = false
+        for (let i = 0; i < total; i++) {
+          const c = comms[i]
+          if (c.cid === v.cid) {
+            if (c.curValue < v.value) {
+              v.real = c.curValue
+            } else {
+              v.real = v.value
+            }
+            v.stock = c.curValue
+            find = true
+            break
+          }
+        }
+        if (!find) {
+          v.real = '-'
+          v.stock = '-'
+        }
+
+        this.temp.list.push({
+          cid: v.cid,
+          code: v.ccode,
+          name: v.cname,
+          value: v.value,
+          real: v.real,
+          stock: v.stock
+        })
+
+        if (!find) {
+          return
+        }
+        this.temp.commoditys.push(v.cid)
+        this.temp.values.push(v.real)
       })
       this.dialogVisible = true
-    },
-    addItem(type, row) {
-      // 校验履约单商品数量
-      const total = this.temp.row.comms.length
-      const comms = this.temp.row.comms
-      let find = false
-      for (let i = 0; i < total; i++) {
-        const c = comms[i]
-        if (c.ctype === type && c.cid === row.cid) {
-          if (c.curValue < row.value) {
-            row.real = c.curValue
-          } else {
-            row.real = row.value
-          }
-          row.stock = c.curValue
-          find = true
-          break
-        }
-      }
-      if (!find) {
-        row.real = '-'
-        row.stock = '-'
-      }
-
-      let typename = null
-      this.coptions.forEach(v => {
-        if (v.id === type) {
-          typename = v.label
-        }
-      })
-      this.temp.list.push({
-        ctype: type,
-        cid: row.cid,
-        type: typename,
-        code: row.ccode,
-        name: row.cname,
-        value: row.value,
-        real: row.real,
-        stock: row.stock
-      })
-
-      if (!find) {
-        return
-      }
-      this.temp.types.push(type)
-      this.temp.commoditys.push(row.cid)
-      this.temp.values.push(row.real)
     },
     applyData() {
       loss({
