@@ -10,18 +10,21 @@
       </el-select>
       <span class="filter-item" style="color:#606266">{{ temp.sremark }}</span>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" />
+      <el-select v-model="itype" class="filter-item" style="width:100px">
+        <el-option v-for="item in ioptions" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
       <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>
     </div>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="编号" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.ccode }}</span>
+          <span>{{ row.code }}</span>
         </template>
       </el-table-column>
       <el-table-column label="名称" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.cname }}</span>
+          <span>{{ row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="品类" width="100px" align="center">
@@ -36,12 +39,12 @@
       </el-table-column>
       <el-table-column label="备注" width="120px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.cremark }}</span>
+          <span>{{ row.remark }}</span>
         </template>
       </el-table-column>
       <el-table-column label="总价" width="110px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.sprice }}</span>
+          <span>{{ row.iprice }}</span>
         </template>
       </el-table-column>
       <el-table-column label="重量(kg)" width="100px" align="center">
@@ -74,12 +77,12 @@
     <el-table v-if="temp.clist.length>0" v-loading="loading" :data="temp.clist" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="商品" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.ccode }}</span>
+          <span>{{ row.code }}</span>
         </template>
       </el-table-column>
       <el-table-column label="名称" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.cname }}</span>
+          <span>{{ row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="品类" width="100px" align="center">
@@ -94,7 +97,12 @@
       </el-table-column>
       <el-table-column label="备注" width="120px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.cremark }}</span>
+          <span>{{ row.remark }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="总价" width="110px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.price }}</span>
         </template>
       </el-table-column>
       <el-table-column label="重量" width="100px" align="center">
@@ -131,11 +139,6 @@
           <span>{{ temp.saccount.length > 0 ? temp.saccount+'('+temp.sremark+')' : temp.account+'('+temp.remark+')' }}</span>
         </el-form-item>
         <el-table v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
-          <el-table-column label="类型" width="80px" align="center">
-            <template slot-scope="{row}">
-              <span>{{ row.type }}</span>
-            </template>
-          </el-table-column>
           <el-table-column label="编号" width="100px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.code }}</span>
@@ -144,6 +147,11 @@
           <el-table-column label="名称" align="center">
             <template slot-scope="{row}">
               <span>{{ row.name }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="总价" width="110px" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.price }}</span>
             </template>
           </el-table-column>
           <el-table-column label="重量" width="100px" align="center">
@@ -162,6 +170,28 @@
             </template>
           </el-table-column>
         </el-table>
+
+        <el-form-item />
+        <el-form-item label="订单备注" prop="sremark">
+          <el-input v-model="tempOrder.sremark" />
+        </el-form-item>
+
+        <!-- 物流 -->
+        <el-form-item label="物流" prop="ship">
+          <el-input v-model="tempOrder.ship" />
+        </el-form-item>
+        <el-form-item label="车牌" prop="code">
+          <el-input v-model="tempOrder.code" />
+        </el-form-item>
+        <el-form-item label="电话" prop="phone">
+          <el-input v-model="tempOrder.phone" />
+        </el-form-item>
+        <el-form-item label="运费" prop="fare">
+          <el-input v-model="tempOrder.fare" />
+        </el-form-item>
+        <el-form-item label="物流备注" prop="remark">
+          <el-input v-model="tempOrder.remark" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -180,6 +210,7 @@ import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 import { getTodayStockList } from '@/api/stock'
 import { getMarketStorageAccount, getMarketSubAccount } from '@/api/dock'
+import { addOrderFare, addOrderRemark } from '@/api/order'
 import { shipped } from '@/api/agreement'
 
 export default {
@@ -187,6 +218,13 @@ export default {
   data() {
     return {
       userdata: {},
+      business: 4, // 业务类型
+      itype: 1,
+      ioptions: [{
+        id: 1, label: '按重量'
+      }, {
+        id: 2, label: '按件数'
+      }],
       storages: [],
       asoptions: [],
       date: new Date(),
@@ -211,12 +249,21 @@ export default {
         sremark: '',
         date: null,
         commoditys: [],
+        prices: [],
         weights: [],
         norms: [],
         values: [],
         attrs: null,
         clist: [],
         list: []
+      },
+      tempOrder: {
+        ship: '',
+        code: '',
+        phone: '',
+        fare: 0,
+        remark: '',
+        sremark: ''
       },
       dialogVisible: false
     }
@@ -331,13 +378,15 @@ export default {
         if (list && list.length > 0) {
           list.forEach(v => {
             // 初始化数据
-            v.iweight = v.sweight / 1000
+            v.iprice = v.price
+            v.weight = v.weight / 1000
+            v.iweight = v.weight
             v.inorm = ''
-            v.ivalue = v.svalue
+            v.ivalue = v.value
 
             // 品类
             this.categoryList.forEach(c => {
-              if (c.id === v.category) {
+              if (c.id === v.cid) {
                 v.categoryName = c.name
               }
             })
@@ -348,10 +397,6 @@ export default {
               v.attribute = v.attribute + t + ': ' + (v.attrs[idx] ? v.attrs[idx++] : '') + ', '
             })
             this.list.push(v)
-            // 子账号
-            if (v.sub && v.sub.length > 0) {
-              v.saccount = v.sub.join('\n')
-            }
           })
         }
         this.loading = false
@@ -378,6 +423,21 @@ export default {
       })
     },
     handleAdd(row) {
+      if (this.itype === 1) {
+        // 按重量
+        if (row.weight === row.iweight) {
+          row.price = row.iprice
+        } else {
+          row.price = (row.iprice * row.iweight / row.weight).toFixed(2)
+        }
+      } else {
+        // 按件数
+        if (row.value === row.ivalue) {
+          row.price = row.iprice
+        } else {
+          row.price = (row.iprice * row.ivalue / row.value).toFixed(2)
+        }
+      }
       row.weight = row.iweight
       row.norm = row.inorm
       row.value = row.ivalue
@@ -398,6 +458,7 @@ export default {
     handleApply() {
       this.temp.list = []
       this.temp.commoditys = []
+      this.temp.prices = []
       this.temp.weights = []
       this.temp.norms = []
       this.temp.values = []
@@ -408,20 +469,15 @@ export default {
       })
       this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')
       this.temp.clist.forEach(v => {
-        let typename = null
-        this.options.forEach(v2 => {
-          if (v2.id === 1) {
-            typename = v2.label
-          }
-        })
-        this.temp.commoditys.push(v.cid)
+        this.temp.commoditys.push(v.id)
+        this.temp.prices.push(v.price)
         this.temp.weights.push(v.weight * 1000)
         this.temp.norms.push(v.norm)
         this.temp.values.push(v.value)
         this.temp.list.push({
-          type: typename,
-          code: v.ccode,
-          name: v.cname,
+          code: v.code,
+          name: v.name,
+          price: v.price,
           weight: v.weight,
           norm: v.norm,
           value: v.value
@@ -430,6 +486,20 @@ export default {
       this.dialogVisible = true
     },
     applyData() {
+      if (this.tempOrder.fare > 0) {
+        if (this.tempOrder.ship.length <= 0) {
+          this.$message({ type: 'error', message: '请填写物流名称!' })
+          return
+        }
+        if (this.tempOrder.code.length <= 0) {
+          this.$message({ type: 'error', message: '请填写物流车牌!' })
+          return
+        }
+        if (this.tempOrder.phone.length <= 0) {
+          this.$message({ type: 'error', message: '请填写物流电话!' })
+          return
+        }
+      }
       shipped({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
@@ -438,11 +508,33 @@ export default {
         asid: this.listQuery.asid,
         date: this.temp.date,
         commoditys: this.temp.commoditys,
+        prices: this.temp.prices,
         weights: this.temp.weights,
         norms: this.temp.norms,
         values: this.temp.values,
         attrs: []
       }).then(response => {
+        const id = response.data.data.id
+        if (this.tempOrder.sremark.length > 0) {
+          addOrderRemark({
+            id: this.userdata.user.id,
+            otype: this.business,
+            oid: id,
+            remark: this.tempOrder.sremark
+          })
+        }
+        if (this.tempOrder.fare > 0) {
+          addOrderFare({
+            id: this.userdata.user.id,
+            otype: this.business,
+            oid: id,
+            ship: this.tempOrder.ship,
+            code: this.tempOrder.code,
+            phone: this.tempOrder.phone,
+            fare: this.tempOrder.fare,
+            remark: this.tempOrder.remark
+          })
+        }
         this.$message({ type: 'success', message: '申请成功!' })
         this.getCommodityList()
         this.dialogVisible = false

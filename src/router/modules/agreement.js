@@ -17,5 +17,11 @@ export default {
   }, {
     path: 'return', component: () => import('@/views/agreement/return'),
     name: 'agreement_return', meta: { title: '退货录入', roles: [204] }
+  }, {
+    path: 'offline', component: () => import('@/views/agreement/offline'),
+    name: 'agreement_offline', meta: { title: '线下销售', roles: [205] }
+  }, {
+    path: 'back', component: () => import('@/views/agreement/back'),
+    name: 'agreement_back', meta: { title: '线下退货', roles: [206] }
   }]
 }

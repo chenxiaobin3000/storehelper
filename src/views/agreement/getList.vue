@@ -288,6 +288,10 @@ export default {
         id: 20, label: '履约发货单'
       }, {
         id: 21, label: '履约退货单'
+      }, {
+        id: 22, label: '线下销售单'
+      }, {
+        id: 23, label: '线下退货单'
       }],
       date: new Date(),
       list: null,

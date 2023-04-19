@@ -94,8 +94,6 @@ export default {
         const tdata = [...this.tdata]
         tdata[0].data = Array(7).fill(0)
         tdata[1].data = [...tdata[0].data]
-        tdata[2].data = [...tdata[0].data]
-        tdata[3].data = [...tdata[0].data]
         const size = this.xdata.length
         const data = response.data.data.list
         data.forEach(v => {

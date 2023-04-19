@@ -8,7 +8,7 @@
         <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" />
-      <el-select v-model="itype" class="filter-item" style="width:100px" @change="handleSelect">
+      <el-select v-model="itype" class="filter-item" style="width:100px">
         <el-option v-for="item in ioptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>
@@ -501,10 +501,6 @@ export default {
             v.attribute = v.attribute + t + ': ' + (v.attrs[idx] ? v.attrs[idx++] : '') + ', '
           })
           this.list.push(v)
-          // 子账号
-          if (v.sub && v.sub.length > 0) {
-            v.saccount = v.sub.join('\n')
-          }
         })
       }
       this.loading = false

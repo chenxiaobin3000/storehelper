@@ -22,6 +22,11 @@
           <span>{{ row.sname }}</span>
         </template>
       </el-table-column>
+      <el-table-column v-if="otype===0||otype===12" label="入库" width="100px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.sname2 }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="商品" align="center">
         <template slot-scope="{row}">
           <span>{{ row.commList }}</span>
@@ -180,15 +185,11 @@ export default {
       orders: [{
         id: 10, label: '采购入库单'
       }, {
-        id: 11, label: '采购退货单'
-      }, {
         id: 12, label: '仓储调度单'
       }, {
         id: 13, label: '仓储损耗单'
       }, {
-        id: 14, label: '线下销售单'
-      }, {
-        id: 15, label: '销售退货单'
+        id: 11, label: '采购退货单'
       }],
       date: new Date(),
       list: null,

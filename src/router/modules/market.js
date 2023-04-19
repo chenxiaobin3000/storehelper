@@ -23,5 +23,8 @@ export default {
   }, {
     path: 'loss', component: () => import('@/views/market/loss'),
     name: 'market_loss', meta: { title: '损耗录入', roles: [505] }
+  }, {
+    path: 'exception', component: () => import('@/views/market/exception'),
+    name: 'market_exception', meta: { title: '异常录入', roles: [506] }
   }]
 }

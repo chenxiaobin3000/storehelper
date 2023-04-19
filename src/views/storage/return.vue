@@ -210,6 +210,11 @@
             </template>
           </el-table-column>
         </el-table>
+
+        <el-form-item />
+        <el-form-item label="订单备注" prop="sremark">
+          <el-input v-model="tempOrder.sremark" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -223,7 +228,7 @@
 import { mapState } from 'vuex'
 import { parseTime, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
-import { getPurchaseOrder } from '@/api/order'
+import { addOrderRemark, getPurchaseOrder } from '@/api/order'
 import { returnc } from '@/api/storage'
 
 export default {
@@ -231,6 +236,7 @@ export default {
   data() {
     return {
       userdata: {},
+      business: 2, // 业务类型
       date: new Date(),
       list: null,
       total: 0,
@@ -262,6 +268,9 @@ export default {
         hlist: [],
         olist: [],
         list: []
+      },
+      tempOrder: {
+        sremark: ''
       },
       dialogVisible: false
     }
@@ -417,7 +426,7 @@ export default {
       returnc({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
-        pid: this.temp.id,
+        rid: this.temp.id,
         date: this.temp.date,
         types: this.temp.types,
         commoditys: this.temp.commoditys,
@@ -426,6 +435,15 @@ export default {
         values: this.temp.values,
         attrs: []
       }).then(response => {
+        const id = response.data.data.id
+        if (this.tempOrder.sremark.length > 0) {
+          addOrderRemark({
+            id: this.userdata.user.id,
+            otype: this.business,
+            oid: id,
+            remark: this.tempOrder.sremark
+          })
+        }
         this.$message({ type: 'success', message: '申请成功!' })
         this.getCommodityList()
         this.dialogVisible = false

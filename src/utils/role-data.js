@@ -12,6 +12,8 @@ export const MyRoleData = [{
     path: 'after', meta: { title: '售后录入', roles: [504] }
   }, {
     path: 'loss', meta: { title: '损耗录入', roles: [505] }
+  }, {
+    path: 'exception', meta: { title: '异常录入', roles: [506] }
   }]
 }, {
   path: '/purchase', meta: { title: '采购管理', roles: [250] },
@@ -35,17 +37,13 @@ export const MyRoleData = [{
   }, {
     path: 'getList', meta: { title: '仓储明细', roles: [804] }
   }, {
-    path: 'purchase', meta: { title: '进货录入', roles: [805] }
-  }, {
-    path: 'return', meta: { title: '退货录入', roles: [806] }
+    path: 'purchase', meta: { title: '入库录入', roles: [805] }
   }, {
     path: 'dispatch', meta: { title: '调度出库', roles: [807] }
   }, {
     path: 'loss', meta: { title: '损耗明细', roles: [808] }
   }, {
-    path: 'offline', meta: { title: '线下销售', roles: [809] }
-  }, {
-    path: 'back', meta: { title: '线下退货', roles: [810] }
+    path: 'return', meta: { title: '退货录入', roles: [806] }
   }]
 }, {
   path: '/product', meta: { title: '生产管理', roles: [600] },
@@ -66,6 +64,10 @@ export const MyRoleData = [{
     path: 'shipped', meta: { title: '发货录入', roles: [203] }
   }, {
     path: 'return', meta: { title: '退货录入', roles: [204] }
+  }, {
+    path: 'offline', meta: { title: '线下销售', roles: [205] }
+  }, {
+    path: 'back', meta: { title: '线下退货', roles: [206] }
   }]
 }, {
   path: '/supplier', hidden: true, meta: { title: '供应商管理', roles: [900] },
@@ -79,15 +81,15 @@ export const MyRoleData = [{
   children: [{
     path: 'market', meta: { title: '销售报表', roles: [701] }
   }, {
+    path: 'stock', meta: { title: '库存报表', roles: [706] }
+  }, {
     path: 'purchase', meta: { title: '采购报表', roles: [702] }
-  }, {
-    path: 'agreement', meta: { title: '履约报表', roles: [703] }
-  }, {
-    path: 'product', meta: { title: '生产报表', roles: [704] }
   }, {
     path: 'storage', meta: { title: '仓储报表', roles: [705] }
   }, {
-    path: 'stock', meta: { title: '仓储库存', roles: [706] }
+    path: 'product', meta: { title: '生产报表', roles: [704] }
+  }, {
+    path: 'agreement', meta: { title: '履约报表', roles: [703] }
   }]
 }, {
   path: '/dock', meta: { title: '平台管理', roles: [450] },

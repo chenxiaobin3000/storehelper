@@ -257,6 +257,11 @@
             </template>
           </el-table-column>
         </el-table>
+
+        <el-form-item />
+        <el-form-item label="订单备注" prop="sremark">
+          <el-input v-model="tempOrder.sremark" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -276,6 +281,7 @@ import { getGroupAttrTemp } from '@/api/attribute'
 import { getStorageCommodity } from '@/api/commodity'
 import { getStorageHalfgood } from '@/api/halfgood'
 import { getStorageOriginal } from '@/api/original'
+import { addOrderRemark } from '@/api/order'
 import { collect } from '@/api/product'
 
 export default {
@@ -283,6 +289,7 @@ export default {
   data() {
     return {
       userdata: {},
+      business: 3, // 业务类型
       ctype: 1,
       options: [{
         id: 1, label: '商品'
@@ -334,6 +341,9 @@ export default {
         attrs: null,
         data: [],
         list: []
+      },
+      tempOrder: {
+        sremark: ''
       },
       dialogVisible: false
     }
@@ -460,10 +470,6 @@ export default {
             v.attribute = v.attribute + t + ': ' + (v.attrs[idx] ? v.attrs[idx++] : '') + ', '
           })
           this.list.push(v)
-          // 子账号
-          if (v.sub && v.sub.length > 0) {
-            v.saccount = v.sub.join('\n')
-          }
         })
       }
       this.loading = false
@@ -642,6 +648,15 @@ export default {
         values3: this.temp.values3,
         attrs: []
       }).then(response => {
+        const id = response.data.data.id
+        if (this.tempOrder.sremark.length > 0) {
+          addOrderRemark({
+            id: this.userdata.user.id,
+            otype: this.business,
+            oid: id,
+            remark: this.tempOrder.sremark
+          })
+        }
         this.$message({ type: 'success', message: '修改成功!' })
         this.getCommodityList()
         this.dialogVisible = false

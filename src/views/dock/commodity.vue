@@ -280,10 +280,6 @@ export default {
               v.attribute = v.attribute + t + ': ' + (v.attrs[idx] ? v.attrs[idx++] : '') + ', '
             })
             this.list.push(v)
-            // 子账号
-            if (v.sub && v.sub.length > 0) {
-              v.saccount = v.sub.join('\n')
-            }
           })
         }
         this.loading = false

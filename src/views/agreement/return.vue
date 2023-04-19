@@ -130,12 +130,7 @@
         <el-form-item label="账号" prop="account">
           <span>{{ temp.account }}({{ temp.remark }})</span>
         </el-form-item>
-        <el-table v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
-          <el-table-column label="类型" width="80px" align="center">
-            <template slot-scope="{row}">
-              <span>{{ row.type }}</span>
-            </template>
-          </el-table-column>
+        <el-table v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>s
           <el-table-column label="编号" width="100px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.code }}</span>
@@ -162,6 +157,11 @@
             </template>
           </el-table-column>
         </el-table>
+
+        <el-form-item />
+        <el-form-item label="订单备注" prop="sremark">
+          <el-input v-model="tempOrder.sremark" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -175,7 +175,7 @@
 import { mapState } from 'vuex'
 import { parseTime, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
-import { getAgreementOrder } from '@/api/order'
+import { addOrderRemark, getAgreementOrder } from '@/api/order'
 import { returnc } from '@/api/agreement'
 
 export default {
@@ -183,6 +183,7 @@ export default {
   data() {
     return {
       userdata: {},
+      business: 4, // 业务类型
       date: new Date(),
       list: null,
       total: 0,
@@ -211,6 +212,9 @@ export default {
         attrs: null,
         clist: [],
         list: []
+      },
+      tempOrder: {
+        sremark: ''
       },
       dialogVisible: false
     }
@@ -321,6 +325,15 @@ export default {
         values: this.temp.values,
         attrs: []
       }).then(response => {
+        const id = response.data.data.id
+        if (this.tempOrder.sremark.length > 0) {
+          addOrderRemark({
+            id: this.userdata.user.id,
+            otype: this.business,
+            oid: id,
+            remark: this.tempOrder.sremark
+          })
+        }
         this.$message({ type: 'success', message: '申请成功!' })
         this.getCommodityList()
         this.dialogVisible = false
