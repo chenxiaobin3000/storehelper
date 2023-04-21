@@ -525,12 +525,12 @@ export default {
     handleAdd(row) {
       if (this.itype === 1) {
         // 总价 = 单价 * 份数，总重量 = 克重 * 份数
-        row.price = row.iprice * row.ivalue
-        row.weight = row.iweight * row.ivalue
+        row.price = (row.iprice * row.ivalue).toFixed(2)
+        row.weight = (row.iweight * row.ivalue).toFixed(2)
       } else {
         // 原料总价 = 单价 * 重量
-        row.price = row.iprice * row.iweight
-        row.weight = row.iweight
+        row.price = (row.iprice * row.iweight).toFixed(2)
+        row.weight = (row.iweight).toFixed(2)
       }
       row.norm = row.inorm
       row.value = row.ivalue

@@ -162,7 +162,7 @@
 
     <pagination v-show="agreeTotal>0" :total="agreeTotal" :page.sync="listAgree.page" :limit.sync="listAgree.limit" @pagination="getAgreementList" />
 
-    <el-dialog title="线上销售单信息" :visible.sync="dialogVisible">
+    <el-dialog title="平台销售单信息" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
         <el-form-item label="制单日期" prop="date">
           <span>{{ temp.date }}</span>

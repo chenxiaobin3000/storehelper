@@ -1,6 +1,14 @@
 import request from '@/utils/request'
 const path = '/sale'
 
+export function getSaleType(data) {
+  return request({
+    url: `${path}/getSaleType`,
+    method: 'post',
+    data
+  })
+}
+
 export function sale(data) {
   return request({
     url: `${path}/sale`,
@@ -36,38 +44,6 @@ export function delSale(data) {
 export function setSalePay(data) {
   return request({
     url: `${path}/setSalePay`,
-    method: 'post',
-    data
-  })
-}
-
-export function after(data) {
-  return request({
-    url: `${path}/after`,
-    method: 'post',
-    data
-  })
-}
-
-export function reviewAfter(data) {
-  return request({
-    url: `${path}/reviewAfter`,
-    method: 'post',
-    data
-  })
-}
-
-export function revokeAfter(data) {
-  return request({
-    url: `${path}/revokeAfter`,
-    method: 'post',
-    data
-  })
-}
-
-export function delAfter(data) {
-  return request({
-    url: `${path}/delAfter`,
     method: 'post',
     data
   })

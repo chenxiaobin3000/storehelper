@@ -96,7 +96,7 @@
       </el-table-column>
       <el-table-column label="重量(kg)" width="100px" align="center">
         <template slot-scope="{row}">
-          <el-input v-model="row.weight" />
+          <span>{{ row.weight }}</span>
         </template>
       </el-table-column>
       <el-table-column label="规格" width="100px" align="center">
@@ -106,7 +106,7 @@
       </el-table-column>
       <el-table-column label="件数" width="80px" align="center">
         <template slot-scope="{row}">
-          <el-input v-model="row.value" />
+          <el-input v-model="row.value" @change="handleValue(row)" />
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
@@ -149,6 +149,11 @@
           <el-table-column label="重量" width="100px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.weight }}kg</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="规格" width="80px" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.norm }}</span>
             </template>
           </el-table-column>
           <el-table-column label="件数" width="80px" align="center">
@@ -277,6 +282,9 @@ export default {
       this.temp.account = row.msaccount && row.msaccount.length > 0 ? row.msaccount : row.maccount
       this.temp.remark = row.msaccount && row.msaccount.length > 0 ? row.msremark : row.mremark
       row.comms.forEach(v => {
+        v.oldPrice = v.price
+        v.oldWeight = v.weight
+        v.oldValue = v.value
         this.temp.clist.push(v)
       })
     },
@@ -286,6 +294,21 @@ export default {
           this.temp.clist.splice(i, 1)
         }
       })
+    },
+    handleValue(row) {
+      row.value = parseInt(row.value)
+      if (row.value > row.oldValue) {
+        row.value = row.oldValue
+        this.$message({ type: 'error', message: '退货件数不能超过履约单件数!' })
+        return
+      }
+      if (row.oldValue === row.value) {
+        row.price = row.oldPrice
+        row.weight = row.oldWeight
+      } else {
+        row.price = (row.oldPrice * row.value / row.oldValue).toFixed(2)
+        row.weight = (row.oldWeight * row.value / row.oldValue).toFixed(2)
+      }
     },
     handleApply() {
       this.temp.list = []
@@ -309,6 +332,7 @@ export default {
           name: v.name,
           price: v.price,
           weight: v.weight,
+          norm: v.norm,
           value: v.value
         })
       })
@@ -321,6 +345,7 @@ export default {
         rid: this.temp.id,
         date: this.temp.date,
         commoditys: this.temp.commoditys,
+        prices: this.temp.prices,
         weights: this.temp.weights,
         values: this.temp.values,
         attrs: []

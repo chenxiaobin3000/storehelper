@@ -10,9 +10,6 @@
       </el-select>
       <span class="filter-item" style="color:#606266">{{ temp.sremark }}</span>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" />
-      <el-select v-model="itype" class="filter-item" style="width:100px">
-        <el-option v-for="item in ioptions" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
       <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>
     </div>
 
@@ -49,7 +46,7 @@
       </el-table-column>
       <el-table-column label="重量(kg)" width="100px" align="center">
         <template slot-scope="{row}">
-          <el-input v-model="row.iweight" />
+          <span>{{ row.iweight }}</span>
         </template>
       </el-table-column>
       <el-table-column label="规格" width="80px" align="center">
@@ -219,12 +216,6 @@ export default {
     return {
       userdata: {},
       business: 4, // 业务类型
-      itype: 1,
-      ioptions: [{
-        id: 1, label: '按重量'
-      }, {
-        id: 2, label: '按件数'
-      }],
       storages: [],
       asoptions: [],
       date: new Date(),
@@ -423,22 +414,14 @@ export default {
       })
     },
     handleAdd(row) {
-      if (this.itype === 1) {
-        // 按重量
-        if (row.weight === row.iweight) {
-          row.price = row.iprice
-        } else {
-          row.price = (row.iprice * row.iweight / row.weight).toFixed(2)
-        }
+      // 按件数
+      if (row.value === row.ivalue) {
+        row.price = row.iprice
+        row.weight = row.iweight
       } else {
-        // 按件数
-        if (row.value === row.ivalue) {
-          row.price = row.iprice
-        } else {
-          row.price = (row.iprice * row.ivalue / row.value).toFixed(2)
-        }
+        row.price = (row.iprice * row.ivalue / row.value).toFixed(2)
+        row.weight = (row.iweight * row.ivalue / row.value).toFixed(2)
       }
-      row.weight = row.iweight
       row.norm = row.inorm
       row.value = row.ivalue
       this.temp.clist.map((v, i) => {

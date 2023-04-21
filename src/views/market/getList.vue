@@ -11,6 +11,11 @@
     </div>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
+      <el-table-column v-if="listQuery.type===31" label="类型" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.type }} </span>
+        </template>
+      </el-table-column>
       <el-table-column label="批次" align="center">
         <template slot-scope="{row}">
           <span>{{ row.batch }} </span>
@@ -40,6 +45,11 @@
       <el-table-column label="总价" align="center">
         <template slot-scope="{row}">
           <span>{{ row.price }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column v-if="listQuery.type===31" label="罚款" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.fine }} </span>
         </template>
       </el-table-column>
       <el-table-column label="应收" align="center">
@@ -187,7 +197,7 @@ import { mapState } from 'vuex'
 import { parseTime, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
-import { reviewSale, revokeSale, delSale, setSalePay, reviewAfter, revokeAfter, delAfter, reviewLoss, revokeLoss, delLoss } from '@/api/sale'
+import { reviewSale, revokeSale, delSale, setSalePay, reviewLoss, revokeLoss, delLoss } from '@/api/sale'
 import { addOrderRemark, delOrderRemark, getSaleOrder } from '@/api/order'
 
 export default {
@@ -199,9 +209,7 @@ export default {
       orders: [{
         id: 30, label: '平台销售单'
       }, {
-        id: 31, label: '平台售后单'
-      }, {
-        id: 32, label: '平台损耗单'
+        id: 31, label: '平台损耗单'
       }],
       date: new Date(),
       list: null,
@@ -372,12 +380,6 @@ export default {
             })
             break
           case 31:
-            reviewAfter(data).then(() => {
-              this.$message({ type: 'success', message: '审核成功!' })
-              this.getOrderList()
-            })
-            break
-          case 32:
             reviewLoss(data).then(() => {
               this.$message({ type: 'success', message: '审核成功!' })
               this.getOrderList()
@@ -406,12 +408,6 @@ export default {
             })
             break
           case 31:
-            revokeAfter(data).then(() => {
-              this.$message({ type: 'success', message: '撤销成功!' })
-              this.getOrderList()
-            })
-            break
-          case 32:
             revokeLoss(data).then(() => {
               this.$message({ type: 'success', message: '撤销成功!' })
               this.getOrderList()
@@ -440,12 +436,6 @@ export default {
             })
             break
           case 31:
-            delAfter(data).then(() => {
-              this.$message({ type: 'success', message: '删除成功!' })
-              this.getOrderList()
-            })
-            break
-          case 32:
             delLoss(data).then(() => {
               this.$message({ type: 'success', message: '删除成功!' })
               this.getOrderList()
