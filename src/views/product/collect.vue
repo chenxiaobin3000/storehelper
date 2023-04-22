@@ -492,6 +492,14 @@ export default {
       })
     },
     handleAdd(row) {
+      if (!row.iweight) {
+        this.$message({ type: 'error', message: '请填写重量!' })
+        return
+      }
+      if (!row.ivalue) {
+        this.$message({ type: 'error', message: '请填写份数!' })
+        return
+      }
       if (this.iotype === 1) {
         row.price = row.iprice
       } else {

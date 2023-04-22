@@ -41,6 +41,14 @@ export function getGroupAllStorage(data) {
   })
 }
 
+export function getStorageType(data) {
+  return request({
+    url: `${path}/getStorageType`,
+    method: 'post',
+    data
+  })
+}
+
 export function purchase(data) {
   return request({
     url: `${path}/purchase`,

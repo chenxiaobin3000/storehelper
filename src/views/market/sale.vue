@@ -477,6 +477,14 @@ export default {
       })
     },
     handleUpdate(row) {
+      if (!row.mprice) {
+        this.$message({ type: 'error', message: '请填写单价!' })
+        return
+      }
+      if (!row.mvalue) {
+        this.$message({ type: 'error', message: '请填写销量!' })
+        return
+      }
       const temp = {
         id: this.listQuery.id,
         gid: this.userdata.group.id,

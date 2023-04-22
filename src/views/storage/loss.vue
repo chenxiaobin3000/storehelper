@@ -1,6 +1,9 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
+      <el-select v-model="tid" class="filter-item" style="width:120px" @change="handleOrderSelect">
+        <el-option v-for="item in orders" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
       <el-select v-model="listQuery.ctype" class="filter-item" style="width:100px" @change="handleSelect">
         <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
@@ -70,7 +73,7 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
 
     <div class="filter-container" align="center">
-      <span class="filter-item">----------  仓储调度单信息  ----------</span>
+      <span class="filter-item">----------  {{ tname }}信息  ----------</span>
     </div>
     <el-table v-if="temp.clist.length>0" v-loading="loading" :data="temp.clist" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="商品" width="100px" align="center">
@@ -231,7 +234,7 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog title="仓储损耗单" :visible.sync="dialogVisible">
+    <el-dialog :title="tname" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
         <el-form-item label="制单日期" prop="date">
           <span>{{ temp.date }}</span>
@@ -299,7 +302,7 @@ import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 import { getTodayStockList } from '@/api/stock'
 import { addOrderRemark } from '@/api/order'
-import { loss } from '@/api/storage'
+import { getStorageType, loss } from '@/api/storage'
 
 export default {
   components: { Pagination },
@@ -307,6 +310,9 @@ export default {
     return {
       userdata: {},
       business: 2, // 业务类型
+      tid: 0,
+      tname: '',
+      orders: [],
       options: [{
         id: 1, label: '商品'
       }, {
@@ -375,9 +381,16 @@ export default {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
     this.listQuery.gid = this.userdata.group.id
-    this.getCategoryList()
+    this.getStorageType()
   },
   methods: {
+    handleOrderSelect() {
+      this.orders.forEach(v => {
+        if (v.id === this.tid) {
+          this.tname = '平台' + v.label + '单'
+        }
+      })
+    },
     handleSelect() {
       this.listQuery.page = 1
       this.listQuery.limit = 20
@@ -387,6 +400,22 @@ export default {
       this.listQuery.page = 1
       this.listQuery.limit = 20
       this.getCommodityList()
+    },
+    getStorageType() {
+      getStorageType({
+        id: this.userdata.user.id,
+        gid: this.userdata.group.id
+      }).then(response => {
+        const list = response.data.data.list
+        if (list.length > 0) {
+          list.forEach(v => {
+            this.orders.push({ id: v.id, label: v.name })
+          })
+          this.tid = this.orders[0].id
+          this.tname = '平台' + this.orders[0].label + '单'
+        }
+        this.getCategoryList()
+      })
     },
     getGroupAllStorage() {
       getGroupAllStorage({
@@ -457,6 +486,18 @@ export default {
       })
     },
     handleAdd(row) {
+      if (!row.iweight) {
+        this.$message({ type: 'error', message: '请填写重量!' })
+        return
+      }
+      if (!row.inorm) {
+        this.$message({ type: 'error', message: '请填写规格!' })
+        return
+      }
+      if (!row.ivalue) {
+        this.$message({ type: 'error', message: '请填写份数!' })
+        return
+      }
       if (this.itype === 1) {
         // 按重量
         if (row.weight === row.iweight) {
@@ -503,6 +544,7 @@ export default {
         default:
           break
       }
+      this.$message({ type: 'success', message: '添加成功!' })
     },
     handleDeleteCommodity(row) {
       this.temp.clist.map((v, i) => {
@@ -578,6 +620,7 @@ export default {
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
         sid: this.listQuery.sid,
+        tid: this.tid,
         date: this.temp.date,
         types: this.temp.types,
         commoditys: this.temp.commoditys,

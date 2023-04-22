@@ -523,6 +523,22 @@ export default {
       })
     },
     handleAdd(row) {
+      if (!row.iprice) {
+        this.$message({ type: 'error', message: '请填写单价!' })
+        return
+      }
+      if (!row.iweight) {
+        this.$message({ type: 'error', message: '请填写重量!' })
+        return
+      }
+      if (!row.inorm) {
+        this.$message({ type: 'error', message: '请填写规格!' })
+        return
+      }
+      if (!row.ivalue) {
+        this.$message({ type: 'error', message: '请填写份数!' })
+        return
+      }
       if (this.itype === 1) {
         // 总价 = 单价 * 份数，总重量 = 克重 * 份数
         row.price = (row.iprice * row.ivalue).toFixed(2)
@@ -547,6 +563,7 @@ export default {
         default:
           break
       }
+      this.$message({ type: 'success', message: '添加成功!' })
     },
     handleDeleteCommodity(row) {
       this.temp.clist.map((v, i) => {

@@ -414,6 +414,14 @@ export default {
       })
     },
     handleAdd(row) {
+      if (!row.inorm) {
+        this.$message({ type: 'error', message: '请填写规格!' })
+        return
+      }
+      if (!row.ivalue) {
+        this.$message({ type: 'error', message: '请填写份数!' })
+        return
+      }
       // 按件数
       if (row.value === row.ivalue) {
         row.price = row.iprice

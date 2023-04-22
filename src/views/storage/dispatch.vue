@@ -486,6 +486,18 @@ export default {
       })
     },
     handleAdd(row) {
+      if (!row.iweight) {
+        this.$message({ type: 'error', message: '请填写重量!' })
+        return
+      }
+      if (!row.inorm) {
+        this.$message({ type: 'error', message: '请填写规格!' })
+        return
+      }
+      if (!row.ivalue) {
+        this.$message({ type: 'error', message: '请填写份数!' })
+        return
+      }
       if (this.itype === 1) {
         // 按重量
         if (row.weight === row.iweight) {
@@ -532,6 +544,7 @@ export default {
         default:
           break
       }
+      this.$message({ type: 'success', message: '添加成功!' })
     },
     handleDeleteCommodity(row) {
       this.temp.clist.map((v, i) => {
