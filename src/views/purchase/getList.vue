@@ -4,7 +4,10 @@
       <el-select v-model="listQuery.type" class="filter-item" style="width:120px" @change="handleSelect">
         <el-option v-for="item in orders" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <el-select v-model="listQuery.complete" class="filter-item" style="width:140px" @change="handleSelect">
+      <el-select v-model="listQuery.review" class="filter-item" style="width:100px" @change="handleSelect">
+        <el-option v-for="item in reviewList" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
+      <el-select v-model="listQuery.complete" class="filter-item" style="width:100px" @change="handleSelect">
         <el-option v-for="item in completeList" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
@@ -295,7 +298,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { parseTime, completeType } from '@/utils'
+import { parseTime, reviewType, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
 import { reviewPurchase, revokePurchase, delPurchase, setPurchasePay, setPurchaseSupplier, reviewReturn, revokeReturn, delReturn } from '@/api/purchase'
@@ -317,6 +320,7 @@ export default {
       list: null,
       total: 0,
       supplierList: [],
+      reviewList: reviewType,
       completeList: completeType,
       loading: false,
       listQuery: {

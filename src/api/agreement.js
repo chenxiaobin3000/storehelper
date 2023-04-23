@@ -65,33 +65,73 @@ export function delReturn(data) {
   })
 }
 
-export function again(data) {
+export function offline(data) {
   return request({
-    url: `${path}/again`,
+    url: `${path}/offline`,
     method: 'post',
     data
   })
 }
 
-export function reviewAgain(data) {
+export function reviewOffline(data) {
   return request({
-    url: `${path}/reviewAgain`,
+    url: `${path}/reviewOffline`,
     method: 'post',
     data
   })
 }
 
-export function revokeAgain(data) {
+export function revokeOffline(data) {
   return request({
-    url: `${path}/revokeAgain`,
+    url: `${path}/revokeOffline`,
     method: 'post',
     data
   })
 }
 
-export function delAgain(data) {
+export function delOffline(data) {
   return request({
-    url: `${path}/delAgain`,
+    url: `${path}/delOffline`,
+    method: 'post',
+    data
+  })
+}
+
+export function setOfflinePay(data) {
+  return request({
+    url: `${path}/setOfflinePay`,
+    method: 'post',
+    data
+  })
+}
+
+export function backc(data) {
+  return request({
+    url: `${path}/backc`,
+    method: 'post',
+    data
+  })
+}
+
+export function reviewBack(data) {
+  return request({
+    url: `${path}/reviewBack`,
+    method: 'post',
+    data
+  })
+}
+
+export function revokeBack(data) {
+  return request({
+    url: `${path}/revokeBack`,
+    method: 'post',
+    data
+  })
+}
+
+export function delBack(data) {
+  return request({
+    url: `${path}/delBack`,
     method: 'post',
     data
   })

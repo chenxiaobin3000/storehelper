@@ -17,7 +17,7 @@
           <span>{{ row.ccode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" width="160px" align="center">
+      <el-table-column label="名称" align="center">
         <template slot-scope="{row}">
           <span>{{ row.cname }}</span>
         </template>
@@ -42,7 +42,7 @@
           <span>{{ row.mcode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台名称" width="160px" align="center">
+      <el-table-column label="平台名称" align="center">
         <template slot-scope="{row}">
           <span>{{ row.mname }}</span>
         </template>

@@ -172,3 +172,11 @@ export const completeType = [{
 }, {
   id: 2, label: '未完成'
 }]
+
+export const reviewType = [{
+  id: 1, label: '全部'
+}, {
+  id: 2, label: '已审核'
+}, {
+  id: 3, label: '未审核'
+}]

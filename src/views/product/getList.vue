@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="listQuery.complete" class="filter-item" style="width:140px" @change="handleSelect">
-        <el-option v-for="item in completeList" :key="item.id" :label="item.label" :value="item.id" />
+      <el-select v-model="listQuery.review" class="filter-item" style="width:100px" @change="handleSelect">
+        <el-option v-for="item in reviewList" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
     </div>
@@ -171,7 +171,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { parseTime, completeType } from '@/utils'
+import { parseTime, reviewType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
 import { getProductOrder } from '@/api/order'
@@ -187,7 +187,7 @@ export default {
       date: new Date(),
       list: null,
       total: 0,
-      completeList: completeType,
+      reviewList: reviewType,
       loading: false,
       listQuery: {
         id: 0,

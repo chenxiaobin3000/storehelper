@@ -4,7 +4,10 @@
       <el-select v-model="listQuery.type" class="filter-item" style="width:120px" @change="handleSelect">
         <el-option v-for="item in orders" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <el-select v-model="listQuery.complete" class="filter-item" style="width:140px" @change="handleSelect">
+      <el-select v-model="listQuery.review" class="filter-item" style="width:100px" @change="handleSelect">
+        <el-option v-for="item in reviewList" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
+      <el-select v-model="listQuery.complete" class="filter-item" style="width:100px" @change="handleSelect">
         <el-option v-for="item in completeList" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
@@ -23,12 +26,17 @@
           <el-button icon="el-icon-edit" size="mini" circle @click="handleFare(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="账号" width="110px" align="center">
+      <el-table-column v-if="listQuery.type!==22&&listQuery.type!==23" label="账号" width="110px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.msaccount && row.msaccount.length > 0 ? row.msaccount : row.maccount }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" width="100px" align="center">
+      <el-table-column v-else label="供应商" width="100px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.supplier }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column v-if="listQuery.type!==22&&listQuery.type!==23" label="备注" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.msaccount && row.msaccount.length > 0 ? row.msremark : row.mremark }}</span>
         </template>
@@ -41,6 +49,12 @@
       <el-table-column label="现价 / 总价" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.curPrice }} / {{ row.price }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="应付" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.curPrice - row.pay }} </span>
+          <el-button icon="el-icon-edit" size="mini" circle @click="handlePay(row)" />
         </template>
       </el-table-column>
       <el-table-column label="存量 / 总数" width="100px" align="center">
@@ -203,6 +217,17 @@
       </el-form>
     </el-dialog>
 
+    <el-dialog title="修改付款信息" :visible.sync="dialogPayVisible">
+      <el-form :model="tempOrder" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
+        <el-form-item label="已付款" prop="pay">
+          <el-input v-model="tempOrder.pay" />
+        </el-form-item>
+        <div align="center">
+          <el-button type="primary" @click="updatePay()">修改</el-button>
+        </div>
+      </el-form>
+    </el-dialog>
+
     <el-dialog title="修改订单信息" :visible.sync="dialogFareVisible">
       <el-form :model="tempOrder" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
         <!-- 运费列表 -->
@@ -272,10 +297,10 @@
 
 <script>
 import { mapState } from 'vuex'
-import { parseTime, completeType } from '@/utils'
+import { parseTime, reviewType, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
-import { reviewShipped, revokeShipped, delShipped, reviewReturn, revokeReturn, delReturn, reviewAgain, revokeAgain, delAgain } from '@/api/agreement'
+import { reviewShipped, revokeShipped, delShipped, reviewReturn, revokeReturn, delReturn, reviewOffline, revokeOffline, setOfflinePay, delOffline, reviewBack, revokeBack, delBack } from '@/api/agreement'
 import { addOrderFare, delOrderFare, addOrderRemark, delOrderRemark, getAgreementOrder } from '@/api/order'
 
 export default {
@@ -296,6 +321,7 @@ export default {
       date: new Date(),
       list: null,
       total: 0,
+      reviewList: reviewType,
       completeList: completeType,
       loading: false,
       listQuery: {
@@ -320,6 +346,7 @@ export default {
         remark: ''
       },
       tempOrder: {
+        pay: '',
         ship: '',
         code: '',
         phone: '',
@@ -327,6 +354,7 @@ export default {
         remark: ''
       },
       dialogVisible: false,
+      dialogPayVisible: false,
       dialogFareVisible: false
     }
   },
@@ -431,6 +459,25 @@ export default {
         this.getOrderList()
       })
     },
+    handlePay(row) {
+      this.tempOrder.id = row.id
+      this.dialogPayVisible = true
+    },
+    updatePay() {
+      if (this.tempOrder.pay.length <= 0) {
+        this.$message({ type: 'error', message: '请填写已付款金额' })
+        return
+      }
+      setOfflinePay({
+        id: this.userdata.user.id,
+        oid: this.tempOrder.id,
+        pay: this.tempOrder.pay
+      }).then(() => {
+        this.$message({ type: 'success', message: '修改成功!' })
+        this.getOrderList()
+        this.dialogPayVisible = false
+      })
+    },
     handleFare(row) {
       this.tempOrder = {
         id: row.id,
@@ -500,7 +547,13 @@ export default {
             })
             break
           case 22:
-            reviewAgain(data).then(() => {
+            reviewOffline(data).then(() => {
+              this.$message({ type: 'success', message: '审核成功!' })
+              this.getOrderList()
+            })
+            break
+          case 23:
+            reviewBack(data).then(() => {
               this.$message({ type: 'success', message: '审核成功!' })
               this.getOrderList()
             })
@@ -534,7 +587,13 @@ export default {
             })
             break
           case 22:
-            revokeAgain(data).then(() => {
+            revokeOffline(data).then(() => {
+              this.$message({ type: 'success', message: '撤销成功!' })
+              this.getOrderList()
+            })
+            break
+          case 23:
+            revokeBack(data).then(() => {
               this.$message({ type: 'success', message: '撤销成功!' })
               this.getOrderList()
             })
@@ -568,7 +627,13 @@ export default {
             })
             break
           case 22:
-            delAgain(data).then(() => {
+            delOffline(data).then(() => {
+              this.$message({ type: 'success', message: '删除成功!' })
+              this.getOrderList()
+            })
+            break
+          case 23:
+            delBack(data).then(() => {
               this.$message({ type: 'success', message: '删除成功!' })
               this.getOrderList()
             })

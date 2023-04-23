@@ -17,10 +17,6 @@ export default [{
     meta: { title: '仓储调度申请', roles: [23] }, path: '/storageDispatchApply'
   }, {
     meta: { title: '仓储损耗申请', roles: [24] }, path: '/storageLossApply'
-  }, {
-    meta: { title: '线下销售申请', roles: [25] }, path: '/storageOfflineApply'
-  }, {
-    meta: { title: '线下退货申请', roles: [26] }, path: '/storageBackApply'
   }]
 }, {
   meta: { title: '生产申请', roles: [15] }, path: '/productApply',
@@ -34,14 +30,16 @@ export default [{
   }, {
     meta: { title: '履约退货申请', roles: [32] }, path: '/agreementReturnApply'
   }, {
-    meta: { title: '履约退转入申请', roles: [33] }, path: '/agreementAgainApply'
+    meta: { title: '线下销售申请', roles: [33] }, path: '/agreementOfflineApply'
+  }, {
+    meta: { title: '线下退货申请', roles: [34] }, path: '/agreementBackApply'
   }]
 }, {
   meta: { title: '销售申请', roles: [40] }, path: '/saleApply',
   children: [{
-    meta: { title: '销售售后申请', roles: [41] }, path: '/afterApply'
+    meta: { title: '平台销售申请', roles: [41] }, path: '/saleApply'
   }, {
-    meta: { title: '销售损耗申请', roles: [42] }, path: '/lossApply'
+    meta: { title: '平台损耗申请', roles: [42] }, path: '/lossApply'
   }]
 }, {
   meta: { title: '采购审核', roles: [51] }, path: '/purchaseReview',
@@ -60,10 +58,6 @@ export default [{
     meta: { title: '仓储调度审核', roles: [63] }, path: '/storageDispatchReview'
   }, {
     meta: { title: '仓储损耗审核', roles: [64] }, path: '/storageLossReview'
-  }, {
-    meta: { title: '线下销售审核', roles: [65] }, path: '/storageOfflineReview'
-  }, {
-    meta: { title: '线下退货审核', roles: [66] }, path: '/storageBackReview'
   }]
 }, {
   meta: { title: '生产审核', roles: [55] }, path: '/productReview',
@@ -77,13 +71,15 @@ export default [{
   }, {
     meta: { title: '履约退货审核', roles: [72] }, path: '/agreementReturnReview'
   }, {
-    meta: { title: '履约退转入审核', roles: [73] }, path: '/agreementAgainReview'
+    meta: { title: '线下销售审核', roles: [73] }, path: '/agreementOfflineReview'
+  }, {
+    meta: { title: '线下退货审核', roles: [74] }, path: '/agreementBackReview'
   }]
 }, {
   meta: { title: '销售审核', roles: [80] }, path: '/saleReview',
   children: [{
-    meta: { title: '销售售后审核', roles: [81] }, path: '/afterReview'
+    meta: { title: '平台销售审核', roles: [81] }, path: '/afterReview'
   }, {
-    meta: { title: '销售损耗审核', roles: [82] }, path: '/lossReview'
+    meta: { title: '平台损耗审核', roles: [82] }, path: '/lossReview'
   }]
 }]

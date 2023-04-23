@@ -1,188 +1,258 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="listQuery.complete" class="filter-item" style="width:140px" @change="handleSelect">
-        <el-option v-for="item in completeList" :key="item.id" :label="item.label" :value="item.id" />
+      <el-select v-model="listQuery.sid" class="filter-item" @change="handleStorageSelect">
+        <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
+      <el-select v-model="tempOrder.supplier" class="filter-item">
+        <el-option v-for="item in supplierList" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
+      <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" />
+      <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>
     </div>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="批次" align="center">
+      <el-table-column label="编号" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.batch }} </span>
-          <el-button icon="el-icon-tickets" size="mini" circle @click="handleDetail(row)" />
+          <span>{{ row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="仓库" width="100px" align="center">
+      <el-table-column label="名称" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.sname }}</span>
+          <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="商品" align="center">
+      <el-table-column label="品类" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.commList }}</span>
+          <span>{{ row.categoryName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="申请人" width="65px" align="center">
+      <el-table-column label="属性" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.applyName }}</span>
+          <span>{{ row.attribute }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="申请时间" width="155px" align="center">
+      <el-table-column label="备注" width="120px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.applyTime }}</span>
+          <span>{{ row.remark }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核人" width="65px" align="center">
+      <el-table-column label="总价" width="110px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.reviewName }}</span>
+          <span>{{ row.iprice }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核时间" width="155px" align="center">
+      <el-table-column label="重量(kg)" width="100px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.reviewTime }}</span>
+          <span>{{ row.iweight }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
+      <el-table-column label="规格" width="80px" align="center">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleRevoke(row)">撤销审核</el-button>
-          <el-button type="danger" size="mini" @click="handleDelete(row)">删除</el-button>
+          <el-input v-model="row.inorm" />
+        </template>
+      </el-table-column>
+      <el-table-column label="件数" width="80px" align="center">
+        <template slot-scope="{row}">
+          <el-input v-model="row.ivalue" />
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
+        <template slot-scope="{row}">
+          <el-button type="primary" size="mini" @click="handleAdd(row)">添加</el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getOrderList" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
 
-    <el-dialog title="订单信息" :visible.sync="dialogVisible">
+    <div class="filter-container" align="center">
+      <span class="filter-item">----------  线下销售单信息  ----------</span>
+    </div>
+    <el-table v-if="temp.clist.length>0" v-loading="loading" :data="temp.clist" style="width: 100%" border fit highlight-current-row>
+      <el-table-column label="商品" width="100px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.code }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="名称" width="200px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="品类" width="100px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.categoryName }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="属性" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.attribute }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="备注" width="120px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.remark }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="总价" width="110px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.price }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="重量" width="100px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.weight }}kg</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="规格" width="80px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.norm }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="件数" width="80px" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.value }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
+        <template slot-scope="{row}">
+          <el-button type="danger" size="mini" @click="handleDeleteCommodity(row)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <el-dialog title="线下销售单" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="批次" prop="batch">
-          <span>{{ temp.batch }}</span>
+        <el-form-item label="制单日期" prop="date">
+          <span>{{ temp.date }}</span>
         </el-form-item>
-        <el-form-item label="仓库" prop="sname">
-          <span>{{ temp.sname }}</span>
+        <el-form-item label="仓库" prop="storage">
+          <span>{{ temp.storage }}</span>
+        </el-form-item>
+        <el-form-item label="供应商" prop="account">
+          <span>{{ temp.supplier }}</span>
+        </el-form-item>
+        <el-table v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
+          <el-table-column label="编号" width="100px" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.code }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="名称" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.name }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="总价" width="110px" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.price }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="重量" width="100px" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.weight }}kg</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="规格" width="80px" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.norm }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="件数" width="80px" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.value }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <el-form-item />
+        <el-form-item label="订单备注" prop="sremark">
+          <el-input v-model="tempOrder.sremark" />
         </el-form-item>
 
-        <!-- 商品列表 -->
-        <el-form-item v-if="temp.comms && temp.comms.length > 0" label="商品列表" prop="remarks">
-          <el-table :data="temp.comms" style="width: 100%" border stripe fit highlight-current-row>
-            <el-table-column label="编号" width="80px" align="center">
-              <template slot-scope="{row}">
-                <span>{{ row.code }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="名称" align="center">
-              <template slot-scope="{row}">
-                <span>{{ row.name }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="重量" width="70px" align="center">
-              <template slot-scope="{row}">
-                <span>{{ row.weight / 1000 }}kg</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="件数" width="70px" align="center">
-              <template slot-scope="{row}">
-                <span>{{ row.value }}件</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="价格" width="70px" align="center">
-              <template slot-scope="{row}">
-                <span>{{ row.price }}元</span>
-              </template>
-            </el-table-column>
-          </el-table>
+        <!-- 物流 -->
+        <el-form-item label="物流" prop="ship">
+          <el-input v-model="tempOrder.ship" />
         </el-form-item>
-        <el-form-item v-else label="商品列表" prop="remarks">
-          <span>没有商品</span>
+        <el-form-item label="车牌" prop="code">
+          <el-input v-model="tempOrder.code" />
         </el-form-item>
-
-        <!-- 运费列表 -->
-        <el-form-item v-if="temp.fares && temp.fares.length > 0" label="运费列表" prop="fares">
-          <el-table :data="temp.fares" style="width: 100%" border stripe fit highlight-current-row>
-            <el-table-column label="时间" width="160px" align="center">
-              <template slot-scope="{row}">
-                <span>{{ row.cdate }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="运费" align="center">
-              <template slot-scope="{row}">
-                <span>{{ row.fare }}元</span>
-              </template>
-            </el-table-column>
-          </el-table>
+        <el-form-item label="电话" prop="phone">
+          <el-input v-model="tempOrder.phone" />
         </el-form-item>
-        <el-form-item v-else label="运费列表" prop="fares">
-          <span>没有运费</span>
+        <el-form-item label="运费" prop="fare">
+          <el-input v-model="tempOrder.fare" />
         </el-form-item>
-
-        <!-- 备注列表 -->
-        <el-form-item v-if="temp.remarks && temp.remarks.length > 0" label="备注列表" prop="remarks">
-          <el-table :data="temp.remarks" style="width: 100%" border stripe fit highlight-current-row>
-            <el-table-column label="时间" width="160px" align="center">
-              <template slot-scope="{row}">
-                <span>{{ row.cdate }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="备注" align="center">
-              <template slot-scope="{row}">
-                <span>{{ row.remark }}</span>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-form-item>
-        <el-form-item v-else label="备注列表" prop="remarks">
-          <span>没有备注</span>
-        </el-form-item>
-
-        <!-- 附件列表 -->
-        <el-form-item v-if="temp.imageList && temp.imageList.length > 0">
-          <span>附件列表</span><br>
-          <el-image
-            v-for="image in temp.imageList"
-            :key="image"
-            :src="image"
-            :preview-src-list="temp.imageList"
-            style="width: 100px; height: 100px"
-          />
-        </el-form-item>
-        <el-form-item v-else label="附件列表" prop="attrs">
-          <span>没有附件</span>
+        <el-form-item label="物流备注" prop="remark">
+          <el-input v-model="tempOrder.remark" />
         </el-form-item>
       </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="applyData()">确定</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { parseTime, completeType } from '@/utils'
+import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import ImageSrc from '@/utils/image-src'
-import { getStorageOrder } from '@/api/order'
-import { revokeOffline, delOffline } from '@/api/storage'
+import { getGroupAllStorage } from '@/api/storage'
+import { getGroupCategoryList } from '@/api/category'
+import { getGroupAttrTemp } from '@/api/attribute'
+import { getTodayStockList } from '@/api/stock'
+import { getGroupAllSupplier } from '@/api/supplier'
+import { addOrderFare, addOrderRemark } from '@/api/order'
+import { offline } from '@/api/agreement'
 
 export default {
   components: { Pagination },
   data() {
     return {
       userdata: {},
+      business: 4, // 业务类型
+      storages: [],
+      asoptions: [],
       date: new Date(),
       list: null,
       total: 0,
-      completeList: completeType,
+      supplierList: [],
+      categoryList: [],
+      templateList: {},
       loading: false,
       listQuery: {
         id: 0,
-        type: 12, // 调度调度入库
         page: 1,
         limit: 20,
-        review: 1, // 全部
-        complete: 0, // 未完成
-        date: null,
+        sid: 0,
+        ctype: 1,
         search: null
       },
-      temp: {},
+      temp: {
+        storage: '',
+        supplier: '',
+        date: null,
+        commoditys: [],
+        prices: [],
+        weights: [],
+        norms: [],
+        values: [],
+        attrs: null,
+        clist: [],
+        list: []
+      },
+      tempOrder: {
+        supplier: 0,
+        ship: '',
+        code: '',
+        phone: '',
+        fare: 0,
+        remark: '',
+        sremark: ''
+      },
       dialogVisible: false
     }
   },
@@ -195,95 +265,240 @@ export default {
   watch: {
     search(newVal, oldVal) {
       this.listQuery.search = newVal
-      this.getGroupList()
+      this.getCommodityList()
     },
     create() {
       this.$message({ type: 'error', message: '不支持新建!' })
     }
   },
   created() {
-    this.listQuery.id = this.$store.getters.userdata.user.id
     this.userdata = this.$store.getters.userdata
-    this.resetTemp()
-    this.getOrderList()
+    this.listQuery.id = this.userdata.user.id
+    this.listQuery.gid = this.userdata.group.id
+    this.getGroupAllSupplier()
   },
   methods: {
-    resetTemp() {
-      this.temp = {
-        batch: '',
-        sname: '',
-        comms: [],
-        attrs: [],
-        imageList: []
-      }
-    },
     handleSelect() {
       this.listQuery.page = 1
       this.listQuery.limit = 20
-      this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
-      this.getOrderList()
+      this.getCommodityList()
     },
-    getOrderList() {
+    handleStorageSelect() {
+      this.listQuery.page = 1
+      this.listQuery.limit = 20
+      this.getMarketStorageAccount()
+    },
+    handleSubSelect() {
+      this.asoptions.forEach(v => {
+        if (this.listQuery.asid === v.id) {
+          this.temp.saccount = v.label
+          this.temp.sremark = v.remark
+        }
+      })
+      this.handleSelect()
+    },
+    getGroupAllSupplier() {
+      getGroupAllSupplier({
+        id: this.userdata.user.id
+      }).then(response => {
+        if (response.data.data.total > 0) {
+          this.supplierList = []
+          response.data.data.list.forEach(v => {
+            this.supplierList.push({ id: v.id, label: v.name })
+          })
+          this.tempOrder.supplier = this.supplierList[0].id
+        }
+        this.getCategoryList()
+      })
+    },
+    getGroupAllStorage() {
+      getGroupAllStorage({
+        id: this.userdata.user.id
+      }).then(response => {
+        if (response.data.data.list && response.data.data.list.length > 0) {
+          response.data.data.list.forEach(v => {
+            this.storages.push({ id: v.id, label: v.name })
+          })
+          this.listQuery.sid = response.data.data.list[0].id
+          this.getCommodityList()
+        }
+      })
+    },
+    getCommodityList() {
       this.loading = true
-      getStorageOrder(
+      getTodayStockList(
         this.listQuery
       ).then(response => {
+        this.list = []
         this.total = response.data.data.total
-        this.list = response.data.data.list
-        this.list.forEach(v => {
-          v.commList = ''
-          if (v.comms && v.comms.length > 0) {
-            v.comms.forEach(c => {
-              if (v.commList.length < 20) {
-                v.commList = v.commList + c.name + ','
+        const list = response.data.data.list
+        if (list && list.length > 0) {
+          list.forEach(v => {
+            // 初始化数据
+            v.iprice = v.price
+            v.weight = v.weight / 1000
+            v.iweight = v.weight
+            v.inorm = ''
+            v.ivalue = v.value
+
+            // 品类
+            this.categoryList.forEach(c => {
+              if (c.id === v.cid) {
+                v.categoryName = c.name
               }
             })
-          }
-        })
+            // 属性
+            let idx = 0
+            v.attribute = ''
+            this.templateList.forEach(t => {
+              v.attribute = v.attribute + t + ': ' + (v.attrs[idx] ? v.attrs[idx++] : '') + ', '
+            })
+            this.list.push(v)
+          })
+        }
         this.loading = false
       }).catch(error => {
         this.loading = false
         Promise.reject(error)
       })
     },
-    handleDetail(row) {
-      this.temp = Object.assign({}, row)
-      this.temp.imageList = []
-      if (this.temp.attrs && this.temp.attrs.length > 0) {
-        this.temp.attrs.forEach(v => {
-          this.temp.imageList.push(ImageSrc[v.src] + v.path + '/' + v.name)
-        })
-      }
-      this.dialogVisible = true
-    },
-    handleRevoke(row) {
-      this.$confirm('确定要撤销吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        revokeOffline({
-          id: this.userdata.user.id,
-          oid: row.id
-        }).then(() => {
-          this.$message({ type: 'success', message: '撤销成功!' })
-          this.getOrderList()
-        })
+    getCategoryList() {
+      getGroupCategoryList({
+        id: this.userdata.user.id
+      }).then(response => {
+        this.categoryList = response.data.data.list
+        this.getGroupAttrTemp()
       })
     },
-    handleDelete(row) {
-      this.$confirm('确定要删除吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        delOffline({
-          id: this.userdata.user.id,
-          oid: row.id
-        }).then(() => {
-          this.$message({ type: 'success', message: '删除成功!' })
-          this.getOrderList()
+    getGroupAttrTemp() {
+      getGroupAttrTemp({
+        id: this.userdata.user.id,
+        atid: 1
+      }).then(response => {
+        this.templateList = response.data.data.list
+        this.getGroupAllStorage()
+      })
+    },
+    handleAdd(row) {
+      if (!row.inorm) {
+        this.$message({ type: 'error', message: '请填写规格!' })
+        return
+      }
+      if (!row.ivalue) {
+        this.$message({ type: 'error', message: '请填写份数!' })
+        return
+      }
+      // 按件数
+      if (row.value === row.ivalue) {
+        row.price = row.iprice
+        row.weight = row.iweight
+      } else {
+        row.price = (row.iprice * row.ivalue / row.value).toFixed(2)
+        row.weight = (row.iweight * row.ivalue / row.value).toFixed(2)
+      }
+      row.norm = row.inorm
+      row.value = row.ivalue
+      this.temp.clist.map((v, i) => {
+        if (v.id === row.id) {
+          this.temp.clist.splice(i, 1)
+        }
+      })
+      this.temp.clist.push(Object.assign({}, row))
+    },
+    handleDeleteCommodity(row) {
+      this.temp.clist.map((v, i) => {
+        if (v.id === row.id) {
+          this.temp.clist.splice(i, 1)
+        }
+      })
+    },
+    handleApply() {
+      this.temp.list = []
+      this.temp.commoditys = []
+      this.temp.prices = []
+      this.temp.weights = []
+      this.temp.norms = []
+      this.temp.values = []
+      this.storages.forEach(v => {
+        if (v.id === this.listQuery.sid) {
+          this.temp.storage = v.label
+        }
+      })
+      this.supplierList.forEach(v => {
+        if (v.id === this.tempOrder.supplier) {
+          this.temp.supplier = v.label
+        }
+      })
+      this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')
+      this.temp.clist.forEach(v => {
+        this.temp.commoditys.push(v.id)
+        this.temp.prices.push(v.price)
+        this.temp.weights.push(v.weight * 1000)
+        this.temp.norms.push(v.norm)
+        this.temp.values.push(v.value)
+        this.temp.list.push({
+          code: v.code,
+          name: v.name,
+          price: v.price,
+          weight: v.weight,
+          norm: v.norm,
+          value: v.value
         })
+      })
+      this.dialogVisible = true
+    },
+    applyData() {
+      if (this.tempOrder.fare > 0) {
+        if (this.tempOrder.ship.length <= 0) {
+          this.$message({ type: 'error', message: '请填写物流名称!' })
+          return
+        }
+        if (this.tempOrder.code.length <= 0) {
+          this.$message({ type: 'error', message: '请填写物流车牌!' })
+          return
+        }
+        if (this.tempOrder.phone.length <= 0) {
+          this.$message({ type: 'error', message: '请填写物流电话!' })
+          return
+        }
+      }
+      offline({
+        id: this.userdata.user.id,
+        gid: this.userdata.group.id,
+        sid: this.listQuery.sid,
+        aid: this.tempOrder.supplier,
+        date: this.temp.date,
+        commoditys: this.temp.commoditys,
+        prices: this.temp.prices,
+        weights: this.temp.weights,
+        norms: this.temp.norms,
+        values: this.temp.values,
+        attrs: []
+      }).then(response => {
+        const id = response.data.data.id
+        if (this.tempOrder.sremark.length > 0) {
+          addOrderRemark({
+            id: this.userdata.user.id,
+            otype: this.business,
+            oid: id,
+            remark: this.tempOrder.sremark
+          })
+        }
+        if (this.tempOrder.fare > 0) {
+          addOrderFare({
+            id: this.userdata.user.id,
+            otype: this.business,
+            oid: id,
+            ship: this.tempOrder.ship,
+            code: this.tempOrder.code,
+            phone: this.tempOrder.phone,
+            fare: this.tempOrder.fare,
+            remark: this.tempOrder.remark
+          })
+        }
+        this.$message({ type: 'success', message: '申请成功!' })
+        this.getCommodityList()
+        this.dialogVisible = false
       })
     }
   }

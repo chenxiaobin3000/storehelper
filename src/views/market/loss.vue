@@ -1,6 +1,12 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
+      <el-select v-model="listQuery.review" class="filter-item" style="width:100px" @change="handleSelect">
+        <el-option v-for="item in reviewList" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
+      <el-select v-model="listQuery.complete" class="filter-item" style="width:100px" @change="handleSelect">
+        <el-option v-for="item in completeList" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
       <el-select v-model="tid" class="filter-item" style="width:120px" @change="handleOrderSelect">
         <el-option v-for="item in orders" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
@@ -184,7 +190,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { parseTime, completeType } from '@/utils'
+import { parseTime, reviewType, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import { addOrderRemark, getAgreementOrder } from '@/api/order'
 import { getSaleType, loss } from '@/api/sale'
@@ -195,21 +201,22 @@ export default {
     return {
       userdata: {},
       business: 5, // 业务类型
+      reviewList: reviewType,
+      completeList: completeType,
       tid: 0,
       tname: '',
       orders: [],
       date: new Date(),
       list: null,
       total: 0,
-      completeList: completeType,
       loading: false,
       listQuery: {
         id: 0,
         type: 20, // 履约发货
         page: 1,
         limit: 20,
-        review: 1, // 全部
-        complete: 0, // 未完成
+        review: 2, // 已审核
+        complete: 2, // 未完成
         date: null,
         search: null
       },

@@ -10,10 +10,11 @@
       </el-select>
       <span class="filter-item" style="color:#606266">{{ temp.sremark }}</span>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
+      <span class="filter-item" style="color:#606266">{{ mname }}平台</span>
       <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>
     </div>
 
-    <upload-excel-component :on-success="handleSuccess" :before-upload="beforeUpload" />
+    <upload-excel-component :on-success="handleSuccess" />
     <br>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
@@ -90,7 +91,14 @@
       <span class="filter-item" style="color:#606266"> 存量: {{ temp.row.curValue }}.</span>
     </div>
     <div class="filter-container">
-      <el-date-picker v-model="agreeDate" type="date" class="filter-item" style="width: 150px;" @change="handleAgreeSelect" />
+      <el-select v-model="listAgree.review" class="filter-item" style="width:100px" @change="handleAgreeSelect">
+        <el-option v-for="item in reviewList" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
+      <el-select v-model="listAgree.complete" class="filter-item" style="width:100px" @change="handleAgreeSelect">
+        <el-option v-for="item in completeList" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
+      <el-date-picker v-model="agreeDate" type="date" class="filter-item" style="width:160px" placeholder="请输入查询日期" @change="handleAgreeSelect" />
+      <el-input v-model="listAgree.search" class="filter-item" style="width:200px" placeholder="请输入商品名称" @change="handleAgreeSelect" />
     </div>
     <el-table v-loading="loading" :data="agrees" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="批次" align="center">
@@ -219,7 +227,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import { parseTime } from '@/utils'
+import { parseTime, reviewType, completeType } from '@/utils'
+import { marketArr } from '@/utils/market-data'
 import Pagination from '@/components/Pagination'
 import UploadExcelComponent from '@/components/UploadExcel'
 import { setMarketCommList, setMarketCommDetail, delMarketCommDetail, getMarketCommDetail, getMarketSaleDetail } from '@/api/market'
@@ -235,6 +244,8 @@ export default {
       userdata: {},
       soptions: [],
       asoptions: [],
+      mid: 0,
+      mname: '',
       date: new Date(),
       list: null,
       total: 0,
@@ -250,17 +261,21 @@ export default {
         date: null,
         search: null
       },
-      agreeDate: new Date(),
+      reviewList: reviewType,
+      completeList: completeType,
+      agreeDate: '',
       agreeLoading: false,
       agreeTotal: 0,
       agrees: [],
       listAgree: {
         id: 0,
+        aid: 0,
+        asid: 0,
         type: 20, // 履约发货
         page: 1,
         limit: 20,
-        review: 1, // 全部
-        complete: 0, // 未完成
+        review: 2, // 已审核
+        complete: 2, // 未完成
         date: null,
         search: null
       },
@@ -298,10 +313,7 @@ export default {
     this.listQuery.gid = this.userdata.group.id
     this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
     this.listAgree.id = this.userdata.user.id
-    this.agreeDate.setDate(this.date.getDate() - 1)
-    this.listAgree.date = parseTime(this.agreeDate, '{y}-{m}-{d}')
     this.getGroupAllStorage()
-    this.getAgreementList()
   },
   methods: {
     handleSelect() {
@@ -320,11 +332,14 @@ export default {
         if (this.listQuery.asid === v.id) {
           this.temp.saccount = v.label
           this.temp.sremark = v.remark
+          this.handleMarket(v.mid)
         }
       })
       this.handleSelect()
     },
     handleAgreeSelect() {
+      this.listAgree.aid = this.listQuery.aid
+      this.listAgree.asid = this.listQuery.asid
       this.listAgree.page = 1
       this.listAgree.limit = 20
       this.listAgree.date = parseTime(this.agreeDate, '{y}-{m}-{d}')
@@ -333,19 +348,48 @@ export default {
     handleSelectOrder(row) {
       this.temp.row = Object.assign({}, row)
     },
-    beforeUpload(file) {
-      // 暂时不对文件做校验
-      return true
+    handleMarket(id) {
+      this.mid = id
+      this.mname = marketArr[id]
     },
     handleSuccess({ results, header }) {
       const commoditys = []
       const prices = []
       const values = []
+      let idName = ''
+      let priceName = ''
+      let valueName = ''
+      switch (this.mid) {
+        case 1: // 拼多多
+          idName = '商品ID'
+          priceName = '商家报价（元）'
+          valueName = '商品总数'
+          break
+        case 2: // 美团
+          this.$message({ type: 'error', message: '暂不支持导入美团平台数据!' })
+          return
+        case 3: // 快驴
+          idName = '商品编号'
+          priceName = '商品单价/业务单价'
+          valueName = '下单数量/业务数量'
+          break
+        case 4: // 美莱
+          idName = 'ID编号'
+          priceName = '商品单价'
+          valueName = '下单量'
+          break
+        case 5: // 淘菜菜
+          this.$message({ type: 'error', message: '暂不支持导入淘菜菜平台数据!' })
+          return
+        default:
+          this.$message({ type: 'error', message: '请选择要导入的平台!' })
+          return
+      }
       results.forEach(v => {
-        if (v['商品ID'] && v['商品ID'].length > 0) {
-          commoditys.push(v['商品ID'])
-          prices.push(v['商家报价（元）'])
-          values.push(v['商品总数'])
+        if (v[idName] && v[idName].length > 0) {
+          commoditys.push(v[idName])
+          prices.push(v[priceName])
+          values.push(v[valueName])
         }
       })
       setMarketCommList({
@@ -372,11 +416,12 @@ export default {
         if (response.data.data.list && response.data.data.list.length > 0) {
           this.asoptions = []
           response.data.data.list.forEach(v => {
-            this.asoptions.push({ id: v.id, label: v.account, remark: v.remark })
+            this.asoptions.push({ id: v.id, label: v.account, remark: v.remark, mid: v.mid })
           })
           this.listQuery.asid = this.asoptions[0].id
           this.temp.saccount = this.asoptions[0].label
           this.temp.sremark = this.asoptions[0].remark
+          this.handleMarket(this.asoptions[0].mid)
         } else {
           this.asoptions = [{ id: 0, label: '无' }]
           this.listQuery.asid = 0
@@ -385,6 +430,7 @@ export default {
         }
         this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
         this.getCommodityList()
+        this.handleAgreeSelect()
       })
     },
     getMarketStorageAccount() {
@@ -397,6 +443,7 @@ export default {
         this.listQuery.aid = data.aid
         this.temp.account = data.account
         this.temp.remark = data.remark
+        this.handleMarket(data.mid)
         this.getMarketSubAccount()
       }).catch(error => {
         this.temp.account = ''

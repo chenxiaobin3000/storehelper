@@ -327,6 +327,7 @@ export default {
         date: null,
         types: [],
         commoditys: [],
+        prices: [],
         weights: [],
         values: [],
         types2: [],
@@ -336,6 +337,7 @@ export default {
         values2: [],
         types3: [],
         commoditys3: [],
+        prices3: [],
         weights3: [],
         values3: [],
         attrs: null,
@@ -454,7 +456,8 @@ export default {
         data.list.forEach(v => {
           // 初始化数据
           v.iprice = v.sprice
-          v.iweight = v.sweight / 1000
+          v.sweight = v.sweight / 1000
+          v.iweight = v.sweight
           v.ivalue = v.svalue
 
           // 品类
@@ -561,6 +564,7 @@ export default {
       this.temp.list = []
       this.temp.types = []
       this.temp.commoditys = []
+      this.temp.prices = []
       this.temp.weights = []
       this.temp.values = []
       this.temp.types2 = []
@@ -570,6 +574,7 @@ export default {
       this.temp.values2 = []
       this.temp.types3 = []
       this.temp.commoditys3 = []
+      this.temp.prices3 = []
       this.temp.weights3 = []
       this.temp.values3 = []
       this.storages.forEach(v => {
@@ -604,6 +609,7 @@ export default {
           ioname = '出库'
           this.temp.types.push(type)
           this.temp.commoditys.push(row.id)
+          this.temp.prices.push(row.price)
           this.temp.weights.push(row.weight * 1000)
           this.temp.values.push(row.value)
           break
@@ -619,6 +625,7 @@ export default {
           ioname = '损耗'
           this.temp.types3.push(type)
           this.temp.commoditys3.push(row.id)
+          this.temp.prices3.push(row.price)
           this.temp.weights3.push(row.weight * 1000)
           this.temp.values3.push(row.value)
           break
@@ -643,6 +650,7 @@ export default {
         date: this.temp.date,
         types: this.temp.types,
         commoditys: this.temp.commoditys,
+        prices: this.temp.prices,
         weights: this.temp.weights,
         values: this.temp.values,
         types2: this.temp.types2,
@@ -652,6 +660,7 @@ export default {
         values2: this.temp.values2,
         types3: this.temp.types3,
         commoditys3: this.temp.commoditys3,
+        prices3: this.temp.prices3,
         weights3: this.temp.weights3,
         values3: this.temp.values3,
         attrs: []

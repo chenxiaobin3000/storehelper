@@ -55,7 +55,7 @@
           <el-input v-model="temp.account" />
         </el-form-item>
         <el-form-item label="平台" prop="name">
-          <el-select v-model="temp.mid" class="filter-item">
+          <el-select v-model="temp.smid" class="filter-item">
             <el-option v-for="item in moptions" :key="item.id" :label="item.label" :value="item.id" />
           </el-select>
         </el-form-item>
@@ -137,7 +137,7 @@ export default {
         id: 0,
         aid: '',
         mremark: '',
-        mid: 1,
+        smid: 1,
         account: '',
         remark: ''
       }
@@ -192,7 +192,7 @@ export default {
       addMarketMany({
         id: this.listQuery.id,
         gid: this.listQuery.gid,
-        mid: this.temp.mid,
+        mid: this.temp.smid,
         aid: this.temp.aid,
         account: this.temp.account,
         remark: this.temp.remark
@@ -204,9 +204,6 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row)
-      if (this.temp.mid == null) {
-        this.temp.mid = 1
-      }
       this.dialogStatus = 'update'
       this.dialogVisible = true
     },
@@ -214,7 +211,7 @@ export default {
       setMarketMany({
         id: this.listQuery.id,
         gid: this.listQuery.gid,
-        mid: this.temp.mid,
+        mid: this.temp.smid,
         aid: this.temp.aid,
         sub: this.temp.id,
         account: this.temp.account,
@@ -234,7 +231,6 @@ export default {
         delMarketMany({
           id: this.listQuery.id,
           gid: this.listQuery.gid,
-          aid: row.aid,
           sub: row.id
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
