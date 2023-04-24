@@ -19,6 +19,7 @@ import storageRouter from './modules/storage'
 import superRouter from './modules/super'
 import supplierRouter from './modules/supplier'
 import systemRouter from './modules/system'
+import transportRouter from './modules/transport'
 import userRouter from './modules/user'
 
 /**
@@ -72,6 +73,7 @@ export const asyncRoutes = [
   /** when your routing map is too long, you can split it into small modules **/
   marketRouter,
   purchaseRouter,
+  transportRouter,
   storageRouter,
   productRouter,
   agreementRouter,

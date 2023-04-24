@@ -53,12 +53,12 @@
           <el-input v-model="row.iweight" />
         </template>
       </el-table-column>
-      <el-table-column label="规格" width="80px" align="center">
+      <el-table-column label="箱规" width="80px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.inorm" />
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.ivalue" />
         </template>
@@ -111,12 +111,12 @@
           <span>{{ row.weight }}kg</span>
         </template>
       </el-table-column>
-      <el-table-column label="规格" width="80px" align="center">
+      <el-table-column label="箱规" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.norm }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.value }}</span>
         </template>
@@ -164,12 +164,12 @@
           <span>{{ row.weight }}kg</span>
         </template>
       </el-table-column>
-      <el-table-column label="规格" width="80px" align="center">
+      <el-table-column label="箱规" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.norm }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.value }}</span>
         </template>
@@ -217,12 +217,12 @@
           <span>{{ row.weight }}kg</span>
         </template>
       </el-table-column>
-      <el-table-column label="规格" width="80px" align="center">
+      <el-table-column label="箱规" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.norm }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.value }}</span>
         </template>
@@ -268,12 +268,12 @@
               <span>{{ row.weight }}kg</span>
             </template>
           </el-table-column>
-          <el-table-column label="规格" width="80px" align="center">
+          <el-table-column label="箱规" width="80px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.norm }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="件数" width="80px" align="center">
+          <el-table-column label="份数" width="80px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.value }}</span>
             </template>
@@ -324,7 +324,7 @@ export default {
       ioptions: [{
         id: 1, label: '按重量'
       }, {
-        id: 2, label: '按件数'
+        id: 2, label: '按份数'
       }],
       storages: [],
       date: new Date(),
@@ -491,7 +491,7 @@ export default {
         return
       }
       if (!row.inorm) {
-        this.$message({ type: 'error', message: '请填写规格!' })
+        this.$message({ type: 'error', message: '请填写箱规!' })
         return
       }
       if (!row.ivalue) {
@@ -506,7 +506,7 @@ export default {
           row.price = (row.iprice * row.iweight / row.weight).toFixed(2)
         }
       } else {
-        // 按件数
+        // 按份数
         if (row.value === row.ivalue) {
           row.price = row.iprice
         } else {

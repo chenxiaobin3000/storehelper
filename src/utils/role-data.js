@@ -9,11 +9,11 @@ export const MyRoleData = [{
   }, {
     path: 'sale', meta: { title: '销售录入', roles: [503] }
   }, {
-    path: 'after', meta: { title: '售后录入', roles: [504] }
+    path: 'loss', meta: { title: '损耗录入', roles: [504] }
   }, {
-    path: 'loss', meta: { title: '损耗录入', roles: [505] }
+    path: 'offline', meta: { title: '线下销售', roles: [505] }
   }, {
-    path: 'exception', meta: { title: '异常录入', roles: [506] }
+    path: 'back', meta: { title: '线下退货', roles: [506] }
   }]
 }, {
   path: '/purchase', meta: { title: '采购管理', roles: [250] },
@@ -27,21 +27,34 @@ export const MyRoleData = [{
     path: 'return', meta: { title: '退货录入', roles: [254] }
   }]
 }, {
+  path: '/transport', meta: { title: '物流管理', roles: [350] },
+  children: [{
+    path: 'report', meta: { title: '物流总览', roles: [351] }
+  }, {
+    path: 'getList', meta: { title: '物流明细', roles: [352] }
+  }, {
+    path: 'purchase', meta: { title: '采购物流', roles: [353] }
+  }, {
+    path: 'storage', meta: { title: '仓储物流', roles: [354] }
+  }, {
+    path: 'agreement', meta: { title: '履约物流', roles: [355] }
+  }]
+}, {
   path: '/storage', meta: { title: '仓储管理', roles: [800] },
   children: [{
     path: 'stockReport', meta: { title: '库存总览', roles: [801] }
   }, {
     path: 'stockList', meta: { title: '库存明细', roles: [802] }
   }, {
-    path: 'report', meta: { title: '仓储总览', roles: [803] }
+    path: 'report', meta: { title: '订单总览', roles: [803] }
   }, {
-    path: 'getList', meta: { title: '仓储明细', roles: [804] }
+    path: 'getList', meta: { title: '订单明细', roles: [804] }
   }, {
     path: 'purchase', meta: { title: '入库录入', roles: [805] }
   }, {
-    path: 'dispatch', meta: { title: '调度出库', roles: [807] }
+    path: 'dispatch', meta: { title: '出库录入', roles: [807] }
   }, {
-    path: 'loss', meta: { title: '损耗明细', roles: [808] }
+    path: 'loss', meta: { title: '损耗录入', roles: [808] }
   }, {
     path: 'return', meta: { title: '退货录入', roles: [806] }
   }]
@@ -64,10 +77,6 @@ export const MyRoleData = [{
     path: 'shipped', meta: { title: '发货录入', roles: [203] }
   }, {
     path: 'return', meta: { title: '退货录入', roles: [204] }
-  }, {
-    path: 'offline', meta: { title: '线下销售', roles: [205] }
-  }, {
-    path: 'back', meta: { title: '线下退货', roles: [206] }
   }]
 }, {
   path: '/supplier', hidden: true, meta: { title: '供应商管理', roles: [900] },

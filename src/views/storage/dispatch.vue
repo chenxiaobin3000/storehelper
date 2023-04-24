@@ -50,12 +50,12 @@
           <el-input v-model="row.iweight" />
         </template>
       </el-table-column>
-      <el-table-column label="规格" width="80px" align="center">
+      <el-table-column label="箱规" width="80px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.inorm" />
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.ivalue" />
         </template>
@@ -70,7 +70,7 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
 
     <div class="filter-container" align="center">
-      <span class="filter-item">----------  仓储调度单信息  ----------</span>
+      <span class="filter-item">----------  仓储出库单信息  ----------</span>
     </div>
     <el-table v-if="temp.clist.length>0" v-loading="loading" :data="temp.clist" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="商品" width="100px" align="center">
@@ -108,12 +108,12 @@
           <span>{{ row.weight }}kg</span>
         </template>
       </el-table-column>
-      <el-table-column label="规格" width="80px" align="center">
+      <el-table-column label="箱规" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.norm }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.value }}</span>
         </template>
@@ -161,12 +161,12 @@
           <span>{{ row.weight }}kg</span>
         </template>
       </el-table-column>
-      <el-table-column label="规格" width="80px" align="center">
+      <el-table-column label="箱规" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.norm }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.value }}</span>
         </template>
@@ -214,12 +214,12 @@
           <span>{{ row.weight }}kg</span>
         </template>
       </el-table-column>
-      <el-table-column label="规格" width="80px" align="center">
+      <el-table-column label="箱规" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.norm }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.value }}</span>
         </template>
@@ -231,7 +231,7 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog title="仓储调度单" :visible.sync="dialogVisible">
+    <el-dialog title="仓储出库单" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
         <el-form-item label="制单日期" prop="date">
           <span>{{ temp.date }}</span>
@@ -270,12 +270,12 @@
               <span>{{ row.weight }}kg</span>
             </template>
           </el-table-column>
-          <el-table-column label="规格" width="80px" align="center">
+          <el-table-column label="箱规" width="80px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.norm }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="件数" width="80px" align="center">
+          <el-table-column label="份数" width="80px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.value }}</span>
             </template>
@@ -340,7 +340,7 @@ export default {
       ioptions: [{
         id: 1, label: '按重量'
       }, {
-        id: 2, label: '按件数'
+        id: 2, label: '按份数'
       }],
       storages: [],
       date: new Date(),
@@ -491,7 +491,7 @@ export default {
         return
       }
       if (!row.inorm) {
-        this.$message({ type: 'error', message: '请填写规格!' })
+        this.$message({ type: 'error', message: '请填写箱规!' })
         return
       }
       if (!row.ivalue) {
@@ -506,7 +506,7 @@ export default {
           row.price = (row.iprice * row.iweight / row.weight).toFixed(2)
         }
       } else {
-        // 按件数
+        // 按份数
         if (row.value === row.ivalue) {
           row.price = row.iprice
         } else {

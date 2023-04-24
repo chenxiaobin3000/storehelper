@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="listQuery.sid" class="filter-item" @change="handleStorageSelect">
+      <el-select v-model="listQuery.sid" class="filter-item" @change="handleSelect">
         <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-select v-model="tempOrder.supplier" class="filter-item">
@@ -47,12 +47,12 @@
           <span>{{ row.iweight }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="规格" width="80px" align="center">
+      <el-table-column label="箱规" width="80px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.inorm" />
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.ivalue" />
         </template>
@@ -105,12 +105,12 @@
           <span>{{ row.weight }}kg</span>
         </template>
       </el-table-column>
-      <el-table-column label="规格" width="80px" align="center">
+      <el-table-column label="箱规" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.norm }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.value }}</span>
         </template>
@@ -154,12 +154,12 @@
               <span>{{ row.weight }}kg</span>
             </template>
           </el-table-column>
-          <el-table-column label="规格" width="80px" align="center">
+          <el-table-column label="箱规" width="80px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.norm }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="件数" width="80px" align="center">
+          <el-table-column label="份数" width="80px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.value }}</span>
             </template>
@@ -283,11 +283,6 @@ export default {
       this.listQuery.limit = 20
       this.getCommodityList()
     },
-    handleStorageSelect() {
-      this.listQuery.page = 1
-      this.listQuery.limit = 20
-      this.getMarketStorageAccount()
-    },
     handleSubSelect() {
       this.asoptions.forEach(v => {
         if (this.listQuery.asid === v.id) {
@@ -381,14 +376,14 @@ export default {
     },
     handleAdd(row) {
       if (!row.inorm) {
-        this.$message({ type: 'error', message: '请填写规格!' })
+        this.$message({ type: 'error', message: '请填写箱规!' })
         return
       }
       if (!row.ivalue) {
         this.$message({ type: 'error', message: '请填写份数!' })
         return
       }
-      // 按件数
+      // 按份数
       if (row.value === row.ivalue) {
         row.price = row.iprice
         row.weight = row.iweight

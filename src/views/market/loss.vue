@@ -108,12 +108,12 @@
           <span>{{ row.weight }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="规格" width="100px" align="center">
+      <el-table-column label="箱规" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.norm }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.value" @change="handleValue(row)" />
         </template>
@@ -163,12 +163,12 @@
               <span>{{ row.weight }}kg</span>
             </template>
           </el-table-column>
-          <el-table-column label="规格" width="80px" align="center">
+          <el-table-column label="箱规" width="80px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.norm }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="件数" width="80px" align="center">
+          <el-table-column label="份数" width="80px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.value }}</span>
             </template>
@@ -339,7 +339,7 @@ export default {
       row.value = parseInt(row.value)
       if (row.value > row.oldValue) {
         row.value = row.oldValue
-        this.$message({ type: 'error', message: '退货件数不能超过履约单件数!' })
+        this.$message({ type: 'error', message: '退货份数不能超过履约单份数!' })
         return
       }
       if (row.oldValue === row.value) {

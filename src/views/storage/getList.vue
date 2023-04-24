@@ -90,7 +90,7 @@
                 <span>{{ row.weight / 1000 }}kg</span>
               </template>
             </el-table-column>
-            <el-table-column label="件数" width="70px" align="center">
+            <el-table-column label="份数" width="70px" align="center">
               <template slot-scope="{row}">
                 <span>{{ row.value }}件</span>
               </template>
@@ -185,7 +185,7 @@ export default {
       orders: [{
         id: 10, label: '采购入库单'
       }, {
-        id: 12, label: '仓储调度单'
+        id: 12, label: '仓储出库单'
       }, {
         id: 13, label: '仓储损耗单'
       }, {

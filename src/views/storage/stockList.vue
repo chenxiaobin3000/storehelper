@@ -31,7 +31,7 @@
           <span>{{ row.weight / 1000 }}kg</span>
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="180px" align="center">
+      <el-table-column label="份数" width="180px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.value }}件</span>
         </template>

@@ -51,7 +51,7 @@
           <el-input v-model="row.iweight" />
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.ivalue" />
         </template>
@@ -104,7 +104,7 @@
           <span>{{ row.weight }}kg</span>
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.value }}</span>
         </template>
@@ -152,7 +152,7 @@
           <span>{{ row.weight }}kg</span>
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.value }}</span>
         </template>
@@ -200,7 +200,7 @@
           <span>{{ row.weight }}kg</span>
         </template>
       </el-table-column>
-      <el-table-column label="件数" width="80px" align="center">
+      <el-table-column label="份数" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.value }}</span>
         </template>
@@ -251,7 +251,7 @@
               <span>{{ row.weight }}kg</span>
             </template>
           </el-table-column>
-          <el-table-column label="件数" width="80px" align="center">
+          <el-table-column label="份数" width="80px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.value }}</span>
             </template>

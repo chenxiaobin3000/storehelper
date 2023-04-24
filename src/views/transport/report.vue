@@ -1,0 +1,136 @@
+<template>
+  <div class="app-container">
+    <div v-if="tdata.length > 0" class="filter-container div-float" style="float:right; right:50px;">
+      <el-select v-model="cycle" class="filter-item">
+        <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
+    </div>
+    <chart :labels="labels" :xdata="xdata" :tdata="tdata" width="100%" height="100%" />
+  </div>
+</template>
+
+<script>
+import { mapState } from 'vuex'
+import { parseTime, reportCycle } from '@/utils'
+import Chart from '@/components/Charts/Chart'
+import { getPurchaseReport } from '@/api/report'
+
+export default {
+  components: { Chart },
+  data() {
+    return {
+      userdata: {},
+      cycle: 1,
+      options: reportCycle,
+      labels: [],
+      xdata: [],
+      tdata: []
+    }
+  },
+  computed: {
+    ...mapState({
+      search: state => state.header.search,
+      create: state => state.header.create
+    })
+  },
+  watch: {
+    search(newVal, oldVal) {
+      this.$message({ type: 'error', message: '不支持搜索!' })
+    },
+    create() {
+      this.$message({ type: 'error', message: '不支持新建!' })
+    }
+  },
+  created() {
+    this.userdata = this.$store.getters.userdata
+
+    // x轴
+    this.xdata = []
+    const date = new Date()
+    date.setDate(date.getDate() - 6)
+    for (let i = 0; i < 7; i++) {
+      this.xdata.push({
+        key: parseTime(date, '{y}{m}{d}'),
+        value: parseTime(date, '{m}月{d}日')
+      })
+      date.setDate(date.getDate() + 1)
+    }
+
+    // 数据
+    this.resetData()
+
+    // 左上标签
+    this.labels = []
+    this.tdata.forEach(v => {
+      this.labels.push(v.name)
+    })
+    this.getPurchaseReport()
+  },
+  methods: {
+    resetData() {
+      this.tdata = [{
+        name: '仓储采购', type: 'line', yAxisIndex: 0, color: '#91cc75', data: []
+      }, {
+        name: '仓储退货', type: 'line', yAxisIndex: 0, color: '#ee6666', data: []
+      }]
+    },
+    getPurchaseReport() {
+      this.resetData()
+      switch (this.cycle) {
+        case 1: // 日报
+          this.getPurchaseDayReport()
+          break
+        default:
+          break
+      }
+    },
+    getPurchaseDayReport() {
+      getPurchaseReport({
+        id: this.userdata.user.id,
+        gid: this.userdata.group.id,
+        sid: 0,
+        cycle: 1
+      }).then(response => {
+        const tdata = [...this.tdata]
+        tdata[0].data = Array(7).fill(0)
+        tdata[1].data = [...tdata[0].data]
+        const size = this.xdata.length
+        const data = response.data.data.list
+        data.forEach(v => {
+          for (let i = 0; i < size; i++) {
+            if (this.xdata[i].key === v.date) {
+              switch (v.type) {
+                case 1: // 采购仓储进货
+                  tdata[0].data[i] = v.num
+                  break
+                case 2: // 采购仓储退货
+                  tdata[1].data[i] = v.num
+                  break
+                default:
+                  break
+              }
+              return
+            }
+          }
+        })
+        this.tdata = tdata
+      })
+    }
+  }
+}
+</script>
+
+<style scoped>
+.app-container {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 84px);
+}
+
+.div-float {
+  position: absolute;
+  margin-top: 0;
+  margin-left: 200px;
+  z-index: 1;
+}
+</style>

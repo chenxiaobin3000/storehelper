@@ -37,6 +37,11 @@
           <span>{{ row.curPrice }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="应付" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.curPrice - row.pay }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="{row}">
           <span>{{ row.complete == 0 ? '未完成' : '已完成' }}</span>
@@ -72,7 +77,7 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
 
     <div class="filter-container" align="center">
-      <span class="filter-item">----------  仓储退货单信息  ----------</span>
+      <span class="filter-item">----------  采购退货单信息  ----------</span>
     </div>
     <el-table v-if="temp.clist.length>0" v-loading="loading" :data="temp.clist" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="商品" width="100px" align="center">
@@ -173,15 +178,15 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog title="仓储退货单" :visible.sync="dialogVisible">
+    <el-dialog title="采购退货单" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="采购单号" prop="ccode">
+        <el-form-item label="采购单号" prop="batch">
           <span>{{ temp.batch }}</span>
         </el-form-item>
-        <el-form-item label="制单日期" prop="cname">
+        <el-form-item label="制单日期" prop="date">
           <span>{{ temp.date }}</span>
         </el-form-item>
-        <el-form-item label="仓库" prop="cremark">
+        <el-form-item label="仓库" prop="storage">
           <span>{{ temp.storage }}</span>
         </el-form-item>
         <el-table v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
@@ -235,14 +240,14 @@ import { mapState } from 'vuex'
 import { parseTime, reviewType, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import { addOrderRemark, getPurchaseOrder } from '@/api/order'
-import { returnc } from '@/api/storage'
+import { returnc } from '@/api/purchase'
 
 export default {
   components: { Pagination },
   data() {
     return {
       userdata: {},
-      business: 2, // 业务类型
+      business: 1, // 业务类型
       reviewList: reviewType,
       completeList: completeType,
       date: new Date(),
@@ -255,7 +260,7 @@ export default {
         page: 1,
         limit: 20,
         review: 2, // 已审核
-        complete: 1, // 已完成
+        complete: 2, // 未完成
         date: null,
         search: null
       },
