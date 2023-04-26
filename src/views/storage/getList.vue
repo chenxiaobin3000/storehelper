@@ -200,7 +200,7 @@ export default {
         id: 0,
         type: 10, // 采购入库
         page: 1,
-        limit: 20,
+        limit: 10,
         review: 1, // 全部
         date: null,
         search: null

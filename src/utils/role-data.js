@@ -118,10 +118,6 @@ export const MyRoleData = [{
   }, {
     path: 'commodity', meta: { title: '商品列表', roles: [302] }
   }, {
-    path: 'halfgood', meta: { title: '半成品列表', roles: [303] }
-  }, {
-    path: 'original', meta: { title: '原料列表', roles: [304] }
-  }, {
     path: 'category', meta: { title: '品类管理', roles: [306] }
   }, {
     path: 'attribute', meta: { title: '属性管理', roles: [307] }

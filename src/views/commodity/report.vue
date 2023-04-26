@@ -91,7 +91,7 @@ export default {
       listQuery: {
         id: 0,
         page: 1,
-        limit: 20,
+        limit: 10,
         mid: 0,
         cycle: 1,
         search: null

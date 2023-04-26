@@ -1,9 +1,6 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
-        <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleSelect">
         <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
@@ -320,8 +317,6 @@ import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 import { getStorageCommodity } from '@/api/commodity'
-import { getStorageHalfgood } from '@/api/halfgood'
-import { getStorageOriginal } from '@/api/original'
 import { getGroupAllSupplier } from '@/api/supplier'
 import { addOrderFare, addOrderRemark } from '@/api/order'
 import { purchase, setPurchaseSupplier } from '@/api/purchase'
@@ -332,14 +327,6 @@ export default {
     return {
       userdata: {},
       business: 1, // 业务类型
-      ctype: 1,
-      options: [{
-        id: 1, label: '商品'
-      }, {
-        id: 2, label: '半成品'
-      }, {
-        id: 3, label: '原料'
-      }],
       itype: 1,
       ioptions: [{
         id: 1, label: '标准'
@@ -358,7 +345,7 @@ export default {
         id: 0,
         sid: 0,
         page: 1,
-        limit: 20,
+        limit: 10,
         search: null
       },
       temp: {
@@ -442,40 +429,14 @@ export default {
     },
     getCommodityList() {
       this.loading = true
-      switch (this.ctype) {
-        case 1:
-          getStorageCommodity(
-            this.listQuery
-          ).then(response => {
-            this.handleRet(response.data.data)
-          }).catch(error => {
-            this.loading = false
-            Promise.reject(error)
-          })
-          break
-        case 2:
-          getStorageHalfgood(
-            this.listQuery
-          ).then(response => {
-            this.handleRet(response.data.data)
-          }).catch(error => {
-            this.loading = false
-            Promise.reject(error)
-          })
-          break
-        case 3:
-          getStorageOriginal(
-            this.listQuery
-          ).then(response => {
-            this.handleRet(response.data.data)
-          }).catch(error => {
-            this.loading = false
-            Promise.reject(error)
-          })
-          break
-        default:
-          break
-      }
+      getStorageCommodity(
+        this.listQuery
+      ).then(response => {
+        this.handleRet(response.data.data)
+      }).catch(error => {
+        this.loading = false
+        Promise.reject(error)
+      })
     },
     handleRet(data) {
       this.total = data.total
@@ -515,8 +476,7 @@ export default {
     },
     getGroupAttrTemp() {
       getGroupAttrTemp({
-        id: this.userdata.user.id,
-        atid: this.ctype
+        id: this.userdata.user.id
       }).then(response => {
         this.templateList = response.data.data.list
         this.getGroupAllStorage()
@@ -550,19 +510,7 @@ export default {
       }
       row.norm = row.inorm
       row.value = row.ivalue
-      switch (this.ctype) {
-        case 1:
-          this.temp.clist.push(Object.assign({}, row))
-          break
-        case 2:
-          this.temp.hlist.push(Object.assign({}, row))
-          break
-        case 3:
-          this.temp.olist.push(Object.assign({}, row))
-          break
-        default:
-          break
-      }
+      this.temp.clist.push(Object.assign({}, row))
       this.$message({ type: 'success', message: '添加成功!' })
     },
     handleDeleteCommodity(row) {

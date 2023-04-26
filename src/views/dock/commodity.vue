@@ -118,7 +118,7 @@
 <script>
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
-import { setMarketCommodity, delMarketCommodity, getMarketCommodity } from '@/api/market'
+import { setMarketCommodity, delMarketCommodity, getMarketCommodityList } from '@/api/market'
 import { getMarketStorageAccount, getMarketSubAccount } from '@/api/dock'
 import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryList } from '@/api/category'
@@ -140,7 +140,7 @@ export default {
         id: 0,
         gid: 0,
         page: 1,
-        limit: 20,
+        limit: 10,
         sid: 0,
         aid: 0,
         asid: 0,
@@ -259,7 +259,7 @@ export default {
     },
     getCommodityList() {
       this.loading = true
-      getMarketCommodity(
+      getMarketCommodityList(
         this.listQuery
       ).then(response => {
         this.list = []

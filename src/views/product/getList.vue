@@ -193,7 +193,7 @@ export default {
         id: 0,
         type: 3, // 生产完成
         page: 1,
-        limit: 20,
+        limit: 10,
         review: 1, // 全部
         complete: 0, // 未完成
         date: null,

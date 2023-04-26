@@ -221,7 +221,7 @@ export default {
         id: 0,
         type: 30, // 平台销售
         page: 1,
-        limit: 20,
+        limit: 10,
         review: 1, // 全部
         date: null,
         search: null

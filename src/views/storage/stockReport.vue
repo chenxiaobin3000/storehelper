@@ -1,9 +1,6 @@
 <template>
   <div class="app-container">
     <div v-if="tdata.length > 0" class="filter-container div-float" style="float:right; right:50px;">
-      <el-select v-model="ctype" class="filter-item" style="width:100px" @change="handleSelect">
-        <el-option v-for="item in coptions" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
       <el-select v-model="cycle" class="filter-item" @change="handleSelect">
         <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
@@ -24,14 +21,6 @@ export default {
   data() {
     return {
       userdata: {},
-      ctype: 1,
-      coptions: [{
-        id: 1, label: '商品'
-      }, {
-        id: 2, label: '半成品'
-      }, {
-        id: 3, label: '原料'
-      }],
       cycle: 1,
       options: reportCycle,
       labels: [],
@@ -90,8 +79,7 @@ export default {
       getStockDay({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
-        sid: 0,
-        ctype: this.ctype
+        sid: 0
       }).then(response => {
         const tdata = [...this.tdata]
         const tsize = tdata.length

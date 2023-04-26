@@ -253,7 +253,7 @@ export default {
         id: 0,
         type: 1, // 采购进货
         page: 1,
-        limit: 20,
+        limit: 10,
         review: 2, // 已审核
         complete: 2, // 未完成
         date: null,

@@ -4,9 +4,6 @@
       <el-select v-model="listQuery.sid" style="width: 200px;" class="filter-item" @change="handleSelect">
         <el-option v-for="item in soptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <el-select v-model="listQuery.ctype" style="width: 100px;" class="filter-item" @change="handleSelect">
-        <el-option v-for="item in coptions" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
     </div>
 
@@ -55,13 +52,6 @@ export default {
     return {
       userdata: {},
       soptions: [],
-      coptions: [{
-        id: 1, label: '商品'
-      }, {
-        id: 2, label: '半成品'
-      }, {
-        id: 3, label: '原料'
-      }],
       date: new Date(),
       list: null,
       total: 0,
@@ -69,9 +59,8 @@ export default {
       listQuery: {
         id: 0,
         sid: 0,
-        ctype: 1,
         page: 1,
-        limit: 20,
+        limit: 10,
         date: null,
         search: null
       }

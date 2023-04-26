@@ -15,12 +15,6 @@ export default {
     path: 'commodity', component: () => import('@/views/commodity/commodity'),
     name: 'commodity_commodity', meta: { title: '商品列表', roles: [302] }
   }, {
-    path: 'halfgood', component: () => import('@/views/commodity/halfgood'),
-    name: 'commodity_halfgood', meta: { title: '半成品列表', roles: [303] }
-  }, {
-    path: 'original', component: () => import('@/views/commodity/original'),
-    name: 'commodity_original', meta: { title: '原料列表', roles: [304] }
-  }, {
     path: 'category', component: () => import('@/views/commodity/category'),
     name: 'commodity_category', meta: { title: '品类管理', roles: [306] }
   }, {

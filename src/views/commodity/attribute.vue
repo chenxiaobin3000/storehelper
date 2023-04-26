@@ -1,47 +1,31 @@
 <template>
   <div class="app-container">
     <el-row>
-      <el-col :span="16">
-        <el-form>
-          <el-form-item label="商品属性模板">
-            <el-button type="primary" size="mini" class="button-node" @click="handleUpdateTemp()">
-              更新模板
-            </el-button>
-            <el-drag-select v-model="attrTempList1" class="select-node" multiple placeholder="请选择商品属性">
-              <el-option v-for="item in attrOptions" :key="item.id" :label="item.label" :value="item.id" />
-            </el-drag-select>
-          </el-form-item>
-          <el-form-item label="半成品属性模板">
-            <el-drag-select v-model="attrTempList2" class="select-node" multiple placeholder="请选择半成品属性">
-              <el-option v-for="item in attrOptions" :key="item.id" :label="item.label" :value="item.id" />
-            </el-drag-select>
-          </el-form-item>
-          <el-form-item label="原料属性模板">
-            <el-drag-select v-model="attrTempList3" class="select-node" multiple placeholder="请选择原料属性">
-              <el-option v-for="item in attrOptions" :key="item.id" :label="item.label" :value="item.id" />
-            </el-drag-select>
-          </el-form-item>
-        </el-form>
-      </el-col>
-      <el-col :span="8">
-        <el-form style="padding-left: 20px">
-          <el-form-item label="属性列表">
-            <el-table v-loading="loading" :data="attrList" style="width: 100%" border fit highlight-current-row>
-              <el-table-column label="属性名称" width="140" align="center">
-                <template slot-scope="{row}">
-                  {{ row.name }}
-                </template>
-              </el-table-column>
-              <el-table-column label="操作" align="center">
-                <template slot-scope="{row}">
-                  <el-button type="primary" size="small" @click="handleUpdate(row)">编辑</el-button>
-                  <el-button type="danger" size="small" @click="handleDelete(row)">删除</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-form-item>
-        </el-form>
-      </el-col>
+      <el-form>
+        <el-form-item label="属性列表">
+          <el-table v-loading="loading" :data="attrList" style="width: 100%" border fit highlight-current-row>
+            <el-table-column label="属性名称" align="center">
+              <template slot-scope="{row}">
+                {{ row.name }}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" align="center">
+              <template slot-scope="{row}">
+                <el-button type="primary" size="small" @click="handleUpdate(row)">编辑</el-button>
+                <el-button type="danger" size="small" @click="handleDelete(row)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+        <el-form-item label="商品属性模板" align="center">
+          <el-drag-select v-model="attrTempList" class="select-node" multiple placeholder="请选择商品属性">
+            <el-option v-for="item in attrOptions" :key="item.id" :label="item.label" :value="item.id" />
+          </el-drag-select>
+          <el-button type="primary" size="mini" style="margin-top:12px" @click="handleUpdateTemp()">
+            更新模板
+          </el-button>
+        </el-form-item>
+      </el-form>
     </el-row>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
@@ -69,11 +53,7 @@ export default {
     return {
       userdata: {},
       attrList: [],
-      attrTempList1: [],
-      attrTempList2: [],
-      attrTempList3: [],
-      attrTempList4: [],
-      attrTempList5: [],
+      attrTempList: [],
       attrOptions: [],
       loading: false,
       temp: {},
@@ -140,11 +120,7 @@ export default {
         id: this.userdata.user.id,
         atid: 0
       }).then(response => {
-        this.attrTempList1 = response.data.data.list1
-        this.attrTempList2 = response.data.data.list2
-        this.attrTempList3 = response.data.data.list3
-        this.attrTempList4 = response.data.data.list4
-        this.attrTempList5 = response.data.data.list5
+        this.attrTempList = response.data.data.list
       })
     },
     createData() {
@@ -194,11 +170,7 @@ export default {
       updateAttrTemp({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
-        template1: this.attrTempList1,
-        template2: this.attrTempList2,
-        template3: this.attrTempList3,
-        template4: this.attrTempList4,
-        template5: this.attrTempList5
+        template: this.attrTempList
       }).then(response => {
         this.$message({ type: 'success', message: '更新成功!' })
         this.getGroupAttr()
@@ -209,13 +181,8 @@ export default {
 </script>
 
 <style>
-.button-node {
-  margin-top: 4px;
-  float: right;
-}
-
 .select-node {
-  margin-top: 4px;
+  margin-top: 6px;
   width: 100%;
 }
 </style>

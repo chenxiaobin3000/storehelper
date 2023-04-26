@@ -112,3 +112,11 @@ export function getMarketStorageList(data) {
     data
   })
 }
+
+export function getAccountStorage(data) {
+  return request({
+    url: `${path}/getAccountStorage`,
+    method: 'post',
+    data
+  })
+}

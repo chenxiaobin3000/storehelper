@@ -111,7 +111,7 @@ export default {
       listQuery: {
         id: 0,
         page: 1,
-        limit: 20,
+        limit: 10,
         search: null
       },
       temp: {},

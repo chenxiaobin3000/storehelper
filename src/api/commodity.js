@@ -41,6 +41,14 @@ export function getStorageCommodity(data) {
   })
 }
 
+export function getAccountCommodity(data) {
+  return request({
+    url: `${path}/getAccountCommodity`,
+    method: 'post',
+    data
+  })
+}
+
 export function setCommodityOriginal(data) {
   return request({
     url: `${path}/setCommodityOriginal`,

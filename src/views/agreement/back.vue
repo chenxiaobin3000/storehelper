@@ -200,7 +200,7 @@ export default {
         id: 0,
         type: 22, // 履约发货
         page: 1,
-        limit: 20,
+        limit: 10,
         review: 2, // 已审核
         complete: 1, // 已完成
         date: null,

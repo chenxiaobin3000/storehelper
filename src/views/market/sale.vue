@@ -254,7 +254,7 @@ export default {
         id: 0,
         gid: 0,
         page: 1,
-        limit: 20,
+        limit: 10,
         sid: 0,
         aid: 0,
         asid: 0,
@@ -273,7 +273,7 @@ export default {
         asid: 0,
         type: 20, // 履约发货
         page: 1,
-        limit: 20,
+        limit: 10,
         review: 2, // 已审核
         complete: 2, // 未完成
         date: null,

@@ -1,9 +1,6 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="listQuery.ctype" class="filter-item" style="width:100px" @change="handleSelect">
-        <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleStorageSelect">
         <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
@@ -329,13 +326,6 @@ export default {
     return {
       userdata: {},
       business: 2, // 业务类型
-      options: [{
-        id: 1, label: '商品'
-      }, {
-        id: 2, label: '半成品'
-      }, {
-        id: 3, label: '原料'
-      }],
       itype: 1,
       ioptions: [{
         id: 1, label: '按重量'
@@ -352,9 +342,8 @@ export default {
       listQuery: {
         id: 0,
         page: 1,
-        limit: 20,
+        limit: 10,
         sid: 0,
-        ctype: 1,
         search: null
       },
       temp: {
@@ -516,34 +505,12 @@ export default {
       row.weight = row.iweight
       row.norm = row.inorm
       row.value = row.ivalue
-      switch (this.listQuery.ctype) {
-        case 1:
-          this.temp.clist.map((v, i) => {
-            if (v.id === row.id) {
-              this.temp.clist.splice(i, 1)
-            }
-          })
-          this.temp.clist.push(Object.assign({}, row))
-          break
-        case 2:
-          this.temp.hlist.map((v, i) => {
-            if (v.id === row.id) {
-              this.temp.hlist.splice(i, 1)
-            }
-          })
-          this.temp.hlist.push(Object.assign({}, row))
-          break
-        case 3:
-          this.temp.olist.map((v, i) => {
-            if (v.id === row.id) {
-              this.temp.olist.splice(i, 1)
-            }
-          })
-          this.temp.olist.push(Object.assign({}, row))
-          break
-        default:
-          break
-      }
+      this.temp.clist.map((v, i) => {
+        if (v.id === row.id) {
+          this.temp.clist.splice(i, 1)
+        }
+      })
+      this.temp.clist.push(Object.assign({}, row))
       this.$message({ type: 'success', message: '添加成功!' })
     },
     handleDeleteCommodity(row) {
