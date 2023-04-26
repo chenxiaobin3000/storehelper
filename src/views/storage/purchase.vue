@@ -305,7 +305,7 @@ export default {
   methods: {
     handleSelect() {
       this.listQuery.page = 1
-      this.listQuery.limit = 20
+      this.listQuery.limit = 10
       this.getCommodityList()
     },
     getCommodityList() {

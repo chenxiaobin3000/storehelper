@@ -11,13 +11,13 @@
       <span class="filter-item" style="color:#606266">{{ temp.sremark }}</span>
     </div>
 
-    <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="编号" width="80px" align="center">
+    <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
+      <el-table-column label="编号" fixed="left" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.ccode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" align="center">
+      <el-table-column label="名称" fixed="left" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.cname }}</span>
         </template>
@@ -27,27 +27,27 @@
           <span>{{ row.categoryName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="属性" width="160px" align="center">
+      <el-table-column label="属性" width="260px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.attribute }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" width="80px" align="center">
+      <el-table-column label="备注" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.cremark }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台编号" width="100px" align="center">
+      <el-table-column label="平台编号" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.mcode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台名称" align="center">
+      <el-table-column label="平台名称" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.mname }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台备注" width="80px" align="center">
+      <el-table-column label="平台备注" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.mremark }}</span>
         </template>
@@ -57,7 +57,7 @@
           <span>{{ row.alarm }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" fixed="right" width="160" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">编辑</el-button>
           <el-button type="danger" size="mini" @click="handleDelete(row)">删除</el-button>
@@ -65,7 +65,7 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
+    <pagination v-show="total>0" ref="pagination" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
 
     <el-dialog title="修改平台对接商品信息" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
@@ -128,6 +128,7 @@ export default {
   components: { Pagination },
   data() {
     return {
+      tableHeight: 600,
       userdata: {},
       soptions: [],
       asoptions: [],
@@ -177,6 +178,11 @@ export default {
       this.$message({ type: 'error', message: '不支持新建!' })
     }
   },
+  mounted: function() {
+    setTimeout(() => {
+      this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 78
+    }, 1000)
+  },
   created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
@@ -186,12 +192,12 @@ export default {
   methods: {
     handleSelect() {
       this.listQuery.page = 1
-      this.listQuery.limit = 20
+      this.listQuery.limit = 10
       this.getCommodityList()
     },
     handleStorageSelect() {
       this.listQuery.page = 1
-      this.listQuery.limit = 20
+      this.listQuery.limit = 10
       this.getMarketStorageAccount()
     },
     handleSubSelect() {

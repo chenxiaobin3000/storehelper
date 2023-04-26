@@ -56,7 +56,7 @@
           <span>{{ row.remark }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right" align="center" width="160" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" fixed="right" width="160" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">编辑</el-button>
           <el-button type="danger" size="mini" @click="handleDelete(row)">删除</el-button>
@@ -200,7 +200,7 @@ export default {
   components: { Pagination },
   data() {
     return {
-      tableHeight: 0,
+      tableHeight: 600,
       userdata: {},
       soptionsAll: [], // 仅列表查询
       aoptionsAll: [], // 仅列表查询
@@ -278,7 +278,7 @@ export default {
   mounted: function() {
     setTimeout(() => {
       this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 78
-    }, 2000)
+    }, 1000)
   },
   created() {
     this.userdata = this.$store.getters.userdata

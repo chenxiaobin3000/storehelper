@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
+    <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="用户名称" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
@@ -27,7 +27,7 @@
           <el-button icon="el-icon-edit" size="mini" circle @click="handleUpdateMp(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" fixed="right" width="160" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">编辑</el-button>
           <el-button type="danger" size="mini" @click="handleDelete(row)">删除</el-button>
@@ -35,7 +35,7 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getUserList" />
+    <pagination v-show="total>0" ref="pagination" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getUserList" />
 
     <!-- 用户信息编辑 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
@@ -101,6 +101,7 @@ export default {
   components: { Pagination },
   data() {
     return {
+      tableHeight: 600,
       grouproles: null, // 本公司所有角色列表
       grouproleMps: null, // 本公司所有小程序角色列表
       list: null,
@@ -143,15 +144,17 @@ export default {
       this.dialogVisible = true
     }
   },
-  async created() {
+  mounted: function() {
+    setTimeout(() => {
+      this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 78
+    }, 1000)
+  },
+  created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
     this.resetTemp()
     this.resetTempMp()
-    await this.getUserList()
-    await this.getDepartmentList()
-    await this.getGroupRole()
-    await this.getGroupRoleMp()
+    this.getDepartmentList()
   },
   methods: {
     resetTemp() {
@@ -197,6 +200,7 @@ export default {
         id: this.userdata.user.id
       }).then(response => {
         this.generator(response.data.data.list)
+        this.getGroupRoleMp()
       })
     },
     generator(tree) {
@@ -212,6 +216,7 @@ export default {
         id: this.userdata.user.id
       }).then(response => {
         this.grouproles = response.data.data.list
+        this.getUserList()
       })
     },
     getGroupRoleMp() {
@@ -227,6 +232,7 @@ export default {
             description: ''
           })
         }
+        this.getGroupRole()
       })
     },
     createData() {

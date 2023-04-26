@@ -9,24 +9,19 @@
       </el-select>
     </div>
 
-    <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="编号" width="140px" align="center">
+    <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
+      <el-table-column label="名称" fixed="left" width="240px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.code }} </span>
+          <span>{{ row.name }} </span>
           <el-button icon="el-icon-tickets" size="mini" circle @click="handleDetail(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="名称" width="200px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="总价格 / 销量" width="140px" align="center">
+      <el-table-column label="总价格 / 销量" fixed="left" width="140px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.total }} / {{ row.value }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-for="title in titles" :key="title.id" :label="title.value" align="center">
+      <el-table-column v-for="title in titles" :key="title.id" :label="title.value" width="140px" align="center">
         <template slot-scope="{row}">
           <span v-if="row.detail[title.key]">
             {{ row.detail[title.key].total }} / {{ row.detail[title.key].value }}
@@ -36,7 +31,7 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
+    <pagination v-show="total>0" ref="pagination" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
 
     <el-dialog title="详细信息" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="60px" style="width: 100%; padding: 0 4% 0 4%;">
@@ -79,6 +74,7 @@ export default {
   components: { Pagination },
   data() {
     return {
+      tableHeight: 600,
       userdata: {},
       moptions: [],
       options: reportCycle,
@@ -115,14 +111,16 @@ export default {
       this.$message({ type: 'error', message: '不支持新建!' })
     }
   },
-  async created() {
+  mounted: function() {
+    setTimeout(() => {
+      this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 78
+    }, 1000)
+  },
+  created() {
     this.userdata = this.$store.getters.userdata
     this.moptions = filterMarket(this.userdata.market, true)
     this.listQuery.id = this.userdata.user.id
-    await this.getCategoryList()
-    await this.getGroupAttrTemp()
-    await this.getTitles()
-    await this.getCommodityList()
+    this.getCategoryList()
   },
   methods: {
     handleSelect() {
@@ -139,6 +137,7 @@ export default {
         })
         date.setDate(date.getDate() - 1)
       }
+      this.getCommodityList()
     },
     getCommodityList() {
       this.loading = true
@@ -176,6 +175,7 @@ export default {
         id: this.userdata.user.id
       }).then(response => {
         this.generator(response.data.data.list)
+        this.getGroupAttrTemp()
       })
     },
     generator(tree) {
@@ -192,6 +192,7 @@ export default {
         atid: 1
       }).then(response => {
         this.templateList = response.data.data.list
+        this.getTitles()
       })
     },
     handleDetail(row) {

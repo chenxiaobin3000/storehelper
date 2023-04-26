@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
+    <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="动作" width="180px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.action }}</span>
@@ -23,7 +23,7 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getStockList" />
+    <pagination v-show="total>0" ref="pagination" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getStockList" />
   </div>
 </template>
 
@@ -36,6 +36,7 @@ export default {
   components: { Pagination },
   data() {
     return {
+      tableHeight: 600,
       list: null,
       total: 0,
       loading: false,
@@ -60,6 +61,11 @@ export default {
     create() {
       this.$message({ type: 'error', message: '不支持新建!' })
     }
+  },
+  mounted: function() {
+    setTimeout(() => {
+      this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 78
+    }, 1000)
   },
   created() {
     this.listQuery.id = this.$store.getters.userdata.user.id

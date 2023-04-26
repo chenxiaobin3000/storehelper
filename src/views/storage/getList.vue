@@ -239,7 +239,7 @@ export default {
     handleSelect() {
       this.listQuery.type = this.otype
       this.listQuery.page = 1
-      this.listQuery.limit = 20
+      this.listQuery.limit = 10
       this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
       this.getOrderList()
     },

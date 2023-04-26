@@ -10,7 +10,7 @@
       <el-button type="primary" class="button-node filter-item" @click="insertLabelDetail(true)">扣费</el-button>
       <el-button type="danger" class="button-node filter-item" style="float:right;" @click="insertLabelDetail(false)">冲正</el-button>
     </div>
-    <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
+    <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="动作" width="180px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.action }}</span>
@@ -38,7 +38,7 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getLabelList" />
+    <pagination v-show="total>0" ref="pagination" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getLabelList" />
   </div>
 </template>
 
@@ -53,6 +53,7 @@ export default {
   components: { Pagination },
   data() {
     return {
+      tableHeight: 600,
       date: new Date(),
       list: null,
       total: 0,
@@ -82,6 +83,11 @@ export default {
       this.$message({ type: 'error', message: '不支持新建!' })
     }
   },
+  mounted: function() {
+    setTimeout(() => {
+      this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 78
+    }, 1000)
+  },
   created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
@@ -98,7 +104,7 @@ export default {
     },
     handleSelect() {
       this.listQuery.page = 1
-      this.listQuery.limit = 20
+      this.listQuery.limit = 10
       this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
       this.getLabelList()
     },
