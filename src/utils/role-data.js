@@ -101,26 +101,17 @@ export const MyRoleData = [{
     path: 'agreement', meta: { title: '履约报表', roles: [703] }
   }]
 }, {
-  path: '/dock', meta: { title: '平台管理', roles: [450] },
-  children: [{
-    path: 'account', meta: { title: '账号明细', roles: [451] }
-  }, {
-    path: 'many', meta: { title: '聚合账号', roles: [452] }
-  }, {
-    path: 'storage', meta: { title: '账号关联', roles: [453] }
-  }, {
-    path: 'commodity', meta: { title: '商品上架', roles: [454] }
-  }]
-}, {
   path: '/commodity', meta: { title: '商品管理', roles: [300] },
   children: [{
     path: 'report', meta: { title: '销售数据', roles: [301] }
   }, {
     path: 'commodity', meta: { title: '商品列表', roles: [302] }
   }, {
-    path: 'category', meta: { title: '品类管理', roles: [306] }
+    path: 'market', meta: { title: '商品上架', roles: [303] }
   }, {
-    path: 'attribute', meta: { title: '属性管理', roles: [307] }
+    path: 'category', meta: { title: '品类管理', roles: [304] }
+  }, {
+    path: 'attribute', meta: { title: '属性管理', roles: [305] }
   }]
 }, {
   path: '/finance', meta: { title: '财务管理', roles: [400] },
@@ -154,6 +145,8 @@ export const MyRoleData = [{
     path: 'storage', meta: { title: '仓库地址', roles: [1103] }
   }, {
     path: 'supplier', meta: { title: '供应商管理', roles: [1106] }
+  }, {
+    path: 'account', meta: { title: '账号管理', roles: [1108] }
   }, {
     path: 'roleList', meta: { title: '角色管理', roles: [1104] }
   }, {

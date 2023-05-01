@@ -24,6 +24,9 @@ export default {
     path: 'supplier', component: () => import('@/views/system/supplier'),
     name: 'system_supplier', meta: { title: '供应商管理', roles: [1106] }
   }, {
+    path: 'account', component: () => import('@/views/system/account'),
+    name: 'system_account', meta: { title: '账号管理', roles: [1108] }
+  }, {
     path: 'roleList', component: () => import('@/views/system/roleList'),
     name: 'system_roleList', meta: { title: '角色管理', roles: [1104] }
   }, {

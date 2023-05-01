@@ -318,7 +318,8 @@ import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 import { getStorageCommodity } from '@/api/commodity'
 import { getGroupAllSupplier } from '@/api/supplier'
-import { addOrderFare, addOrderRemark } from '@/api/order'
+import { addOrderRemark } from '@/api/order'
+import { addOrderFare } from '@/api/transport'
 import { purchase, setPurchaseSupplier } from '@/api/purchase'
 
 export default {

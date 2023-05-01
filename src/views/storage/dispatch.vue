@@ -317,7 +317,8 @@ import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 import { getTodayStockList } from '@/api/stock'
-import { addOrderFare, addOrderRemark } from '@/api/order'
+import { addOrderRemark } from '@/api/order'
+import { addOrderFare } from '@/api/transport'
 import { dispatch } from '@/api/storage'
 
 export default {

@@ -1,22 +1,6 @@
 import request from '@/utils/request'
 const path = '/order'
 
-export function addOrderFare(data) {
-  return request({
-    url: `${path}/addOrderFare`,
-    method: 'post',
-    data
-  })
-}
-
-export function delOrderFare(data) {
-  return request({
-    url: `${path}/delOrderFare`,
-    method: 'post',
-    data
-  })
-}
-
 export function addOrderRemark(data) {
   return request({
     url: `${path}/addOrderRemark`,
@@ -41,9 +25,9 @@ export function getAgreementOrder(data) {
   })
 }
 
-export function getCloudOrder(data) {
+export function getOfflineOrder(data) {
   return request({
-    url: `${path}/getCloudOrder`,
+    url: `${path}/getOfflineOrder`,
     method: 'post',
     data
   })

@@ -302,7 +302,8 @@ import { parseTime, reviewType, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
 import { reviewPurchase, revokePurchase, delPurchase, setPurchasePay, setPurchaseSupplier, reviewReturn, revokeReturn, delReturn } from '@/api/purchase'
-import { addOrderFare, delOrderFare, addOrderRemark, delOrderRemark, getPurchaseOrder } from '@/api/order'
+import { addOrderRemark, delOrderRemark, getPurchaseOrder } from '@/api/order'
+import { addOrderFare, delOrderFare } from '@/api/transport'
 import { getGroupAllSupplier } from '@/api/supplier'
 
 export default {

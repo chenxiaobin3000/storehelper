@@ -7,9 +7,6 @@
       <el-select v-model="listQuery.aid" class="filter-item" @change="getAccountCommodityList">
         <el-option v-for="item in aoptionsAll" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <el-select v-model="listQuery.asid" class="filter-item" @change="getSubCommodityList">
-        <el-option v-for="item in asoptionsAll" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
     </div>
 
     <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
@@ -154,14 +151,9 @@
             <el-option v-for="item in aoptions" :key="item.id" :label="item.label" :value="item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="子账号" prop="asid">
-          <el-select v-model="tempAccount.asid" class="filter-item">
-            <el-option v-for="item in asoptions" :key="item.id" :label="item.label" :value="item.id" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="仓库" prop="sid">
           <el-select v-model="tempAccount.sid" class="filter-item">
-            <el-option v-for="item in soptions" :key="item.id" :label="item.label" :value="item.id" />
+            <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="平台编号" prop="code">
@@ -189,9 +181,8 @@
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
 import { treeGenerate } from '@/utils/tree'
-import { getGroupCommodity, addCommodity, setCommodity, delCommodity, setCommodityOriginal, getStorageCommodity, getAccountCommodity, setCommodityStorage } from '@/api/commodity'
-import { getMarketAllAccount, getMarketSubAccount, getAccountStorage } from '@/api/dock'
-import { getMarketCommodity, setMarketCommodity } from '@/api/market'
+import { getGroupCommodity, addCommodity, setCommodity, delCommodity, setCommodityOriginal, getStorageCommodity, setCommodityStorage } from '@/api/commodity'
+import { getMarketAllAccount, getMarketCommodity, setMarketCommodity, getMarketCommodityList } from '@/api/market'
 import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryTree } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
@@ -204,10 +195,8 @@ export default {
       userdata: {},
       soptionsAll: [], // 仅列表查询
       aoptionsAll: [], // 仅列表查询
-      asoptionsAll: [], // 仅列表查询
-      soptions: [], // 仅对话框使用
+      storages: [], // 仅对话框使用
       aoptions: [], // 仅对话框使用
-      asoptions: [], // 仅对话框使用
       routes: [],
       data: [],
       list: null,
@@ -221,7 +210,6 @@ export default {
         gid: 0,
         sid: 0, // 仅列表查询
         aid: 0, // 仅列表查询
-        asid: 0, // 仅列表查询
         page: 1,
         limit: 10,
         search: null
@@ -232,7 +220,6 @@ export default {
       tempAccount: {
         id: 0,
         aid: 0, // 仅对话框使用
-        asid: 0, // 仅对话框使用
         sid: 0, // 仅对话框使用
         storages: null,
         ccode: '',
@@ -309,35 +296,14 @@ export default {
     },
     getStorageCommodityList() {
       this.listQuery.aid = 0
-      this.listQuery.asid = 0
       this.listQuery.page = 1
       this.listQuery.limit = 10
-      this.asoptionsAll = [{ id: 0, label: '无' }]
       this.getCommodityList()
     },
     getAccountCommodityList() {
       this.listQuery.sid = 0
       this.listQuery.page = 1
       this.listQuery.limit = 10
-      if (this.listQuery.aid !== 0) {
-        getMarketSubAccount({
-          id: this.listQuery.id,
-          gid: this.listQuery.gid,
-          aid: this.listQuery.aid
-        }).then(response => {
-          const list = response.data.data.list
-          if (list.length > 0) {
-            this.asoptionsAll = []
-            list.forEach(v => {
-              this.asoptionsAll.push({ id: v.id, label: v.account })
-            })
-            this.listQuery.asid = this.asoptionsAll[0].id
-          } else {
-            this.asoptionsAll = [{ id: 0, label: '无' }]
-            this.listQuery.asid = 0
-          }
-        })
-      }
       this.getCommodityList()
     },
     getSubCommodityList() {
@@ -352,9 +318,7 @@ export default {
       if (this.listQuery.sid !== 0) {
         this.getStorageCommodity()
       } else if (this.listQuery.aid !== 0) {
-        this.getAccountCommodity()
-      } else if (this.listQuery.asid !== 0) {
-        this.getAccountCommodity()
+        this.getMarketCommodityList()
       } else {
         getGroupCommodity(
           this.listQuery
@@ -386,13 +350,18 @@ export default {
         Promise.reject(error)
       })
     },
-    getAccountCommodity() {
-      getAccountCommodity(
+    getMarketCommodityList() {
+      getMarketCommodityList(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total
         const list = response.data.data.list
         if (list && list.length > 0) {
+          list.forEach(v => {
+            v.code = v.ccode
+            v.name = v.cname
+            v.cid = v.cate
+          })
           this.handleRet(list)
         }
         this.loading = false
@@ -446,7 +415,6 @@ export default {
         gid: this.listQuery.gid
       }).then(response => {
         this.aoptionsAll = [{ id: 0, label: '全部账号' }]
-        this.asoptionsAll = [{ id: 0, label: '无' }]
         const list = response.data.data.list
         if (list.length > 0) {
           list.forEach(v => {
@@ -611,25 +579,6 @@ export default {
         this.dialogStorageVisible = false
       })
     },
-    getMarketSubAccount() {
-      getMarketSubAccount({
-        id: this.listQuery.id,
-        gid: this.listQuery.gid,
-        aid: this.tempAccount.aid
-      }).then(response => {
-        const list = response.data.data.list
-        if (list.length > 0) {
-          this.asoptions = []
-          list.forEach(v => {
-            this.asoptions.push({ id: v.id, label: v.account })
-          })
-          this.tempAccount.asid = this.asoptions[0].id
-        } else {
-          this.asoptions = [{ id: 0, label: '无' }]
-          this.tempAccount.asid = 0
-        }
-      })
-    },
     handleAidSelect() {
       getAccountStorage({
         id: this.listQuery.id,
@@ -638,17 +587,16 @@ export default {
       }).then(response => {
         const list = response.data.data.list
         if (list.length > 0) {
-          this.soptions = []
+          this.storages = []
           list.forEach(v => {
-            this.soptions.push({ id: v.id, label: v.name })
+            this.storages.push({ id: v.id, label: v.name })
           })
-          this.tempAccount.sid = this.soptions[0].id
+          this.tempAccount.sid = this.storages[0].id
           getMarketCommodity({
             id: this.listQuery.id,
             gid: this.listQuery.gid,
             sid: this.tempAccount.sid,
             aid: this.tempAccount.aid,
-            asid: this.tempAccount.asid,
             cid: this.tempAccount.id
           }).then(response => {
             const commodity = response.data.data.commodity
@@ -660,11 +608,10 @@ export default {
             }
           })
         } else {
-          this.soptions = [{ id: 0, label: '无' }]
+          this.storages = [{ id: 0, label: '无' }]
           this.tempAccount.sid = 0
         }
       })
-      this.getMarketSubAccount()
     },
     handleSelectAccount(row) {
       this.tempAccount.id = row.id
@@ -686,7 +633,6 @@ export default {
         gid: this.listQuery.gid,
         sid: this.tempAccount.sid,
         aid: this.tempAccount.aid,
-        asid: this.tempAccount.asid,
         cid: this.tempAccount.id,
         code: this.tempAccount.mcode,
         name: this.tempAccount.mname,

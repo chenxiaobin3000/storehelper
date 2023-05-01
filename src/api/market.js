@@ -1,6 +1,46 @@
 import request from '@/utils/request'
 const path = '/market'
 
+export function addMarketAccount(data) {
+  return request({
+    url: `${path}/addMarketAccount`,
+    method: 'post',
+    data
+  })
+}
+
+export function setMarketAccount(data) {
+  return request({
+    url: `${path}/setMarketAccount`,
+    method: 'post',
+    data
+  })
+}
+
+export function delMarketAccount(data) {
+  return request({
+    url: `${path}/delMarketAccount`,
+    method: 'post',
+    data
+  })
+}
+
+export function getMarketAccountList(data) {
+  return request({
+    url: `${path}/getMarketAccountList`,
+    method: 'post',
+    data
+  })
+}
+
+export function getMarketAllAccount(data) {
+  return request({
+    url: `${path}/getMarketAllAccount`,
+    method: 'post',
+    data
+  })
+}
+
 export function setMarketCommodity(data) {
   return request({
     url: `${path}/setMarketCommodity`,

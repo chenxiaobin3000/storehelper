@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <el-select v-model="listQuery.sid" style="width: 200px;" class="filter-item" @change="handleSelect">
-        <el-option v-for="item in soptions" :key="item.id" :label="item.label" :value="item.id" />
+        <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
     </div>
@@ -51,7 +51,7 @@ export default {
   data() {
     return {
       userdata: {},
-      soptions: [],
+      storages: [],
       date: new Date(),
       list: null,
       total: 0,
@@ -101,7 +101,7 @@ export default {
         const data = response.data.data
         if (data.list && data.list.length > 0) {
           data.list.forEach(v => {
-            this.soptions.push({ id: v.id, label: v.name })
+            this.storages.push({ id: v.id, label: v.name })
           })
           this.listQuery.sid = data.list[0].id
           this.getStockList()

@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleStorageSelect">
-        <el-option v-for="item in soptions" :key="item.id" :label="item.label" :value="item.id" />
+        <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <span class="filter-item" style="color:#606266"> 账号: {{ temp.account }} ({{ temp.remark }}), 子账号:</span>
       <el-select v-model="listQuery.asid" class="filter-item" style="width:160px" @change="handleSubSelect">
@@ -232,7 +232,6 @@ import { marketArr } from '@/utils/market-data'
 import Pagination from '@/components/Pagination'
 import UploadExcelComponent from '@/components/UploadExcel'
 import { setMarketCommList, setMarketCommDetail, delMarketCommDetail, getMarketCommDetail, getMarketSaleDetail } from '@/api/market'
-import { getMarketStorageAccount, getMarketSubAccount } from '@/api/dock'
 import { getAgreementOrder } from '@/api/order'
 import { getGroupAllStorage } from '@/api/storage'
 import { sale } from '@/api/sale'
@@ -242,7 +241,7 @@ export default {
   data() {
     return {
       userdata: {},
-      soptions: [],
+      storages: [],
       asoptions: [],
       mid: 0,
       mname: '',
@@ -462,7 +461,7 @@ export default {
       }).then(response => {
         if (response.data.data.list && response.data.data.list.length > 0) {
           response.data.data.list.forEach(v => {
-            this.soptions.push({ id: v.id, label: v.name })
+            this.storages.push({ id: v.id, label: v.name })
           })
           this.listQuery.sid = response.data.data.list[0].id
           this.getMarketStorageAccount()
@@ -579,7 +578,7 @@ export default {
           this.$message({ type: 'error', message: '未查询到销售数据!' })
           return
         }
-        this.soptions.forEach(v => {
+        this.storages.forEach(v => {
           if (v.id === this.listQuery.sid) {
             this.temp.storage = v.label
           }

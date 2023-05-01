@@ -4,11 +4,7 @@
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleStorageSelect">
         <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <span class="filter-item" style="color:#606266"> 账号: {{ temp.account }} ({{ temp.remark }}), 子账号:</span>
-      <el-select v-model="listQuery.asid" class="filter-item" style="width:160px" @change="handleSubSelect">
-        <el-option v-for="item in asoptions" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
-      <span class="filter-item" style="color:#606266">{{ temp.sremark }}</span>
+      <span class="filter-item" style="color:#606266"> 账号: {{ temp.account }}</span>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" />
       <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>
     </div>
@@ -133,7 +129,7 @@
           <span>{{ temp.storage }}</span>
         </el-form-item>
         <el-form-item label="账号" prop="account">
-          <span>{{ temp.saccount.length > 0 ? temp.saccount+'('+temp.sremark+')' : temp.account+'('+temp.remark+')' }}</span>
+          <span>{{ temp.account }}</span>
         </el-form-item>
         <el-table v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
           <el-table-column label="编号" width="100px" align="center">
@@ -206,8 +202,8 @@ import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 import { getTodayStockList } from '@/api/stock'
-import { getMarketStorageAccount, getMarketSubAccount } from '@/api/dock'
-import { addOrderFare, addOrderRemark } from '@/api/order'
+import { addOrderRemark } from '@/api/order'
+import { addOrderFare } from '@/api/transport'
 import { shipped } from '@/api/agreement'
 
 export default {
@@ -235,9 +231,6 @@ export default {
       temp: {
         storage: '',
         account: '',
-        remark: '',
-        saccount: '',
-        sremark: '',
         date: null,
         commoditys: [],
         prices: [],
@@ -289,61 +282,6 @@ export default {
     handleStorageSelect() {
       this.listQuery.page = 1
       this.listQuery.limit = 10
-      this.getMarketStorageAccount()
-    },
-    handleSubSelect() {
-      this.asoptions.forEach(v => {
-        if (this.listQuery.asid === v.id) {
-          this.temp.saccount = v.label
-          this.temp.sremark = v.remark
-        }
-      })
-      this.handleSelect()
-    },
-    getMarketSubAccount() {
-      getMarketSubAccount({
-        id: this.listQuery.id,
-        gid: this.listQuery.gid,
-        aid: this.listQuery.aid
-      }).then(response => {
-        if (response.data.data.list && response.data.data.list.length > 0) {
-          this.asoptions = []
-          response.data.data.list.forEach(v => {
-            this.asoptions.push({ id: v.id, label: v.account, remark: v.remark })
-          })
-          this.listQuery.asid = this.asoptions[0].id
-          this.temp.saccount = this.asoptions[0].label
-          this.temp.sremark = this.asoptions[0].remark
-        } else {
-          this.asoptions = [{ id: 0, label: '无' }]
-          this.listQuery.asid = 0
-          this.temp.saccount = ''
-          this.temp.sremark = ''
-        }
-        this.getCommodityList()
-      })
-    },
-    getMarketStorageAccount() {
-      getMarketStorageAccount({
-        id: this.listQuery.id,
-        gid: this.userdata.group.id,
-        cid: this.listQuery.sid
-      }).then(response => {
-        const data = response.data.data
-        this.listQuery.aid = data.aid
-        this.temp.account = data.account
-        this.temp.remark = data.remark
-        this.getMarketSubAccount()
-      }).catch(error => {
-        this.temp.account = ''
-        this.temp.remark = ''
-        this.asoptions = [{ id: 0, label: '无' }]
-        this.listQuery.asid = 0
-        this.temp.saccount = ''
-        this.temp.sremark = ''
-        this.getCommodityList()
-        Promise.reject(error)
-      })
     },
     getGroupAllStorage() {
       getGroupAllStorage({
@@ -354,7 +292,6 @@ export default {
             this.storages.push({ id: v.id, label: v.name })
           })
           this.listQuery.sid = response.data.data.list[0].id
-          this.getMarketStorageAccount()
         }
       })
     },

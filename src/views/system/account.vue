@@ -1,34 +1,25 @@
 <template>
   <div class="app-container">
+    <div class="filter-container">
+      <el-select v-model="listQuery.mid" class="filter-item" @change="handleSelect">
+        <el-option v-for="item in moptions" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
+    </div>
+
     <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="主账号" width="200px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.maccount }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" width="160px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.mremark }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="平台" width="80px" align="center">
+      <el-table-column label="平台名称" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.mname }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="子账号" align="center">
+      <el-table-column label="账号" align="center">
         <template slot-scope="{row}">
           <span>{{ row.account }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" width="160px" align="center">
+      <el-table-column label="备注" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.remark }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="子平台" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.sname }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" fixed="right" width="160" class-name="small-padding fixed-width">
@@ -39,27 +30,17 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" ref="pagination" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getMarketManyList" />
+    <pagination v-show="total>0" ref="pagination" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getMarketAccountList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="主账号" prop="name">
-          <el-select v-model="temp.aid" class="filter-item" @change="handleSelect">
-            <el-option v-for="item in coptions" :key="item.id" :label="item.label" :value="item.id" />
-          </el-select>
+        <el-form-item label="平台名称" prop="name">
+          <span>{{ temp.mname }}</span>
         </el-form-item>
-        <el-form-item label="备注" prop="saccount">
-          <span>{{ temp.mremark }}</span>
-        </el-form-item>
-        <el-form-item label="子账号" prop="account">
+        <el-form-item label="账号" prop="account">
           <el-input v-model="temp.account" />
         </el-form-item>
-        <el-form-item label="平台" prop="name">
-          <el-select v-model="temp.smid" class="filter-item">
-            <el-option v-for="item in moptions" :key="item.id" :label="item.label" :value="item.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="备注" prop="account">
+        <el-form-item label="备注" prop="remark">
           <el-input v-model="temp.remark" />
         </el-form-item>
       </el-form>
@@ -75,7 +56,7 @@
 import { mapState } from 'vuex'
 import { filterMarket } from '@/utils/market-data'
 import Pagination from '@/components/Pagination'
-import { getMarketManyList, getMarketAllAccount, addMarketMany, setMarketMany, delMarketMany } from '@/api/dock'
+import { addMarketAccount, setMarketAccount, delMarketAccount, getMarketAccountList } from '@/api/market'
 
 export default {
   components: { Pagination },
@@ -84,13 +65,13 @@ export default {
       tableHeight: 600,
       userdata: {},
       moptions: [],
-      coptions: [],
       list: null,
       total: 0,
       loading: false,
       listQuery: {
         id: 0,
         gid: 0,
+        mid: 0,
         page: 1,
         limit: 10
       },
@@ -134,44 +115,28 @@ export default {
     this.moptions = filterMarket(this.userdata.market, false)
     this.listQuery.id = this.userdata.user.id
     this.listQuery.gid = this.userdata.group.id
+    this.listQuery.mid = 1
     this.resetTemp()
-    this.getMarketAllAccount()
+    this.getMarketAccountList()
   },
   methods: {
     resetTemp() {
       this.temp = {
         id: 0,
-        aid: '',
-        mremark: '',
-        smid: 1,
+        mid: 0,
+        mname: '',
         account: '',
         remark: ''
       }
     },
     handleSelect() {
-      // 备注
-      this.coptions.forEach(v => {
-        if (this.temp.aid === v.id) {
-          this.temp.mremark = v.remark
-        }
-      })
+      this.listQuery.page = 1
+      this.listQuery.limit = 10
+      this.getMarketAccountList()
     },
-    getMarketAllAccount() {
-      getMarketAllAccount({
-        id: this.listQuery.id,
-        gid: this.listQuery.gid
-      }).then(response => {
-        if (response.data.data.list && response.data.data.list.length > 0) {
-          response.data.data.list.forEach(v => {
-            this.coptions.push({ id: v.id, label: v.account, remark: v.remark })
-          })
-          this.getMarketManyList()
-        }
-      })
-    },
-    getMarketManyList() {
+    getMarketAccountList() {
       this.loading = true
-      getMarketManyList(
+      getMarketAccountList(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total
@@ -179,11 +144,8 @@ export default {
         if (this.list && this.list.length > 0) {
           this.moptions.forEach(m => {
             this.list.forEach(v => {
-              if (m.id === v.mmid) {
+              if (m.id === v.mid) {
                 v.mname = m.label
-              }
-              if (m.id === v.smid) {
-                v.sname = m.label
               }
             })
           })
@@ -195,16 +157,15 @@ export default {
       })
     },
     createData() {
-      addMarketMany({
-        id: this.listQuery.id,
-        gid: this.listQuery.gid,
-        mid: this.temp.smid,
-        aid: this.temp.aid,
+      addMarketAccount({
+        id: this.userdata.user.id,
+        gid: this.userdata.group.id,
+        mid: this.listQuery.mid,
         account: this.temp.account,
         remark: this.temp.remark
       }).then(response => {
         this.$message({ type: 'success', message: '新增成功!' })
-        this.getMarketManyList()
+        this.getMarketAccountList()
         this.dialogVisible = false
       })
     },
@@ -214,17 +175,16 @@ export default {
       this.dialogVisible = true
     },
     updateData() {
-      setMarketMany({
-        id: this.listQuery.id,
-        gid: this.listQuery.gid,
-        mid: this.temp.smid,
-        aid: this.temp.aid,
-        sub: this.temp.id,
+      setMarketAccount({
+        id: this.userdata.user.id,
+        gid: this.userdata.group.id,
+        mid: this.temp.mid,
+        aid: this.temp.id,
         account: this.temp.account,
         remark: this.temp.remark
       }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
-        this.getMarketManyList()
+        this.getMarketAccountList()
         this.dialogVisible = false
       })
     },
@@ -234,13 +194,14 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delMarketMany({
-          id: this.listQuery.id,
-          gid: this.listQuery.gid,
-          sub: row.id
+        delMarketAccount({
+          id: this.userdata.user.id,
+          gid: this.userdata.group.id,
+          mid: this.listQuery.mid,
+          aid: row.id
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
-          this.getMarketManyList()
+          this.getMarketAccountList()
         })
       })
     }

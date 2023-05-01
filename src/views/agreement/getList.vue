@@ -301,7 +301,8 @@ import { parseTime, reviewType, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
 import { reviewShipped, revokeShipped, delShipped, reviewReturn, revokeReturn, delReturn, reviewOffline, revokeOffline, setOfflinePay, delOffline, reviewBack, revokeBack, delBack } from '@/api/agreement'
-import { addOrderFare, delOrderFare, addOrderRemark, delOrderRemark, getAgreementOrder } from '@/api/order'
+import { addOrderRemark, delOrderRemark, getAgreementOrder } from '@/api/order'
+import { addOrderFare, delOrderFare } from '@/api/transport'
 
 export default {
   components: { Pagination },

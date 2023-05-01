@@ -318,8 +318,9 @@ import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 import { getStorageCommodity } from '@/api/commodity'
 import { getGroupAllSupplier } from '@/api/supplier'
-import { addOrderFare, addOrderRemark } from '@/api/order'
-import { purchase, setPurchaseSupplier } from '@/api/purchase'
+import { addOrderRemark } from '@/api/order'
+import { addOrderFare } from '@/api/transport'
+import { purchase } from '@/api/purchase'
 
 export default {
   components: { Pagination },
@@ -610,6 +611,7 @@ export default {
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
         sid: this.listQuery.sid,
+        supplier: this.tempOrder.supplier,
         date: this.temp.date,
         types: this.temp.types,
         commoditys: this.temp.commoditys,
@@ -638,13 +640,6 @@ export default {
             phone: this.tempOrder.phone,
             fare: this.tempOrder.fare,
             remark: this.tempOrder.remark
-          })
-        }
-        if (this.tempOrder.supplier > 0) {
-          setPurchaseSupplier({
-            id: this.userdata.user.id,
-            oid: id,
-            sid: this.tempOrder.supplier
           })
         }
         this.$message({ type: 'success', message: '申请成功!' })
