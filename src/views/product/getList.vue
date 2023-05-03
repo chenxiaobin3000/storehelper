@@ -87,7 +87,7 @@
                 <span>{{ row.ioname }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="编号" width="80px" align="center">
+            <el-table-column label="编号" width="120px" align="center">
               <template slot-scope="{row}">
                 <span>{{ row.code }}</span>
               </template>

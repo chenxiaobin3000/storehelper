@@ -7,8 +7,8 @@
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
     </div>
 
-    <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="编号" width="200px" align="center">
+    <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
+      <el-table-column label="编号" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.code }}</span>
         </template>
@@ -23,12 +23,12 @@
           <span>{{ row.price }}元</span>
         </template>
       </el-table-column>
-      <el-table-column label="重量" width="180px" align="center">
+      <el-table-column label="重量" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.weight / 1000 }}kg</span>
         </template>
       </el-table-column>
-      <el-table-column label="份数" width="180px" align="center">
+      <el-table-column label="份数" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.value }}件</span>
         </template>
@@ -50,6 +50,7 @@ export default {
   components: { Pagination },
   data() {
     return {
+      tableHeight: 600,
       userdata: {},
       storages: [],
       date: new Date(),
@@ -80,6 +81,11 @@ export default {
     create() {
       this.$message({ type: 'error', message: '不支持新建!' })
     }
+  },
+  mounted: function() {
+    setTimeout(() => {
+      this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 78
+    }, 1000)
   },
   created() {
     this.userdata = this.$store.getters.userdata

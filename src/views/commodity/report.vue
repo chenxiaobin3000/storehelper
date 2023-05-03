@@ -31,7 +31,7 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" ref="pagination" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
 
     <el-dialog title="详细信息" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="60px" style="width: 100%; padding: 0 4% 0 4%;">

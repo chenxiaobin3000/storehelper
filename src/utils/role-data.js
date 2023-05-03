@@ -52,11 +52,9 @@ export const MyRoleData = [{
   }, {
     path: 'purchase', meta: { title: '入库录入', roles: [805] }
   }, {
-    path: 'dispatch', meta: { title: '出库录入', roles: [807] }
+    path: 'dispatch', meta: { title: '出库录入', roles: [806] }
   }, {
-    path: 'loss', meta: { title: '损耗录入', roles: [808] }
-  }, {
-    path: 'return', meta: { title: '退货录入', roles: [806] }
+    path: 'loss', meta: { title: '损耗录入', roles: [807] }
   }]
 }, {
   path: '/product', meta: { title: '生产管理', roles: [600] },
@@ -106,8 +104,6 @@ export const MyRoleData = [{
     path: 'report', meta: { title: '销售数据', roles: [301] }
   }, {
     path: 'commodity', meta: { title: '商品列表', roles: [302] }
-  }, {
-    path: 'market', meta: { title: '商品上架', roles: [303] }
   }, {
     path: 'category', meta: { title: '品类管理', roles: [304] }
   }, {

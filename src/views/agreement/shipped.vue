@@ -10,7 +10,7 @@
     </div>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="编号" width="100px" align="center">
+      <el-table-column label="编号" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.code }}</span>
         </template>
@@ -132,7 +132,7 @@
           <span>{{ temp.account }}</span>
         </el-form-item>
         <el-table v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
-          <el-table-column label="编号" width="100px" align="center">
+          <el-table-column label="编号" width="120px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.code }}</span>
             </template>
@@ -433,7 +433,6 @@ export default {
         gid: this.userdata.group.id,
         sid: this.listQuery.sid,
         aid: this.listQuery.aid,
-        asid: this.listQuery.asid,
         date: this.temp.date,
         commoditys: this.temp.commoditys,
         prices: this.temp.prices,

@@ -132,7 +132,7 @@
           <span>{{ temp.supplier }}</span>
         </el-form-item>
         <el-table v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>s
-          <el-table-column label="编号" width="100px" align="center">
+          <el-table-column label="编号" width="120px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.code }}</span>
             </template>

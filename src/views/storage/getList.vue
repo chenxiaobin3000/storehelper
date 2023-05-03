@@ -75,7 +75,7 @@
         <!-- 商品列表 -->
         <el-form-item v-if="temp.comms && temp.comms.length > 0" label="商品列表" prop="remarks">
           <el-table :data="temp.comms" style="width: 100%" border stripe fit highlight-current-row>
-            <el-table-column label="编号" width="80px" align="center">
+            <el-table-column label="编号" width="120px" align="center">
               <template slot-scope="{row}">
                 <span>{{ row.code }}</span>
               </template>
@@ -185,11 +185,25 @@ export default {
       orders: [{
         id: 10, label: '采购入库单'
       }, {
-        id: 12, label: '仓储出库单'
+        id: 12, label: '生产入库单'
       }, {
-        id: 13, label: '仓储损耗单'
+        id: 14, label: '履约入库单'
       }, {
-        id: 11, label: '采购退货单'
+        id: 16, label: '销售入库单'
+      }, {
+        id: 18, label: '仓储入库单'
+      }, {
+        id: 11, label: '采购出库单'
+      }, {
+        id: 13, label: '生产出库单'
+      }, {
+        id: 15, label: '履约出库单'
+      }, {
+        id: 17, label: '销售出库单'
+      }, {
+        id: 19, label: '仓储出库单'
+      }, {
+        id: 20, label: '仓储损耗单'
       }],
       date: new Date(),
       list: null,

@@ -101,7 +101,7 @@
         <!-- 商品列表 -->
         <el-form-item v-if="temp.comms && temp.comms.length > 0" label="商品列表" prop="remarks">
           <el-table :data="temp.comms" style="width: 100%" border stripe fit highlight-current-row>
-            <el-table-column label="编号" width="80px" align="center">
+            <el-table-column label="编号" width="120px" align="center">
               <template slot-scope="{row}">
                 <span>{{ row.code }}</span>
               </template>
@@ -376,14 +376,16 @@ export default {
   created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
-    this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
+    this.listQuery.date = parseTime(this.date, '{y}{m}{d}')
+    this.listQuery.date = this.listQuery.date.substr(2, this.listQuery.date.length - 2)
     this.getGroupAllSupplier()
   },
   methods: {
     handleSelect() {
       this.listQuery.page = 1
       this.listQuery.limit = 10
-      this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
+      this.listQuery.date = parseTime(this.date, '{y}{m}{d}')
+      this.listQuery.date = this.listQuery.date.substr(2, this.listQuery.date.length - 2)
       this.getOrderList()
     },
     getGroupAllSupplier() {

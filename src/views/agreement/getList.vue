@@ -113,7 +113,7 @@
         <!-- 商品列表 -->
         <el-form-item v-if="temp.comms && temp.comms.length > 0" label="商品列表" prop="remarks">
           <el-table :data="temp.comms" style="width: 100%" border stripe fit highlight-current-row>
-            <el-table-column label="编号" width="80px" align="center">
+            <el-table-column label="编号" width="120px" align="center">
               <template slot-scope="{row}">
                 <span>{{ row.code }}</span>
               </template>

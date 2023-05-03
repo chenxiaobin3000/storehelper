@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <el-select v-model="listQuery.sid" class="filter-item" @change="getStorageCommodityList">
-        <el-option v-for="item in soptionsAll" :key="item.id" :label="item.label" :value="item.id" />
+        <el-option v-for="item in storagesAll" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-select v-model="listQuery.aid" class="filter-item" @change="getAccountCommodityList">
         <el-option v-for="item in aoptionsAll" :key="item.id" :label="item.label" :value="item.id" />
@@ -61,7 +61,7 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" ref="pagination" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="60px" style="width: 100%; padding: 0 4% 0 4%;">
@@ -151,11 +151,6 @@
             <el-option v-for="item in aoptions" :key="item.id" :label="item.label" :value="item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="仓库" prop="sid">
-          <el-select v-model="tempAccount.sid" class="filter-item">
-            <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="平台编号" prop="code">
           <el-input v-model="tempAccount.mcode" />
         </el-form-item>
@@ -170,8 +165,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogStorageVisible = false">取消</el-button>
-        <el-button type="primary" @click="updateStorageData()">确定</el-button>
+        <el-button type="danger" @click="delAccountData()">删除</el-button>
+        <el-button type="primary" @click="updateAccountData()">设置</el-button>
       </div>
     </el-dialog>
   </div>
@@ -182,7 +177,7 @@ import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
 import { treeGenerate } from '@/utils/tree'
 import { getGroupCommodity, addCommodity, setCommodity, delCommodity, setCommodityOriginal, getStorageCommodity, setCommodityStorage } from '@/api/commodity'
-import { getMarketAllAccount, getMarketCommodity, setMarketCommodity, getMarketCommodityList } from '@/api/market'
+import { getMarketAllAccount, getMarketCommodity, setMarketCommodity, delMarketCommodity, getMarketCommodityList } from '@/api/market'
 import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryTree } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
@@ -193,7 +188,7 @@ export default {
     return {
       tableHeight: 600,
       userdata: {},
-      soptionsAll: [], // 仅列表查询
+      storagesAll: [], // 仅列表查询
       aoptionsAll: [], // 仅列表查询
       storages: [], // 仅对话框使用
       aoptions: [], // 仅对话框使用
@@ -220,8 +215,6 @@ export default {
       tempAccount: {
         id: 0,
         aid: 0, // 仅对话框使用
-        sid: 0, // 仅对话框使用
-        storages: null,
         ccode: '',
         cname: '',
         mcode: '',
@@ -430,9 +423,9 @@ export default {
       getGroupAllStorage({
         id: this.userdata.user.id
       }).then(response => {
-        this.soptionsAll = [{ id: 0, label: '全部仓库' }]
+        this.storagesAll = [{ id: 0, label: '全部仓库' }]
         response.data.data.list.forEach(v => {
-          this.soptionsAll.push({ id: v.id, label: v.name })
+          this.storagesAll.push({ id: v.id, label: v.name })
           this.data.push({ path: '/' + v.id, meta: { title: v.name, roles: [v.id] }})
         })
         this.routes = treeGenerate.generateRoutes(this.data)
@@ -580,42 +573,28 @@ export default {
       })
     },
     handleAidSelect() {
-      getAccountStorage({
+      getMarketCommodity({
         id: this.listQuery.id,
         gid: this.listQuery.gid,
-        aid: this.tempAccount.aid
+        aid: this.tempAccount.aid,
+        cid: this.tempAccount.id
       }).then(response => {
-        const list = response.data.data.list
-        if (list.length > 0) {
-          this.storages = []
-          list.forEach(v => {
-            this.storages.push({ id: v.id, label: v.name })
-          })
-          this.tempAccount.sid = this.storages[0].id
-          getMarketCommodity({
-            id: this.listQuery.id,
-            gid: this.listQuery.gid,
-            sid: this.tempAccount.sid,
-            aid: this.tempAccount.aid,
-            cid: this.tempAccount.id
-          }).then(response => {
-            const commodity = response.data.data.commodity
-            if (commodity) {
-              this.tempAccount.mcode = commodity.code
-              this.tempAccount.mname = commodity.name
-              this.tempAccount.mremark = commodity.remark
-              this.tempAccount.alarm = commodity.price
-            }
-          })
+        const commodity = response.data.data.commodity
+        if (commodity) {
+          this.tempAccount.mcode = commodity.code
+          this.tempAccount.mname = commodity.name
+          this.tempAccount.mremark = commodity.remark
+          this.tempAccount.alarm = commodity.price
         } else {
-          this.storages = [{ id: 0, label: '无' }]
-          this.tempAccount.sid = 0
+          this.tempAccount.mcode = ''
+          this.tempAccount.mname = ''
+          this.tempAccount.mremark = ''
+          this.tempAccount.alarm = ''
         }
       })
     },
     handleSelectAccount(row) {
       this.tempAccount.id = row.id
-      this.tempAccount.storages = row.storages
       this.tempAccount.ccode = row.code
       this.tempAccount.cname = row.name
       this.tempAccount.cremark = row.remark
@@ -631,7 +610,6 @@ export default {
       setMarketCommodity({
         id: this.listQuery.id,
         gid: this.listQuery.gid,
-        sid: this.tempAccount.sid,
         aid: this.tempAccount.aid,
         cid: this.tempAccount.id,
         code: this.tempAccount.mcode,
@@ -640,17 +618,22 @@ export default {
         price: this.tempAccount.alarm
       }).then(response => {
         this.$message({ type: 'success', message: '更新成功!' })
-
-        // 绑定仓库
-        if (!this.tempAccount.storages.includes(this.tempAccount.sid)) {
-          this.tempAccount.storages.push(this.tempAccount.sid)
-          setCommodityStorage({
-            id: this.listQuery.id,
-            gid: this.listQuery.gid,
-            cid: this.tempStorage.id,
-            sids: this.tempAccount.storages
-          })
-        }
+        this.getCommodityList()
+      })
+    },
+    delAccountData() {
+      delMarketCommodity({
+        id: this.listQuery.id,
+        gid: this.listQuery.gid,
+        aid: this.tempAccount.aid,
+        cid: this.tempAccount.id
+      }).then(response => {
+        this.$message({ type: 'success', message: '删除成功!' })
+        this.tempAccount.mcode = ''
+        this.tempAccount.mname = ''
+        this.tempAccount.mremark = ''
+        this.tempAccount.alarm = ''
+        this.getCommodityList()
       })
     }
   }

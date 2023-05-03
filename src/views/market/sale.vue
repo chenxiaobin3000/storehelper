@@ -4,11 +4,7 @@
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleStorageSelect">
         <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <span class="filter-item" style="color:#606266"> 账号: {{ temp.account }} ({{ temp.remark }}), 子账号:</span>
-      <el-select v-model="listQuery.asid" class="filter-item" style="width:160px" @change="handleSubSelect">
-        <el-option v-for="item in asoptions" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
-      <span class="filter-item" style="color:#606266">{{ temp.sremark }}</span>
+      <span class="filter-item" style="color:#606266"> 账号: {{ temp.account }}</span>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
       <span class="filter-item" style="color:#606266">{{ mname }}平台</span>
       <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>
@@ -18,7 +14,7 @@
     <br>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="编号" width="80px" align="center">
+      <el-table-column label="编号" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.ccode }}</span>
         </template>
@@ -113,12 +109,7 @@
       </el-table-column>
       <el-table-column label="账号" width="110px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.msaccount && row.msaccount.length > 0 ? row.msaccount : row.maccount }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.msaccount && row.msaccount.length > 0 ? row.msremark : row.mremark }}</span>
+          <span>{{ row.maccount }}</span>
         </template>
       </el-table-column>
       <el-table-column label="商品" align="center">
@@ -185,7 +176,7 @@
           <span>{{ temp.row ? temp.row.batch : '' }}</span>
         </el-form-item>
         <el-table v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
-          <el-table-column label="编号" width="100px" align="center">
+          <el-table-column label="编号" width="120px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.code }}</span>
             </template>
@@ -256,7 +247,6 @@ export default {
         limit: 10,
         sid: 0,
         aid: 0,
-        asid: 0,
         date: null,
         search: null
       },
@@ -269,7 +259,6 @@ export default {
       listAgree: {
         id: 0,
         aid: 0,
-        asid: 0,
         type: 20, // 履约发货
         page: 1,
         limit: 10,
@@ -282,9 +271,6 @@ export default {
         row: null,
         storage: '',
         account: '',
-        remark: '',
-        saccount: '',
-        sremark: '',
         date: null,
         list: []
       },
@@ -326,19 +312,8 @@ export default {
       this.listQuery.limit = 10
       this.getMarketStorageAccount()
     },
-    handleSubSelect() {
-      this.asoptions.forEach(v => {
-        if (this.listQuery.asid === v.id) {
-          this.temp.saccount = v.label
-          this.temp.sremark = v.remark
-          this.handleMarket(v.mid)
-        }
-      })
-      this.handleSelect()
-    },
     handleAgreeSelect() {
       this.listAgree.aid = this.listQuery.aid
-      this.listAgree.asid = this.listQuery.asid
       this.listAgree.page = 1
       this.listAgree.limit = 20
       this.listAgree.date = parseTime(this.agreeDate, '{y}-{m}-{d}')
@@ -396,7 +371,6 @@ export default {
         gid: this.userdata.group.id,
         sid: this.listQuery.sid,
         aid: this.listQuery.aid,
-        asid: this.listQuery.asid,
         date: this.listQuery.date,
         commoditys: commoditys,
         prices: prices,
@@ -404,32 +378,6 @@ export default {
       }).then(response => {
         this.$message({ type: 'success', message: '更新成功!' })
         this.getCommodityList()
-      })
-    },
-    getMarketSubAccount() {
-      getMarketSubAccount({
-        id: this.listQuery.id,
-        gid: this.listQuery.gid,
-        aid: this.listQuery.aid
-      }).then(response => {
-        if (response.data.data.list && response.data.data.list.length > 0) {
-          this.asoptions = []
-          response.data.data.list.forEach(v => {
-            this.asoptions.push({ id: v.id, label: v.account, remark: v.remark, mid: v.mid })
-          })
-          this.listQuery.asid = this.asoptions[0].id
-          this.temp.saccount = this.asoptions[0].label
-          this.temp.sremark = this.asoptions[0].remark
-          this.handleMarket(this.asoptions[0].mid)
-        } else {
-          this.asoptions = [{ id: 0, label: '无' }]
-          this.listQuery.asid = 0
-          this.temp.saccount = ''
-          this.temp.sremark = ''
-        }
-        this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
-        this.getCommodityList()
-        this.handleAgreeSelect()
       })
     },
     getMarketStorageAccount() {
@@ -441,16 +389,9 @@ export default {
         const data = response.data.data
         this.listQuery.aid = data.aid
         this.temp.account = data.account
-        this.temp.remark = data.remark
         this.handleMarket(data.mid)
-        this.getMarketSubAccount()
       }).catch(error => {
         this.temp.account = ''
-        this.temp.remark = ''
-        this.asoptions = [{ id: 0, label: '无' }]
-        this.listQuery.asid = 0
-        this.temp.saccount = ''
-        this.temp.sremark = ''
         this.getCommodityList()
         Promise.reject(error)
       })
@@ -510,7 +451,6 @@ export default {
         gid: this.userdata.group.id,
         sid: this.listQuery.sid,
         aid: this.listQuery.aid,
-        asid: this.listQuery.asid,
         did: 0,
         cid: row.cid,
         value: row.mvalue,
@@ -536,7 +476,6 @@ export default {
         gid: this.userdata.group.id,
         sid: this.listQuery.sid,
         aid: this.listQuery.aid,
-        asid: this.listQuery.asid,
         did: row.id ? row.id : 0,
         cid: row.cid,
         value: row.mvalue,

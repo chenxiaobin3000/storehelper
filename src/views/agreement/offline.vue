@@ -12,7 +12,7 @@
     </div>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="编号" width="100px" align="center">
+      <el-table-column label="编号" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.code }}</span>
         </template>
@@ -134,7 +134,7 @@
           <span>{{ temp.supplier }}</span>
         </el-form-item>
         <el-table v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
-          <el-table-column label="编号" width="100px" align="center">
+          <el-table-column label="编号" width="120px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.code }}</span>
             </template>
@@ -283,15 +283,6 @@ export default {
       this.listQuery.page = 1
       this.listQuery.limit = 10
       this.getCommodityList()
-    },
-    handleSubSelect() {
-      this.asoptions.forEach(v => {
-        if (this.listQuery.asid === v.id) {
-          this.temp.saccount = v.label
-          this.temp.sremark = v.remark
-        }
-      })
-      this.handleSelect()
     },
     getGroupAllSupplier() {
       getGroupAllSupplier({

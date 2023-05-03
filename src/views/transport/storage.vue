@@ -195,7 +195,7 @@
               <span>{{ row.type }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="编号" width="100px" align="center">
+          <el-table-column label="编号" width="120px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.code }}</span>
             </template>

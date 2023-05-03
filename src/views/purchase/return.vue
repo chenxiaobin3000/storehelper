@@ -12,17 +12,17 @@
     </div>
 
     <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="批次" align="center">
+      <el-table-column label="批次" fixed="left" width="140px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.batch }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="仓库" width="100px" align="center">
+      <el-table-column label="仓库" fixed="left" width="140px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.sname }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="商品" align="center">
+      <el-table-column label="商品" width="260px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.commList }}</span>
         </template>
@@ -47,7 +47,7 @@
           <span>{{ row.complete == 0 ? '未完成' : '已完成' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="申请人" width="65px" align="center">
+      <el-table-column label="申请人" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.applyName }}</span>
         </template>
@@ -57,7 +57,7 @@
           <span>{{ row.applyTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核人" width="65px" align="center">
+      <el-table-column label="审核人" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.reviewName }}</span>
         </template>
@@ -67,7 +67,7 @@
           <span>{{ row.reviewTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" fixed="right" width="90" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleSelectOrder(row)">选择</el-button>
         </template>
@@ -79,8 +79,8 @@
     <div class="filter-container" align="center">
       <span class="filter-item">----------  采购退货单信息  ----------</span>
     </div>
-    <el-table v-if="temp.clist.length>0" v-loading="loading" :data="temp.clist" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="商品" width="100px" align="center">
+    <el-table v-if="temp.list.length>0" v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
+      <el-table-column label="编号" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.code }}</span>
         </template>
@@ -98,6 +98,11 @@
       <el-table-column label="重量(kg)" width="100px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.weight" />
+        </template>
+      </el-table-column>
+      <el-table-column label="规格" width="100px" align="center">
+        <template slot-scope="{row}">
+          <el-input v-model="row.norm" />
         </template>
       </el-table-column>
       <el-table-column label="份数" width="80px" align="center">
@@ -108,72 +113,6 @@
       <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="danger" size="mini" @click="handleDeleteCommodity(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <el-table v-if="temp.hlist.length>0" v-loading="loading" :data="temp.hlist" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="半成品" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.code }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="名称" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="总价" width="110px" align="center">
-        <template slot-scope="{row}">
-          <el-input v-model="row.price" />
-        </template>
-      </el-table-column>
-      <el-table-column label="重量(kg)" width="100px" align="center">
-        <template slot-scope="{row}">
-          <el-input v-model="row.weight" />
-        </template>
-      </el-table-column>
-      <el-table-column label="份数" width="80px" align="center">
-        <template slot-scope="{row}">
-          <el-input v-model="row.value" />
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button type="danger" size="mini" @click="handleDeleteHalfgood(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <el-table v-if="temp.olist.length>0" v-loading="loading" :data="temp.olist" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="原料" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.code }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="名称" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="总价" width="110px" align="center">
-        <template slot-scope="{row}">
-          <el-input v-model="row.price" />
-        </template>
-      </el-table-column>
-      <el-table-column label="重量(kg)" width="100px" align="center">
-        <template slot-scope="{row}">
-          <el-input v-model="row.weight" />
-        </template>
-      </el-table-column>
-      <el-table-column label="份数" width="80px" align="center">
-        <template slot-scope="{row}">
-          <el-input v-model="row.value" />
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button type="danger" size="mini" @click="handleDeleteOriginal(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -190,17 +129,12 @@
           <span>{{ temp.storage }}</span>
         </el-form-item>
         <el-table v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
-          <el-table-column label="类型" width="80px" align="center">
-            <template slot-scope="{row}">
-              <span>{{ row.type }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="编号" width="100px" align="center">
+          <el-table-column label="编号" width="120px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.code }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="名称" align="center">
+          <el-table-column label="名称" width="200px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.name }}</span>
             </template>
@@ -215,6 +149,11 @@
               <span>{{ row.weight }}kg</span>
             </template>
           </el-table-column>
+          <el-table-column label="规格" width="100px" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.norm }}</span>
+            </template>
+          </el-table-column>
           <el-table-column label="份数" width="80px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.value }}</span>
@@ -225,6 +164,16 @@
         <el-form-item />
         <el-form-item label="订单备注" prop="sremark">
           <el-input v-model="tempOrder.sremark" />
+        </el-form-item>
+
+        <el-form-item label="一键审核" prop="autoReview">
+          <el-switch v-model="temp.autoReview" />
+        </el-form-item>
+        <el-form-item label="一键出库" prop="autoStorage">
+          <el-switch v-model="temp.autoStorage" />
+          <el-select v-model="temp.sid" class="filter-item" style="margin-left:10px" @change="handleSelect">
+            <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -239,6 +188,7 @@
 import { mapState } from 'vuex'
 import { parseTime, reviewType, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
+import { getGroupAllStorage } from '@/api/storage'
 import { addOrderRemark, getPurchaseOrder } from '@/api/order'
 import { returnc } from '@/api/purchase'
 
@@ -250,6 +200,7 @@ export default {
       business: 1, // 业务类型
       reviewList: reviewType,
       completeList: completeType,
+      storages: [],
       date: new Date(),
       list: null,
       total: 0,
@@ -260,26 +211,25 @@ export default {
         page: 1,
         limit: 10,
         review: 2, // 已审核
-        complete: 2, // 未完成
+        complete: 1, // 已完成
         date: null,
         search: null
       },
       temp: {
         id: 0,
         batch: '',
+        sid: 0,
         storage: '',
         date: null,
-        types: [],
         commoditys: [],
         prices: [],
         weights: [],
         norms: [],
         values: [],
         attrs: null,
-        clist: [],
-        hlist: [],
-        olist: [],
-        list: []
+        list: [],
+        autoReview: false,
+        autoStorage: false
       },
       tempOrder: {
         sremark: ''
@@ -305,13 +255,26 @@ export default {
   created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
-    this.getCommodityList()
+    this.getGroupAllStorage()
   },
   methods: {
     handleSelect() {
       this.listQuery.page = 1
       this.listQuery.limit = 10
       this.getCommodityList()
+    },
+    getGroupAllStorage() {
+      getGroupAllStorage({
+        id: this.userdata.user.id
+      }).then(response => {
+        if (response.data.data.list && response.data.data.list.length > 0) {
+          response.data.data.list.forEach(v => {
+            this.storages.push({ id: v.id, label: v.name })
+          })
+          this.temp.sid = response.data.data.list[0].id
+          this.getCommodityList()
+        }
+      })
     },
     getCommodityList() {
       this.loading = true
@@ -338,52 +301,22 @@ export default {
       })
     },
     handleSelectOrder(row) {
-      this.temp.clist = []
-      this.temp.hlist = []
-      this.temp.olist = []
+      this.temp.list = []
       this.temp.id = row.id
       this.temp.batch = row.batch
       this.temp.storage = row.sname
       row.comms.forEach(v => {
-        switch (v.ctype) {
-          case 1:
-            this.temp.clist.push(v)
-            break
-          case 2:
-            this.temp.hlist.push(v)
-            break
-          case 3:
-            this.temp.olist.push(v)
-            break
-          default:
-            break
-        }
+        this.temp.list.push(v)
       })
     },
     handleDeleteCommodity(row) {
-      this.temp.clist.map((v, i) => {
+      this.temp.list.map((v, i) => {
         if (v.id === row.id) {
-          this.temp.clist.splice(i, 1)
-        }
-      })
-    },
-    handleDeleteHalfgood(row) {
-      this.temp.hlist.map((v, i) => {
-        if (v.id === row.id) {
-          this.temp.hlist.splice(i, 1)
-        }
-      })
-    },
-    handleDeleteOriginal(row) {
-      this.temp.olist.map((v, i) => {
-        if (v.id === row.id) {
-          this.temp.olist.splice(i, 1)
+          this.temp.list.splice(i, 1)
         }
       })
     },
     handleApply() {
-      this.temp.list = []
-      this.temp.types = []
       this.temp.commoditys = []
       this.temp.prices = []
       this.temp.weights = []
@@ -394,56 +327,27 @@ export default {
         return
       }
       this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')
-      this.temp.clist.forEach(v => {
-        this.addItem(1, v)
-      })
-      this.temp.hlist.forEach(v => {
-        this.addItem(2, v)
-      })
-      this.temp.olist.forEach(v => {
-        this.addItem(3, v)
+      this.temp.list.forEach(v => {
+        this.temp.commoditys.push(v.cid)
+        this.temp.prices.push(v.price)
+        this.temp.weights.push(v.weight * 1000)
+        this.temp.norms.push(v.norm)
+        this.temp.values.push(v.value)
       })
       this.dialogVisible = true
-    },
-    addItem(type, row) {
-      let typename = null
-      switch (type) {
-        case 1:
-          typename = '商品'
-          break
-        case 2:
-          typename = '半成品'
-          break
-        case 3:
-          typename = '原料'
-          break
-        default:
-          break
-      }
-      this.temp.types.push(type)
-      this.temp.commoditys.push(row.cid)
-      this.temp.prices.push(row.price)
-      this.temp.weights.push(row.weight * 1000)
-      this.temp.values.push(row.value)
-      this.temp.list.push({
-        type: typename,
-        code: row.code,
-        name: row.name,
-        price: row.price,
-        weight: row.weight,
-        value: row.value
-      })
     },
     applyData() {
       returnc({
         id: this.userdata.user.id,
-        gid: this.userdata.group.id,
         rid: this.temp.id,
+        sid: this.temp.sid,
         date: this.temp.date,
-        types: this.temp.types,
+        review: this.temp.autoReview ? 1 : 0,
+        storage: this.temp.autoStorage ? 1 : 0,
         commoditys: this.temp.commoditys,
         prices: this.temp.prices,
         weights: this.temp.weights,
+        norms: this.temp.norms,
         values: this.temp.values,
         attrs: []
       }).then(response => {
@@ -458,6 +362,7 @@ export default {
         }
         this.$message({ type: 'success', message: '申请成功!' })
         this.getCommodityList()
+        this.temp.list = []
         this.dialogVisible = false
       })
     }

@@ -25,12 +25,9 @@ export default {
     name: 'storage_purchase', meta: { title: '入库录入', roles: [805] }
   }, {
     path: 'dispatch', component: () => import('@/views/storage/dispatch'),
-    name: 'storage_dispatch', meta: { title: '出库录入', roles: [807] }
+    name: 'storage_dispatch', meta: { title: '出库录入', roles: [806] }
   }, {
     path: 'loss', component: () => import('@/views/storage/loss'),
-    name: 'storage_loss', meta: { title: '损耗录入', roles: [808] }
-  }, {
-    path: 'return', component: () => import('@/views/storage/return'),
-    name: 'storage_return', meta: { title: '退货录入', roles: [806] }
+    name: 'storage_loss', meta: { title: '损耗录入', roles: [807] }
   }]
 }
