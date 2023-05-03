@@ -1,6 +1,9 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
+      <el-select v-model="itype" class="filter-item" style="width:100px" @change="handleIOSelect">
+        <el-option v-for="item in ioptions" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
       <el-select v-model="otype" class="filter-item" style="width:120px" @change="handleSelect">
         <el-option v-for="item in orders" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
@@ -10,14 +13,14 @@
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
     </div>
 
-    <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="批次" align="center">
+    <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
+      <el-table-column label="批次" fixed="left" width="170px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.batch }} </span>
           <el-button icon="el-icon-tickets" size="mini" circle @click="handleDetail(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="仓库" width="100px" align="center">
+      <el-table-column label="仓库" fixed="left" width="140px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.sname }}</span>
         </template>
@@ -27,12 +30,12 @@
           <span>{{ row.sname2 }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="商品" align="center">
+      <el-table-column label="商品" width="260px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.commList }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="申请人" width="65px" align="center">
+      <el-table-column label="申请人" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.applyName }}</span>
         </template>
@@ -42,7 +45,7 @@
           <span>{{ row.applyTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核人" width="65px" align="center">
+      <el-table-column label="审核人" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.reviewName }}</span>
         </template>
@@ -52,7 +55,7 @@
           <span>{{ row.reviewTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" fixed="right" width="180" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-if="row.review>0" type="primary" size="mini" @click="handleRevoke(row)">撤销审核</el-button>
           <el-button v-else type="primary" size="mini" @click="handleReview(row)">审核</el-button>
@@ -180,6 +183,7 @@ export default {
   components: { Pagination },
   data() {
     return {
+      tableHeight: 600,
       userdata: {},
       otype: 10,
       orders: [{
@@ -192,18 +196,12 @@ export default {
         id: 16, label: '销售入库单'
       }, {
         id: 18, label: '仓储入库单'
+      }],
+      itype: 1,
+      ioptions: [{
+        id: 1, label: '入库'
       }, {
-        id: 11, label: '采购出库单'
-      }, {
-        id: 13, label: '生产出库单'
-      }, {
-        id: 15, label: '履约出库单'
-      }, {
-        id: 17, label: '销售出库单'
-      }, {
-        id: 19, label: '仓储出库单'
-      }, {
-        id: 20, label: '仓储损耗单'
+        id: 2, label: '出库'
       }],
       date: new Date(),
       list: null,
@@ -244,17 +242,57 @@ export default {
       this.$message({ type: 'error', message: '不支持新建!' })
     }
   },
+  mounted: function() {
+    setTimeout(() => {
+      this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 78
+    }, 1000)
+  },
   created() {
-    this.listQuery.id = this.$store.getters.userdata.user.id
     this.userdata = this.$store.getters.userdata
+    this.listQuery.id = this.userdata.user.id
+    this.listQuery.date = parseTime(this.date, '{y}{m}{d}')
+    this.listQuery.date = this.listQuery.date.substr(2, this.listQuery.date.length - 2)
     this.getOrderList()
   },
   methods: {
+    handleIOSelect() {
+      if (this.itype === 1) {
+        this.orders = [{
+          id: 10, label: '采购入库单'
+        }, {
+          id: 12, label: '生产入库单'
+        }, {
+          id: 14, label: '履约入库单'
+        }, {
+          id: 16, label: '销售入库单'
+        }, {
+          id: 18, label: '仓储入库单'
+        }]
+        this.otype = 10
+      } else {
+        this.orders = [{
+          id: 11, label: '采购出库单'
+        }, {
+          id: 13, label: '生产出库单'
+        }, {
+          id: 15, label: '履约出库单'
+        }, {
+          id: 17, label: '销售出库单'
+        }, {
+          id: 19, label: '仓储出库单'
+        }, {
+          id: 20, label: '仓储损耗单'
+        }]
+        this.otype = 11
+      }
+      this.handleSelect()
+    },
     handleSelect() {
       this.listQuery.type = this.otype
       this.listQuery.page = 1
       this.listQuery.limit = 10
-      this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
+      this.listQuery.date = parseTime(this.date, '{y}{m}{d}')
+      this.listQuery.date = this.listQuery.date.substr(2, this.listQuery.date.length - 2)
       this.getOrderList()
     },
     getOrderList() {

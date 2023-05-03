@@ -63,7 +63,11 @@ export const MyRoleData = [{
   }, {
     path: 'getList', meta: { title: '生产明细', roles: [602] }
   }, {
-    path: 'collect', meta: { title: '生产录入', roles: [603] }
+    path: 'process', meta: { title: '生产出库', roles: [603] }
+  }, {
+    path: 'complete', meta: { title: '生产入库', roles: [604] }
+  }, {
+    path: 'loss', meta: { title: '生产损耗', roles: [605] }
   }]
 }, {
   path: '/agreement', meta: { title: '履约管理', roles: [200] },

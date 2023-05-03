@@ -11,7 +11,7 @@
       <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>
     </div>
 
-    <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
+    <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="批次" fixed="left" width="140px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.batch }}</span>
@@ -134,7 +134,7 @@
               <span>{{ row.code }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="名称" width="200px" align="center">
+          <el-table-column label="名称" align="center">
             <template slot-scope="{row}">
               <span>{{ row.name }}</span>
             </template>
@@ -166,6 +166,23 @@
           <el-input v-model="tempOrder.sremark" />
         </el-form-item>
 
+        <!-- 物流 -->
+        <el-form-item label="物流" prop="ship">
+          <el-input v-model="tempOrder.ship" />
+        </el-form-item>
+        <el-form-item label="车牌" prop="code">
+          <el-input v-model="tempOrder.code" />
+        </el-form-item>
+        <el-form-item label="电话" prop="phone">
+          <el-input v-model="tempOrder.phone" />
+        </el-form-item>
+        <el-form-item label="运费" prop="fare">
+          <el-input v-model="tempOrder.fare" />
+        </el-form-item>
+        <el-form-item label="物流备注" prop="remark">
+          <el-input v-model="tempOrder.remark" />
+        </el-form-item>
+
         <el-form-item label="一键审核" prop="autoReview">
           <el-switch v-model="temp.autoReview" />
         </el-form-item>
@@ -190,12 +207,14 @@ import { parseTime, reviewType, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import { getGroupAllStorage } from '@/api/storage'
 import { addOrderRemark, getPurchaseOrder } from '@/api/order'
+import { addOrderFare } from '@/api/transport'
 import { returnc } from '@/api/purchase'
 
 export default {
   components: { Pagination },
   data() {
     return {
+      tableHeight: 600,
       userdata: {},
       business: 1, // 业务类型
       reviewList: reviewType,
@@ -232,6 +251,11 @@ export default {
         autoStorage: false
       },
       tempOrder: {
+        ship: '',
+        code: '',
+        phone: '',
+        fare: 0,
+        remark: '',
         sremark: ''
       },
       dialogVisible: false
@@ -252,15 +276,24 @@ export default {
       this.$message({ type: 'error', message: '不支持新建!' })
     }
   },
+  mounted: function() {
+    setTimeout(() => {
+      this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 178
+    }, 1000)
+  },
   created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
+    this.listQuery.date = parseTime(this.date, '{y}{m}{d}')
+    this.listQuery.date = this.listQuery.date.substr(2, this.listQuery.date.length - 2)
     this.getGroupAllStorage()
   },
   methods: {
     handleSelect() {
       this.listQuery.page = 1
       this.listQuery.limit = 10
+      this.listQuery.date = parseTime(this.date, '{y}{m}{d}')
+      this.listQuery.date = this.listQuery.date.substr(2, this.listQuery.date.length - 2)
       this.getCommodityList()
     },
     getGroupAllStorage() {
@@ -322,6 +355,14 @@ export default {
       this.temp.weights = []
       this.temp.norms = []
       this.temp.values = []
+      this.tempOrder = {
+        ship: '',
+        code: '',
+        phone: '',
+        fare: '',
+        remark: '',
+        sremark: ''
+      }
       if (this.temp.batch.length <= 0) {
         this.$message({ type: 'error', message: '请选择采购单!' })
         return
@@ -337,6 +378,20 @@ export default {
       this.dialogVisible = true
     },
     applyData() {
+      if (this.tempOrder.fare > 0) {
+        if (this.tempOrder.ship.length <= 0) {
+          this.$message({ type: 'error', message: '请填写物流名称!' })
+          return
+        }
+        if (this.tempOrder.code.length <= 0) {
+          this.$message({ type: 'error', message: '请填写物流车牌!' })
+          return
+        }
+        if (this.tempOrder.phone.length <= 0) {
+          this.$message({ type: 'error', message: '请填写物流电话!' })
+          return
+        }
+      }
       returnc({
         id: this.userdata.user.id,
         rid: this.temp.id,
@@ -358,6 +413,18 @@ export default {
             otype: this.business,
             oid: id,
             remark: this.tempOrder.sremark
+          })
+        }
+        if (this.tempOrder.fare > 0) {
+          addOrderFare({
+            id: this.userdata.user.id,
+            otype: this.business,
+            oid: id,
+            ship: this.tempOrder.ship,
+            code: this.tempOrder.code,
+            phone: this.tempOrder.phone,
+            fare: this.tempOrder.fare,
+            remark: this.tempOrder.remark
           })
         }
         this.$message({ type: 'success', message: '申请成功!' })

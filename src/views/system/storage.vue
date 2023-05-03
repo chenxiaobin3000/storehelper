@@ -124,8 +124,8 @@ export default {
     }, 1000)
   },
   created() {
-    this.listQuery.id = this.$store.getters.userdata.user.id
     this.userdata = this.$store.getters.userdata
+    this.listQuery.id = this.userdata.user.id
     this.resetTemp()
     this.getGroupStorage()
   },

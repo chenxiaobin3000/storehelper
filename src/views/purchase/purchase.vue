@@ -18,7 +18,7 @@
           <span>{{ row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" fixed="left" width="200px" align="center">
+      <el-table-column label="名称" fixed="left" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
@@ -71,12 +71,12 @@
       <span class="filter-item">----------  采购进货单信息  ----------</span>
     </div>
     <el-table v-if="temp.list.length>0" v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="商品" width="100px" align="center">
+      <el-table-column label="编号" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" width="200px" align="center">
+      <el-table-column label="名称" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
@@ -86,7 +86,7 @@
           <span>{{ row.categoryName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="属性" align="center">
+      <el-table-column label="属性" width="260px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.attribute }}</span>
         </template>
@@ -137,7 +137,7 @@
               <span>{{ row.code }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="名称" width="200px" align="center">
+          <el-table-column label="名称" align="center">
             <template slot-scope="{row}">
               <span>{{ row.name }}</span>
             </template>
@@ -337,39 +337,37 @@ export default {
       getStorageCommodity(
         this.listQuery
       ).then(response => {
-        this.handleRet(response.data.data)
+        const data = response.data.data
+        this.total = data.total
+        this.list = []
+        if (data.list && data.list.length > 0) {
+          data.list.forEach(v => {
+            // 初始化数据
+            v.iprice = ''
+            v.iweight = ''
+            v.inorm = ''
+            v.ivalue = ''
+
+            // 品类
+            this.categoryList.forEach(c => {
+              if (c.id === v.cid) {
+                v.categoryName = c.name
+              }
+            })
+            // 属性
+            let idx = 0
+            v.attribute = ''
+            this.templateList.forEach(t => {
+              v.attribute = v.attribute + t + ': ' + (v.attrs[idx] ? v.attrs[idx++] : '') + ', '
+            })
+            this.list.push(v)
+          })
+        }
+        this.loading = false
       }).catch(error => {
         this.loading = false
         Promise.reject(error)
       })
-    },
-    handleRet(data) {
-      this.total = data.total
-      this.list = []
-      if (data.list && data.list.length > 0) {
-        data.list.forEach(v => {
-          // 初始化数据
-          v.iprice = ''
-          v.iweight = ''
-          v.inorm = ''
-          v.ivalue = ''
-
-          // 品类
-          this.categoryList.forEach(c => {
-            if (c.id === v.cid) {
-              v.categoryName = c.name
-            }
-          })
-          // 属性
-          let idx = 0
-          v.attribute = ''
-          this.templateList.forEach(t => {
-            v.attribute = v.attribute + t + ': ' + (v.attrs[idx] ? v.attrs[idx++] : '') + ', '
-          })
-          this.list.push(v)
-        })
-      }
-      this.loading = false
     },
     getCategoryList() {
       getGroupCategoryList({
@@ -411,7 +409,7 @@ export default {
       } else {
         // 原料总价 = 单价 * 重量
         row.price = (row.iprice * row.iweight).toFixed(2)
-        row.weight = (row.iweight).toFixed(2)
+        row.weight = row.iweight
       }
       row.norm = row.inorm
       row.value = row.ivalue

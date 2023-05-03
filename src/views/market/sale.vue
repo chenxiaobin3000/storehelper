@@ -219,7 +219,6 @@
 <script>
 import { mapState } from 'vuex'
 import { parseTime, reviewType, completeType } from '@/utils'
-import { marketArr } from '@/utils/market-data'
 import Pagination from '@/components/Pagination'
 import UploadExcelComponent from '@/components/UploadExcel'
 import { setMarketCommList, setMarketCommDetail, delMarketCommDetail, getMarketCommDetail, getMarketSaleDetail } from '@/api/market'
@@ -310,7 +309,7 @@ export default {
     handleStorageSelect() {
       this.listQuery.page = 1
       this.listQuery.limit = 10
-      this.getMarketStorageAccount()
+      this.getCommodityList()
     },
     handleAgreeSelect() {
       this.listAgree.aid = this.listQuery.aid
@@ -321,10 +320,6 @@ export default {
     },
     handleSelectOrder(row) {
       this.temp.row = Object.assign({}, row)
-    },
-    handleMarket(id) {
-      this.mid = id
-      this.mname = marketArr[id]
     },
     handleSuccess({ results, header }) {
       const commoditys = []
@@ -380,22 +375,6 @@ export default {
         this.getCommodityList()
       })
     },
-    getMarketStorageAccount() {
-      getMarketStorageAccount({
-        id: this.listQuery.id,
-        gid: this.userdata.group.id,
-        cid: this.listQuery.sid
-      }).then(response => {
-        const data = response.data.data
-        this.listQuery.aid = data.aid
-        this.temp.account = data.account
-        this.handleMarket(data.mid)
-      }).catch(error => {
-        this.temp.account = ''
-        this.getCommodityList()
-        Promise.reject(error)
-      })
-    },
     getGroupAllStorage() {
       getGroupAllStorage({
         id: this.userdata.user.id
@@ -405,7 +384,7 @@ export default {
             this.storages.push({ id: v.id, label: v.name })
           })
           this.listQuery.sid = response.data.data.list[0].id
-          this.getMarketStorageAccount()
+          this.getCommodityList()
         }
       })
     },
