@@ -1,45 +1,51 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
+      <el-select v-model="listQuery.type" class="filter-item" style="width:120px" @change="handleSelect">
+        <el-option v-for="item in orders" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
       <el-select v-model="listQuery.review" class="filter-item" style="width:100px" @change="handleSelect">
         <el-option v-for="item in reviewList" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
+      <el-select v-model="listQuery.complete" class="filter-item" style="width:100px" @change="handleSelect">
+        <el-option v-for="item in completeList" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
     </div>
 
-    <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="批次" align="center">
+    <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
+      <el-table-column label="批次" fixed="left" width="170px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.batch }} </span>
           <el-button icon="el-icon-tickets" size="mini" circle @click="handleDetail(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="仓库" width="100px" align="center">
+      <el-table-column label="仓库" fixed="left" width="140px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.sname }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="商品" align="center">
+      <el-table-column label="商品" width="260px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.commList }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="出库总价" align="center">
+      <el-table-column label="总价" align="center">
         <template slot-scope="{row}">
           <span>{{ row.price }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="入库总价" align="center">
+      <el-table-column label="现价" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.price2 }}</span>
+          <span>{{ row.curPrice }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="损耗总价" align="center">
+      <el-table-column label="状态" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.price3 }}</span>
+          <span>{{ row.complete == 0 ? '未完成' : '已完成' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="申请人" width="65px" align="center">
+      <el-table-column label="申请人" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.applyName }}</span>
         </template>
@@ -49,7 +55,7 @@
           <span>{{ row.applyTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核人" width="65px" align="center">
+      <el-table-column label="审核人" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.reviewName }}</span>
         </template>
@@ -59,7 +65,7 @@
           <span>{{ row.reviewTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" fixed="right" width="180" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-if="row.review>0" type="primary" size="mini" @click="handleRevoke(row)">撤销审核</el-button>
           <el-button v-else type="primary" size="mini" @click="handleReview(row)">审核</el-button>
@@ -82,11 +88,6 @@
         <!-- 商品列表 -->
         <el-form-item v-if="temp.comms && temp.comms.length > 0" label="商品列表" prop="remarks">
           <el-table :data="temp.comms" style="width: 100%" border stripe fit highlight-current-row>
-            <el-table-column label="操作" width="80px" align="center">
-              <template slot-scope="{row}">
-                <span>{{ row.ioname }}</span>
-              </template>
-            </el-table-column>
             <el-table-column label="编号" width="120px" align="center">
               <template slot-scope="{row}">
                 <span>{{ row.code }}</span>
@@ -105,6 +106,11 @@
             <el-table-column label="重量" width="70px" align="center">
               <template slot-scope="{row}">
                 <span>{{ row.weight / 1000 }}kg</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="箱规" width="70px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.norm }}</span>
               </template>
             </el-table-column>
             <el-table-column label="份数" width="70px" align="center">
@@ -171,27 +177,36 @@
 
 <script>
 import { mapState } from 'vuex'
-import { parseTime, reviewType } from '@/utils'
+import { parseTime, reviewType, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
 import { getProductOrder } from '@/api/order'
-import { reviewCollect, revokeCollect, delCollect } from '@/api/product'
+import { reviewProcess, revokeProcess, delProcess, reviewComplete, revokeComplete, delComplete, reviewLoss, revokeLoss, delLoss } from '@/api/product'
 import { addOrderRemark, delOrderRemark } from '@/api/order'
 
 export default {
   components: { Pagination },
   data() {
     return {
+      tableHeight: 600,
       userdata: {},
       business: 3, // 业务类型
+      orders: [{
+        id: 30, label: '出库单'
+      }, {
+        id: 31, label: '入库单'
+      }, {
+        id: 32, label: '损耗单'
+      }],
       date: new Date(),
       list: null,
       total: 0,
       reviewList: reviewType,
+      completeList: completeType,
       loading: false,
       listQuery: {
         id: 0,
-        type: 3, // 生产完成
+        type: 30, // 生产出库
         page: 1,
         limit: 10,
         review: 1, // 全部
@@ -226,17 +241,24 @@ export default {
       this.$message({ type: 'error', message: '不支持新建!' })
     }
   },
+  mounted: function() {
+    setTimeout(() => {
+      this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 78
+    }, 1000)
+  },
   created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
-    this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
+    this.listQuery.date = parseTime(this.date, '{y}{m}{d}')
+    this.listQuery.date = this.listQuery.date.substr(2, this.listQuery.date.length - 2)
     this.getOrderList()
   },
   methods: {
     handleSelect() {
       this.listQuery.page = 1
       this.listQuery.limit = 10
-      this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
+      this.listQuery.date = parseTime(this.date, '{y}{m}{d}')
+      this.listQuery.date = this.listQuery.date.substr(2, this.listQuery.date.length - 2)
       this.getOrderList()
     },
     getOrderList() {
@@ -252,20 +274,6 @@ export default {
             v.comms.forEach(c => {
               if (v.commList.length < 20) {
                 v.commList = v.commList + c.name + ','
-              }
-              switch (c.iotype) {
-                case 1:
-                  c.ioname = '出库'
-                  break
-                case 2:
-                  c.ioname = '入库'
-                  break
-                case 3:
-                  c.ioname = '损耗'
-                  break
-                default:
-                  c.ioname = '异常'
-                  break
               }
             })
           }
@@ -323,13 +331,32 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        reviewCollect({
+        const data = {
           id: this.userdata.user.id,
           oid: row.id
-        }).then(() => {
-          this.$message({ type: 'success', message: '审核成功!' })
-          this.getOrderList()
-        })
+        }
+        switch (this.listQuery.type) {
+          case 30:
+            reviewProcess(data).then(() => {
+              this.$message({ type: 'success', message: '审核成功!' })
+              this.getOrderList()
+            })
+            break
+          case 31:
+            reviewComplete(data).then(() => {
+              this.$message({ type: 'success', message: '审核成功!' })
+              this.getOrderList()
+            })
+            break
+          case 32:
+            reviewLoss(data).then(() => {
+              this.$message({ type: 'success', message: '审核成功!' })
+              this.getOrderList()
+            })
+            break
+          default:
+            break
+        }
       })
     },
     handleRevoke(row) {
@@ -338,13 +365,32 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        revokeCollect({
+        const data = {
           id: this.userdata.user.id,
           oid: row.id
-        }).then(() => {
-          this.$message({ type: 'success', message: '撤销成功!' })
-          this.getOrderList()
-        })
+        }
+        switch (this.listQuery.type) {
+          case 30:
+            revokeProcess(data).then(() => {
+              this.$message({ type: 'success', message: '撤销成功!' })
+              this.getOrderList()
+            })
+            break
+          case 31:
+            revokeComplete(data).then(() => {
+              this.$message({ type: 'success', message: '撤销成功!' })
+              this.getOrderList()
+            })
+            break
+          case 32:
+            revokeLoss(data).then(() => {
+              this.$message({ type: 'success', message: '撤销成功!' })
+              this.getOrderList()
+            })
+            break
+          default:
+            break
+        }
       })
     },
     handleDelete(row) {
@@ -353,13 +399,32 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delCollect({
+        const data = {
           id: this.userdata.user.id,
           oid: row.id
-        }).then(() => {
-          this.$message({ type: 'success', message: '删除成功!' })
-          this.getOrderList()
-        })
+        }
+        switch (this.listQuery.type) {
+          case 30:
+            delProcess(data).then(() => {
+              this.$message({ type: 'success', message: '删除成功!' })
+              this.getOrderList()
+            })
+            break
+          case 31:
+            delComplete(data).then(() => {
+              this.$message({ type: 'success', message: '删除成功!' })
+              this.getOrderList()
+            })
+            break
+          case 32:
+            delLoss(data).then(() => {
+              this.$message({ type: 'success', message: '删除成功!' })
+              this.getOrderList()
+            })
+            break
+          default:
+            break
+        }
       })
     }
   }

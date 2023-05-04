@@ -13,8 +13,8 @@
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
     </div>
 
-    <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="批次" align="center">
+    <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
+      <el-table-column label="批次" fixed="left" width="180px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.batch }} </span>
           <el-button icon="el-icon-tickets" size="mini" circle @click="handleDetail(row)" />
@@ -26,13 +26,13 @@
           <el-button icon="el-icon-edit" size="mini" circle @click="handleSupplier(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="仓库" width="100px" align="center">
+      <el-table-column label="仓库" width="140px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.sname }} </span>
           <el-button icon="el-icon-edit" size="mini" circle @click="handleFare(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="商品" align="center">
+      <el-table-column label="商品" width="260px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.commList }}</span>
         </template>
@@ -58,7 +58,7 @@
           <span>{{ row.complete == 0 ? '未完成' : '已完成' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="申请人" width="65px" align="center">
+      <el-table-column label="申请人" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.applyName }}</span>
         </template>
@@ -68,7 +68,7 @@
           <span>{{ row.applyTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核人" width="65px" align="center">
+      <el-table-column label="审核人" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.reviewName }}</span>
         </template>
@@ -78,7 +78,7 @@
           <span>{{ row.reviewTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" fixed="right" width="180" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-if="row.review>0" type="primary" size="mini" @click="handleRevoke(row)">撤销审核</el-button>
           <el-button v-else type="primary" size="mini" @click="handleReview(row)">审核</el-button>
@@ -310,12 +310,13 @@ export default {
   components: { Pagination },
   data() {
     return {
+      tableHeight: 600,
       userdata: {},
       business: 1, // 业务类型
       orders: [{
-        id: 1, label: '采购进货单'
+        id: 1, label: '进货单'
       }, {
-        id: 2, label: '采购退货单'
+        id: 2, label: '退货单'
       }],
       date: new Date(),
       list: null,
@@ -372,6 +373,11 @@ export default {
     create() {
       this.$message({ type: 'error', message: '不支持新建!' })
     }
+  },
+  mounted: function() {
+    setTimeout(() => {
+      this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 78
+    }, 1000)
   },
   created() {
     this.userdata = this.$store.getters.userdata

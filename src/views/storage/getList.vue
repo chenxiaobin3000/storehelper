@@ -88,19 +88,24 @@
                 <span>{{ row.name }}</span>
               </template>
             </el-table-column>
+            <el-table-column label="价格" width="70px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.price }}元</span>
+              </template>
+            </el-table-column>
             <el-table-column label="重量" width="70px" align="center">
               <template slot-scope="{row}">
                 <span>{{ row.weight / 1000 }}kg</span>
               </template>
             </el-table-column>
+            <el-table-column label="箱规" width="70px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.norm }}</span>
+              </template>
+            </el-table-column>
             <el-table-column label="份数" width="70px" align="center">
               <template slot-scope="{row}">
                 <span>{{ row.value }}件</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="价格" width="70px" align="center">
-              <template slot-scope="{row}">
-                <span>{{ row.price }}元</span>
               </template>
             </el-table-column>
           </el-table>
@@ -173,9 +178,9 @@ import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
 import { getStorageOrder } from '@/api/order'
 import {
-  reviewPurchase, revokePurchase, delPurchase,
-  reviewReturn, revokeReturn, delReturn,
-  reviewDispatch, revokeDispatch, delDispatch,
+  reviewIn, revokeIn, delIn, reviewOut, revokeOut, delOut,
+  reviewDispatchIn, revokeDispatchIn, delDispatchIn,
+  reviewDispatchOut, revokeDispatchOut, delDispatchOut,
   reviewLoss, revokeLoss, delLoss
 } from '@/api/storage'
 
@@ -187,15 +192,15 @@ export default {
       userdata: {},
       otype: 10,
       orders: [{
-        id: 10, label: '采购入库单'
+        id: 10, label: '采购单'
       }, {
-        id: 12, label: '生产入库单'
+        id: 12, label: '生产单'
       }, {
-        id: 14, label: '履约入库单'
+        id: 14, label: '履约单'
       }, {
-        id: 16, label: '销售入库单'
+        id: 16, label: '销售单'
       }, {
-        id: 18, label: '仓储入库单'
+        id: 18, label: '仓储单'
       }],
       itype: 1,
       ioptions: [{
@@ -258,30 +263,30 @@ export default {
     handleIOSelect() {
       if (this.itype === 1) {
         this.orders = [{
-          id: 10, label: '采购入库单'
+          id: 10, label: '采购单'
         }, {
-          id: 12, label: '生产入库单'
+          id: 12, label: '生产单'
         }, {
-          id: 14, label: '履约入库单'
+          id: 14, label: '履约单'
         }, {
-          id: 16, label: '销售入库单'
+          id: 16, label: '销售单'
         }, {
-          id: 18, label: '仓储入库单'
+          id: 18, label: '仓储单'
         }]
         this.otype = 10
       } else {
         this.orders = [{
-          id: 11, label: '采购出库单'
+          id: 11, label: '采购单'
         }, {
-          id: 13, label: '生产出库单'
+          id: 13, label: '生产单'
         }, {
-          id: 15, label: '履约出库单'
+          id: 15, label: '履约单'
         }, {
-          id: 17, label: '销售出库单'
+          id: 17, label: '销售单'
         }, {
-          id: 19, label: '仓储出库单'
+          id: 19, label: '仓储单'
         }, {
-          id: 20, label: '仓储损耗单'
+          id: 20, label: '损耗单'
         }]
         this.otype = 11
       }
@@ -336,7 +341,10 @@ export default {
       }).then(() => {
         switch (this.otype) {
           case 10:
-            reviewPurchase({
+          case 12:
+          case 14:
+          case 16:
+            reviewIn({
               id: this.userdata.user.id,
               oid: row.id
             }).then(() => {
@@ -345,24 +353,36 @@ export default {
             })
             break
           case 11:
-            reviewReturn({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
-              this.$message({ type: 'success', message: '审核成功!' })
-              this.getOrderList()
-            })
-            break
-          case 12:
-            reviewDispatch({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
-              this.$message({ type: 'success', message: '审核成功!' })
-              this.getOrderList()
-            })
-            break
           case 13:
+          case 15:
+          case 17:
+            reviewOut({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '审核成功!' })
+              this.getOrderList()
+            })
+            break
+          case 18:
+            reviewDispatchIn({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '审核成功!' })
+              this.getOrderList()
+            })
+            break
+          case 19:
+            reviewDispatchOut({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '审核成功!' })
+              this.getOrderList()
+            })
+            break
+          case 20:
             reviewLoss({
               id: this.userdata.user.id,
               oid: row.id
@@ -384,7 +404,10 @@ export default {
       }).then(() => {
         switch (this.otype) {
           case 10:
-            revokePurchase({
+          case 12:
+          case 14:
+          case 16:
+            revokeIn({
               id: this.userdata.user.id,
               oid: row.id
             }).then(() => {
@@ -393,24 +416,36 @@ export default {
             })
             break
           case 11:
-            revokeReturn({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
-              this.$message({ type: 'success', message: '撤销成功!' })
-              this.getOrderList()
-            })
-            break
-          case 12:
-            revokeDispatch({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
-              this.$message({ type: 'success', message: '撤销成功!' })
-              this.getOrderList()
-            })
-            break
           case 13:
+          case 15:
+          case 17:
+            revokeOut({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '撤销成功!' })
+              this.getOrderList()
+            })
+            break
+          case 18:
+            revokeDispatchIn({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '撤销成功!' })
+              this.getOrderList()
+            })
+            break
+          case 19:
+            revokeDispatchOut({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '撤销成功!' })
+              this.getOrderList()
+            })
+            break
+          case 20:
             revokeLoss({
               id: this.userdata.user.id,
               oid: row.id
@@ -432,7 +467,10 @@ export default {
       }).then(() => {
         switch (this.otype) {
           case 10:
-            delPurchase({
+          case 12:
+          case 14:
+          case 16:
+            delIn({
               id: this.userdata.user.id,
               oid: row.id
             }).then(() => {
@@ -441,24 +479,36 @@ export default {
             })
             break
           case 11:
-            delReturn({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
-              this.$message({ type: 'success', message: '删除成功!' })
-              this.getOrderList()
-            })
-            break
-          case 12:
-            delDispatch({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
-              this.$message({ type: 'success', message: '删除成功!' })
-              this.getOrderList()
-            })
-            break
           case 13:
+          case 15:
+          case 17:
+            delOut({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '删除成功!' })
+              this.getOrderList()
+            })
+            break
+          case 18:
+            delDispatchIn({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '删除成功!' })
+              this.getOrderList()
+            })
+            break
+          case 19:
+            delDispatchOut({
+              id: this.userdata.user.id,
+              oid: row.id
+            }).then(() => {
+              this.$message({ type: 'success', message: '删除成功!' })
+              this.getOrderList()
+            })
+            break
+          case 20:
             delLoss({
               id: this.userdata.user.id,
               oid: row.id

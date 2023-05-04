@@ -73,6 +73,14 @@ export function getMarketCommodityList(data) {
   })
 }
 
+export function getMarketCommodityStock(data) {
+  return request({
+    url: `${path}/getMarketCommodityStock`,
+    method: 'post',
+    data
+  })
+}
+
 export function setMarketCommList(data) {
   return request({
     url: `${path}/setMarketCommList`,

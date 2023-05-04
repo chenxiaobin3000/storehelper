@@ -5,7 +5,7 @@ export default {
   component: Layout,
   name: 'market',
   meta: {
-    title: '销售管理',
+    title: '平台销售',
     roles: [500]
   },
   children: [{
@@ -20,11 +20,5 @@ export default {
   }, {
     path: 'loss', component: () => import('@/views/market/loss'),
     name: 'market_loss', meta: { title: '损耗录入', roles: [504] }
-  }, {
-    path: 'offline', component: () => import('@/views/agreement/offline'),
-    name: 'agreement_offline', meta: { title: '线下销售', roles: [505] }
-  }, {
-    path: 'back', component: () => import('@/views/agreement/back'),
-    name: 'agreement_back', meta: { title: '线下退货', roles: [506] }
   }]
 }

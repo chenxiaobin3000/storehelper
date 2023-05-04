@@ -104,7 +104,7 @@
           <el-input v-model="row.value" />
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" fixed="right" width="90" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="danger" size="mini" @click="handleDeleteCommodity(row)">删除</el-button>
         </template>
@@ -315,10 +315,11 @@ export default {
         if (data.list && data.list.length > 0) {
           data.list.forEach(v => {
             // 初始化数据
-            v.iprice = ''
-            v.iweight = ''
-            v.inorm = ''
-            v.ivalue = ''
+            v.iprice = v.sprice
+            v.sweight = v.sweight / 1000
+            v.iweight = v.sweight
+            v.inorm = v.snorm
+            v.ivalue = v.svalue
 
             // 品类
             this.categoryList.forEach(c => {

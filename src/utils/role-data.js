@@ -1,7 +1,7 @@
 export const MyRoleData = [{
   path: '/', meta: { title: '首页报表', roles: [100] }
 }, {
-  path: '/market', meta: { title: '销售管理', roles: [500] },
+  path: '/market', meta: { title: '平台销售', roles: [500] },
   children: [{
     path: 'report', meta: { title: '销售总览', roles: [501] }
   }, {
@@ -10,10 +10,17 @@ export const MyRoleData = [{
     path: 'sale', meta: { title: '销售录入', roles: [503] }
   }, {
     path: 'loss', meta: { title: '损耗录入', roles: [504] }
+  }]
+}, {
+  path: '/offline', meta: { title: '线下销售', roles: [550] },
+  children: [{
+    path: 'report', meta: { title: '销售总览', roles: [551] }
   }, {
-    path: 'offline', meta: { title: '线下销售', roles: [505] }
+    path: 'getList', meta: { title: '销售明细', roles: [552] }
   }, {
-    path: 'back', meta: { title: '线下退货', roles: [506] }
+    path: 'offline', meta: { title: '线下销售', roles: [553] }
+  }, {
+    path: 'back', meta: { title: '线下退货', roles: [554] }
   }]
 }, {
   path: '/purchase', meta: { title: '采购管理', roles: [250] },

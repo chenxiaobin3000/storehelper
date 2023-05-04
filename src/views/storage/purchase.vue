@@ -22,9 +22,10 @@
     </div>
 
     <el-table v-if="otype===10||otype===12||otype===14||otype===16" ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="批次" fixed="left" width="140px" align="center">
+      <el-table-column label="批次" fixed="left" width="180px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.batch }}</span>
+          <span>{{ row.batch }} </span>
+          <el-button icon="el-icon-tickets" size="mini" circle @click="handleDetail(row)" />
         </template>
       </el-table-column>
       <el-table-column label="仓库" width="140px" align="center">
@@ -168,7 +169,7 @@
           <el-input v-model="row.value" />
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" fixed="right" width="90" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="danger" size="mini" @click="handleDeleteCommodity(row)">删除</el-button>
         </template>
@@ -253,6 +254,109 @@
         <el-button type="primary" @click="applyData()">确定</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="订单信息" :visible.sync="dialogInfoVisible">
+      <el-form :model="tempInfo" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
+        <el-form-item label="批次" prop="batch">
+          <span>{{ tempInfo.batch }}</span>
+        </el-form-item>
+        <el-form-item label="仓库" prop="sname">
+          <span>{{ tempInfo.sname }}</span>
+        </el-form-item>
+
+        <!-- 商品列表 -->
+        <el-form-item v-if="tempInfo.comms && tempInfo.comms.length > 0" label="商品列表" prop="remarks">
+          <el-table :data="tempInfo.comms" style="width: 100%" border stripe fit highlight-current-row>
+            <el-table-column label="编号" width="120px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.code }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="名称" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.name }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="价格" width="70px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.price }}元</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="重量" width="70px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.weight }}kg</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="箱规" width="70px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.norm }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="份数" width="70px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.value }}件</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+        <el-form-item v-else label="商品列表" prop="remarks">
+          <span>没有商品</span>
+        </el-form-item>
+
+        <!-- 运费列表 -->
+        <el-form-item v-if="tempInfo.fares && tempInfo.fares.length > 0" label="运费列表" prop="fares">
+          <el-table :data="tempInfo.fares" style="width: 100%" border stripe fit highlight-current-row>
+            <el-table-column label="时间" width="160px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.cdate }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="运费" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.fare }}元</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+        <el-form-item v-else label="运费列表" prop="fares">
+          <span>没有运费</span>
+        </el-form-item>
+
+        <!-- 附件列表 -->
+        <el-form-item v-if="tempInfo.imageList && tempInfo.imageList.length > 0">
+          <span>附件列表</span><br>
+          <el-image
+            v-for="image in tempInfo.imageList"
+            :key="image"
+            :src="image"
+            :preview-src-list="tempInfo.imageList"
+            style="width: 100px; height: 100px"
+          />
+        </el-form-item>
+        <el-form-item v-else label="附件列表" prop="attrs">
+          <span>没有附件</span>
+        </el-form-item>
+
+        <!-- 备注列表 -->
+        <el-form-item v-if="tempInfo.remarks && tempInfo.remarks.length > 0" label="备注列表" prop="remarks">
+          <el-table :data="tempInfo.remarks" style="width: 100%" border stripe fit highlight-current-row>
+            <el-table-column label="时间" width="160px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.cdate }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="备注" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.remark }}</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+        <el-form-item v-else label="备注列表" prop="remarks">
+          <span>没有备注</span>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -260,6 +364,7 @@
 import { mapState } from 'vuex'
 import { parseTime, reviewType, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
+import ImageSrc from '@/utils/image-src'
 import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 import { getStorageCommodity } from '@/api/commodity'
@@ -333,7 +438,17 @@ export default {
         remark: '',
         sremark: ''
       },
-      dialogVisible: false
+      tempInfo: {
+        id: 0,
+        batch: '',
+        sname: '',
+        comms: [],
+        attrs: [],
+        imageList: [],
+        remark: ''
+      },
+      dialogVisible: false,
+      dialogInfoVisible: false
     }
   },
   computed: {
@@ -387,6 +502,16 @@ export default {
       } else {
         this.ioremark = '原料总价 = 单价 * 重量'
       }
+    },
+    handleDetail(row) {
+      this.tempInfo = Object.assign({}, row)
+      this.tempInfo.imageList = []
+      if (this.tempInfo.attrs && this.tempInfo.attrs.length > 0) {
+        this.tempInfo.attrs.forEach(v => {
+          this.tempInfo.imageList.push(ImageSrc[v.src] + v.path + '/' + v.name)
+        })
+      }
+      this.dialogInfoVisible = true
     },
     getGroupAllStorage() {
       getGroupAllStorage({
@@ -444,10 +569,10 @@ export default {
             if (data.list && data.list.length > 0) {
               data.list.forEach(v => {
                 // 初始化数据
-                v.iprice = ''
-                v.iweight = ''
-                v.inorm = ''
-                v.ivalue = ''
+                v.iprice = v.svalue ? (v.sprice / v.svalue).toFixed(2) : 0
+                v.iweight = v.svalue ? (v.sweight / v.svalue / 1000).toFixed(2) : 0
+                v.inorm = v.snorm
+                v.ivalue = v.svalue
 
                 // 品类
                 this.categoryList.forEach(c => {

@@ -13,14 +13,14 @@
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
     </div>
 
-    <el-table ref="table" v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="批次" fixed="left" width="170px" align="center">
+    <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
+      <el-table-column label="批次" align="center">
         <template slot-scope="{row}">
           <span>{{ row.batch }} </span>
           <el-button icon="el-icon-tickets" size="mini" circle @click="handleDetail(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="仓库" fixed="left" width="140px" align="center">
+      <el-table-column label="仓库" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.sname }} </span>
           <el-button icon="el-icon-edit" size="mini" circle @click="handleFare(row)" />
@@ -87,7 +87,7 @@
           <span>{{ row.reviewTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" fixed="right" width="180" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-if="row.review>0" type="primary" size="mini" @click="handleRevoke(row)">撤销审核</el-button>
           <el-button v-else type="primary" size="mini" @click="handleReview(row)">审核</el-button>
@@ -308,13 +308,16 @@ export default {
   components: { Pagination },
   data() {
     return {
-      tableHeight: 600,
       userdata: {},
       business: 4, // 业务类型
       orders: [{
         id: 20, label: '履约发货单'
       }, {
         id: 21, label: '履约退货单'
+      }, {
+        id: 22, label: '线下销售单'
+      }, {
+        id: 23, label: '线下退货单'
       }],
       date: new Date(),
       list: null,
@@ -370,11 +373,6 @@ export default {
     create() {
       this.$message({ type: 'error', message: '不支持新建!' })
     }
-  },
-  mounted: function() {
-    setTimeout(() => {
-      this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 78
-    }, 1000)
   },
   created() {
     this.userdata = this.$store.getters.userdata

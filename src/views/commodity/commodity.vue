@@ -10,12 +10,12 @@
     </div>
 
     <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="编号" width="120px" align="center">
+      <el-table-column label="编号" fixed="left" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" width="200px" align="center">
+      <el-table-column label="名称" fixed="left" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
@@ -147,7 +147,7 @@
           <span>{{ tempAccount.cname }}</span>
         </el-form-item>
         <el-form-item label="账号" prop="aid">
-          <el-select v-model="tempAccount.aid" class="filter-item" @change="handleAidSelect">
+          <el-select v-model="listQuery.aid" class="filter-item" @change="handleAidSelect">
             <el-option v-for="item in aoptions" :key="item.id" :label="item.label" :value="item.id" />
           </el-select>
         </el-form-item>
@@ -203,8 +203,8 @@ export default {
       listQuery: {
         id: 0,
         gid: 0,
-        sid: 0, // 仅列表查询
-        aid: 0, // 仅列表查询
+        sid: 0,
+        aid: 0,
         page: 1,
         limit: 10,
         search: null
@@ -214,7 +214,6 @@ export default {
       tempStorage: {},
       tempAccount: {
         id: 0,
-        aid: 0, // 仅对话框使用
         ccode: '',
         cname: '',
         mcode: '',
@@ -415,7 +414,7 @@ export default {
             this.aoptionsAll.push(data)
             this.aoptions.push(data)
           })
-          this.tempAccount.aid = this.aoptions[0].id
+          this.listQuery.aid = this.aoptions[0].id
         }
       })
     },
@@ -576,7 +575,7 @@ export default {
       getMarketCommodity({
         id: this.listQuery.id,
         gid: this.listQuery.gid,
-        aid: this.tempAccount.aid,
+        aid: this.listQuery.aid,
         cid: this.tempAccount.id
       }).then(response => {
         const commodity = response.data.data.commodity
@@ -610,7 +609,7 @@ export default {
       setMarketCommodity({
         id: this.listQuery.id,
         gid: this.listQuery.gid,
-        aid: this.tempAccount.aid,
+        aid: this.listQuery.aid,
         cid: this.tempAccount.id,
         code: this.tempAccount.mcode,
         name: this.tempAccount.mname,
@@ -625,7 +624,7 @@ export default {
       delMarketCommodity({
         id: this.listQuery.id,
         gid: this.listQuery.gid,
-        aid: this.tempAccount.aid,
+        aid: this.listQuery.aid,
         cid: this.tempAccount.id
       }).then(response => {
         this.$message({ type: 'success', message: '删除成功!' })

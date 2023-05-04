@@ -12,7 +12,7 @@
       <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>
     </div>
 
-    <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
+    <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="编号" fixed="left" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.code }}</span>
@@ -116,7 +116,7 @@
           <span>{{ row.value }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" fixed="right" width="90" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="danger" size="mini" @click="handleDeleteCommodity(row)">删除</el-button>
         </template>
@@ -223,6 +223,7 @@ export default {
   components: { Pagination },
   data() {
     return {
+      tableHeight: 600,
       userdata: {},
       business: 1, // 业务类型
       itype: 1,
@@ -286,6 +287,11 @@ export default {
     create() {
       this.$message({ type: 'error', message: '不支持新建!' })
     }
+  },
+  mounted: function() {
+    setTimeout(() => {
+      this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 78
+    }, 1000)
   },
   created() {
     this.userdata = this.$store.getters.userdata
