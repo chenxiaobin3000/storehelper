@@ -88,7 +88,7 @@
       <span class="filter-item">----------  {{ tname }}信息  ----------</span>
     </div>
     <el-table v-if="temp.clist.length>0" v-loading="loading" :data="temp.clist" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="商品" width="100px" align="center">
+      <el-table-column label="编号" width="100px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.code }}</span>
         </template>

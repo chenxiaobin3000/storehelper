@@ -36,7 +36,7 @@
       </el-table-column>
       <el-table-column label="总价" width="110px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.sprice }}</span>
+          <span>{{ row.iprice }}</span>
         </template>
       </el-table-column>
       <el-table-column label="总重量(kg)" width="100px" align="center">
@@ -276,11 +276,11 @@ export default {
         if (data.list && data.list.length > 0) {
           data.list.forEach(v => {
             // 初始化数据
-            v.iprice = v.sprice
-            v.sweight = v.sweight / 1000
+            v.iprice = v.price
+            v.sweight = v.weight / 1000
             v.iweight = v.sweight
-            v.inorm = v.snorm
-            v.ivalue = v.svalue
+            v.inorm = v.norm
+            v.ivalue = v.value
 
             // 品类
             this.categoryList.forEach(c => {
@@ -341,7 +341,7 @@ export default {
       row.norm = row.inorm
       row.value = row.ivalue
       this.temp.list.map((v, i) => {
-        if (v.id === row.id) {
+        if (v.cid === row.cid) {
           this.temp.list.splice(i, 1)
         }
       })
@@ -349,7 +349,7 @@ export default {
     },
     handleDeleteCommodity(row) {
       this.temp.list.map((v, i) => {
-        if (v.id === row.id) {
+        if (v.cid === row.cid) {
           this.temp.list.splice(i, 1)
         }
       })
@@ -367,7 +367,7 @@ export default {
       })
       this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')
       this.temp.list.forEach(v => {
-        this.temp.commoditys.push(v.id)
+        this.temp.commoditys.push(v.cid)
         this.temp.prices.push(v.price)
         this.temp.weights.push(v.weight * 1000)
         this.temp.norms.push(v.norm)

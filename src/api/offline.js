@@ -1,40 +1,49 @@
 import request from '@/utils/request'
-const path = '/agreement'
+const path = '/offline'
 
-export function shipped(data) {
+export function offline(data) {
   return request({
-    url: `${path}/shipped`,
+    url: `${path}/offline`,
     method: 'post',
     data
   })
 }
 
-export function setShipped(data) {
+export function delOffline(data) {
   return request({
-    url: `${path}/setShipped`,
+    url: `${path}/delOffline`,
     method: 'post',
     data
   })
 }
 
-export function delShipped(data) {
+export function setOffline(data) {
   return request({
-    url: `${path}/delShipped`,
-    method: 'post',
-    data
-  })
-}
-export function reviewShipped(data) {
-  return request({
-    url: `${path}/reviewShipped`,
+    url: `${path}/setOffline`,
     method: 'post',
     data
   })
 }
 
-export function revokeShipped(data) {
+export function reviewOffline(data) {
   return request({
-    url: `${path}/revokeShipped`,
+    url: `${path}/reviewOffline`,
+    method: 'post',
+    data
+  })
+}
+
+export function revokeOffline(data) {
+  return request({
+    url: `${path}/revokeOffline`,
+    method: 'post',
+    data
+  })
+}
+
+export function setOfflinePay(data) {
+  return request({
+    url: `${path}/setOfflinePay`,
     method: 'post',
     data
   })

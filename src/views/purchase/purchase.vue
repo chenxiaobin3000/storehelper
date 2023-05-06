@@ -290,7 +290,7 @@ export default {
   },
   mounted: function() {
     setTimeout(() => {
-      this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 78
+      this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 178
     }, 1000)
   },
   created() {

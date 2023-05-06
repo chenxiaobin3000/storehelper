@@ -16,9 +16,9 @@ export default {
     name: 'offline_getList', meta: { title: '销售明细', roles: [552] }
   }, {
     path: 'offline', component: () => import('@/views/offline/offline'),
-    name: 'offline_offline', meta: { title: '线下销售', roles: [553] }
+    name: 'offline_offline', meta: { title: '销售录入', roles: [553] }
   }, {
     path: 'return', component: () => import('@/views/offline/return'),
-    name: 'offline_return', meta: { title: '线下退货', roles: [554] }
+    name: 'offline_return', meta: { title: '退货录入', roles: [554] }
   }]
 }

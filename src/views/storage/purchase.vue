@@ -86,7 +86,7 @@
           <span>{{ row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" fixed="left" width="200px" align="center">
+      <el-table-column label="名称" fixed="left" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
@@ -381,15 +381,15 @@ export default {
       business: 2, // 业务类型
       otype: 10,
       orders: [{
-        id: 10, label: '采购入库单'
+        id: 10, label: '采购单'
       }, {
-        id: 12, label: '生产入库单'
+        id: 12, label: '生产单'
       }, {
-        id: 14, label: '履约入库单'
+        id: 14, label: '履约单'
       }, {
-        id: 16, label: '销售入库单'
+        id: 16, label: '销售单'
       }, {
-        id: 18, label: '仓储入库单'
+        id: 18, label: '仓储单'
       }],
       oname: '',
       itype: 1,
@@ -529,7 +529,8 @@ export default {
     getCommodityList() {
       this.loading = true
       switch (this.otype) {
-        case 10:
+        case 10: // 采购单
+          this.listQuery.type = 1
           getPurchaseOrder(this.listQuery).then(response => {
             this.handleRet(response)
           }).catch(error => {
@@ -537,7 +538,8 @@ export default {
             Promise.reject(error)
           })
           break
-        case 12:
+        case 12: // 生产
+          this.listQuery.type = 31
           getProductOrder(this.listQuery).then(response => {
             this.handleRet(response)
           }).catch(error => {
@@ -545,7 +547,8 @@ export default {
             Promise.reject(error)
           })
           break
-        case 14:
+        case 14: // 履约
+          this.listQuery.type = 41
           getAgreementOrder(this.listQuery).then(response => {
             this.handleRet(response)
           }).catch(error => {
@@ -553,7 +556,8 @@ export default {
             Promise.reject(error)
           })
           break
-        case 16:
+        case 16: // 销售
+          this.listQuery.type = 61
           getOfflineOrder(this.listQuery).then(response => {
             this.handleRet(response)
           }).catch(error => {

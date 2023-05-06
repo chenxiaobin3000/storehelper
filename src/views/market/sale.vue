@@ -1,10 +1,9 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="listQuery.sid" class="filter-item" @change="handleStorageSelect">
-        <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
+      <el-select v-model="listQuery.aid" class="filter-item" @change="getAccountCommodityList">
+        <el-option v-for="item in aoptionsAll" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <span class="filter-item" style="color:#606266"> 账号: {{ temp.account }}</span>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
       <span class="filter-item" style="color:#606266">{{ mname }}平台</span>
       <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>
@@ -13,13 +12,13 @@
     <upload-excel-component :on-success="handleSuccess" />
     <br>
 
-    <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="编号" width="120px" align="center">
+    <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
+      <el-table-column label="编号" fixed="left" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.ccode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" align="center">
+      <el-table-column label="名称" fixed="left" align="center">
         <template slot-scope="{row}">
           <span>{{ row.cname }}</span>
         </template>
@@ -50,7 +49,17 @@
           <span>{{ row.alarm }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="单价" width="100px" align="center">
+      <el-table-column label="成本价" width="100px" align="center">
+        <template slot-scope="{row}">
+          <el-input v-model="row.mprice" />
+        </template>
+      </el-table-column>
+      <el-table-column label="库存" width="100px" align="center">
+        <template slot-scope="{row}">
+          <el-input v-model="row.mvalue" />
+        </template>
+      </el-table-column>
+      <el-table-column label="平台价" width="100px" align="center">
         <template slot-scope="{row}">
           <el-input v-model="row.mprice" />
         </template>
@@ -70,110 +79,13 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getCommodityList" />
 
-    <div class="filter-container" align="center">
-      <span class="filter-item">----------  履约发货单信息  ----------</span>
-    </div>
-    <div v-if="temp.row" class="filter-container">
-      <span class="filter-item" style="color:#606266">已选择订单: {{ temp.row.batch }},</span>
-      <span class="filter-item" style="color:#606266"> 仓库: {{ temp.row.sname }},</span>
-      <span class="filter-item" style="color:#606266"> 账号: {{ temp.row.msaccount && temp.row.msaccount.length > 0 ? temp.row.msaccount : temp.row.maccount }},</span>
-      <span class="filter-item" style="color:#606266"> 备注: {{ temp.row.msaccount && temp.row.msaccount.length > 0 ? temp.row.msremark : temp.row.mremark }}.</span>
-      <br>
-      <span class="filter-item" style="color:#606266"> 商品: {{ temp.row.commList }}</span>
-      <br>
-      <span class="filter-item" style="color:#606266"> 总价: {{ temp.row.price }},</span>
-      <span class="filter-item" style="color:#606266"> 现价: {{ temp.row.curPrice }},</span>
-      <span class="filter-item" style="color:#606266"> 总数: {{ temp.row.value }},</span>
-      <span class="filter-item" style="color:#606266"> 存量: {{ temp.row.curValue }}.</span>
-    </div>
-    <div class="filter-container">
-      <el-select v-model="listAgree.review" class="filter-item" style="width:100px" @change="handleAgreeSelect">
-        <el-option v-for="item in reviewList" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
-      <el-select v-model="listAgree.complete" class="filter-item" style="width:100px" @change="handleAgreeSelect">
-        <el-option v-for="item in completeList" :key="item.id" :label="item.label" :value="item.id" />
-      </el-select>
-      <el-date-picker v-model="agreeDate" type="date" class="filter-item" style="width:160px" placeholder="请输入查询日期" @change="handleAgreeSelect" />
-      <el-input v-model="listAgree.search" class="filter-item" style="width:200px" placeholder="请输入商品名称" @change="handleAgreeSelect" />
-    </div>
-    <el-table v-loading="loading" :data="agrees" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="批次" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.batch }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="仓库" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.sname }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="账号" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.maccount }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="商品" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.commList }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="现价 / 总价" width="120px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.curPrice }} / {{ row.price }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="存量 / 总数" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.curValue }} / {{ row.value }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.complete == 0 ? '未完成' : '已完成' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="申请人" width="65px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.applyName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="申请时间" width="155px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.applyTime }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="审核人" width="65px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.reviewName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="审核时间" width="155px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.reviewTime }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="90" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleSelectOrder(row)">选择</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <pagination v-show="agreeTotal>0" :total="agreeTotal" :page.sync="listAgree.page" :limit.sync="listAgree.limit" @pagination="getAgreementList" />
-
     <el-dialog title="平台销售单信息" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
         <el-form-item label="制单日期" prop="date">
           <span>{{ temp.date }}</span>
         </el-form-item>
-        <el-form-item label="仓库" prop="storage">
-          <span>{{ temp.storage }}</span>
-        </el-form-item>
         <el-form-item label="账号" prop="account">
-          <span>{{ temp.saccount.length > 0 ? temp.saccount+'('+temp.sremark+')' : temp.account+'('+temp.remark+')' }}</span>
-        </el-form-item>
-        <el-form-item label="履约单" prop="order">
-          <span>{{ temp.row ? temp.row.batch : '' }}</span>
+          <span>{{ temp.account }}</span>
         </el-form-item>
         <el-table v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
           <el-table-column label="编号" width="120px" align="center">
@@ -218,22 +130,20 @@
 
 <script>
 import { mapState } from 'vuex'
-import { parseTime, reviewType, completeType } from '@/utils'
+import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
 import UploadExcelComponent from '@/components/UploadExcel'
 import { setMarketCommList, setMarketCommDetail, delMarketCommDetail, getMarketCommDetail, getMarketSaleDetail } from '@/api/market'
 import { getAgreementOrder } from '@/api/order'
-import { getGroupAllStorage } from '@/api/storage'
 import { sale } from '@/api/sale'
 
 export default {
   components: { Pagination, UploadExcelComponent },
   data() {
     return {
+      tableHeight: 600,
       userdata: {},
-      storages: [],
       asoptions: [],
-      mid: 0,
       mname: '',
       date: new Date(),
       list: null,
@@ -244,25 +154,7 @@ export default {
         gid: 0,
         page: 1,
         limit: 10,
-        sid: 0,
         aid: 0,
-        date: null,
-        search: null
-      },
-      reviewList: reviewType,
-      completeList: completeType,
-      agreeDate: '',
-      agreeLoading: false,
-      agreeTotal: 0,
-      agrees: [],
-      listAgree: {
-        id: 0,
-        aid: 0,
-        type: 20, // 履约发货
-        page: 1,
-        limit: 10,
-        review: 2, // 已审核
-        complete: 2, // 未完成
         date: null,
         search: null
       },
@@ -291,13 +183,17 @@ export default {
       this.$message({ type: 'error', message: '不支持新建!' })
     }
   },
+  mounted: function() {
+    setTimeout(() => {
+      this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 78
+    }, 1000)
+  },
   created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
     this.listQuery.gid = this.userdata.group.id
     this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
     this.listAgree.id = this.userdata.user.id
-    this.getGroupAllStorage()
   },
   methods: {
     handleSelect() {
@@ -364,7 +260,6 @@ export default {
       setMarketCommList({
         id: this.listQuery.id,
         gid: this.userdata.group.id,
-        sid: this.listQuery.sid,
         aid: this.listQuery.aid,
         date: this.listQuery.date,
         commoditys: commoditys,
@@ -373,19 +268,6 @@ export default {
       }).then(response => {
         this.$message({ type: 'success', message: '更新成功!' })
         this.getCommodityList()
-      })
-    },
-    getGroupAllStorage() {
-      getGroupAllStorage({
-        id: this.userdata.user.id
-      }).then(response => {
-        if (response.data.data.list && response.data.data.list.length > 0) {
-          response.data.data.list.forEach(v => {
-            this.storages.push({ id: v.id, label: v.name })
-          })
-          this.listQuery.sid = response.data.data.list[0].id
-          this.getCommodityList()
-        }
       })
     },
     getCommodityList() {
@@ -428,7 +310,6 @@ export default {
       const temp = {
         id: this.listQuery.id,
         gid: this.userdata.group.id,
-        sid: this.listQuery.sid,
         aid: this.listQuery.aid,
         did: 0,
         cid: row.cid,
@@ -453,7 +334,6 @@ export default {
       const temp = {
         id: this.listQuery.id,
         gid: this.userdata.group.id,
-        sid: this.listQuery.sid,
         aid: this.listQuery.aid,
         did: row.id ? row.id : 0,
         cid: row.cid,
@@ -496,11 +376,6 @@ export default {
           this.$message({ type: 'error', message: '未查询到销售数据!' })
           return
         }
-        this.storages.forEach(v => {
-          if (v.id === this.listQuery.sid) {
-            this.temp.storage = v.label
-          }
-        })
         this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')
 
         // 校验履约单商品数量
@@ -535,7 +410,6 @@ export default {
       sale({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
-        sid: this.listQuery.sid,
         pid: this.temp.row.id,
         date: this.temp.date
       }).then(response => {

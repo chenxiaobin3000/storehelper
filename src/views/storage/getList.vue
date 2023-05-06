@@ -35,6 +35,21 @@
           <span>{{ row.commList }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="总价" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.price }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="总重量" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.weight }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="总件数" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.value }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="申请人" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.applyName }}</span>

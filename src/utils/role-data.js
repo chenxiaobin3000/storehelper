@@ -3,6 +3,10 @@ export const MyRoleData = [{
 }, {
   path: '/market', meta: { title: '平台销售', roles: [500] },
   children: [{
+    path: 'stockReport', meta: { title: '库存总览', roles: [505] }
+  }, {
+    path: 'stock', meta: { title: '库存明细', roles: [506] }
+  }, {
     path: 'report', meta: { title: '销售总览', roles: [501] }
   }, {
     path: 'getList', meta: { title: '销售明细', roles: [502] }
@@ -18,9 +22,9 @@ export const MyRoleData = [{
   }, {
     path: 'getList', meta: { title: '销售明细', roles: [552] }
   }, {
-    path: 'offline', meta: { title: '线下销售', roles: [553] }
+    path: 'offline', meta: { title: '销售录入', roles: [553] }
   }, {
-    path: 'back', meta: { title: '线下退货', roles: [554] }
+    path: 'back', meta: { title: '退货录入', roles: [554] }
   }]
 }, {
   path: '/purchase', meta: { title: '采购管理', roles: [250] },
@@ -51,7 +55,7 @@ export const MyRoleData = [{
   children: [{
     path: 'stockReport', meta: { title: '库存总览', roles: [801] }
   }, {
-    path: 'stockList', meta: { title: '库存明细', roles: [802] }
+    path: 'stock', meta: { title: '库存明细', roles: [802] }
   }, {
     path: 'report', meta: { title: '订单总览', roles: [803] }
   }, {
@@ -70,11 +74,11 @@ export const MyRoleData = [{
   }, {
     path: 'getList', meta: { title: '生产明细', roles: [602] }
   }, {
-    path: 'process', meta: { title: '生产出库', roles: [603] }
+    path: 'process', meta: { title: '出库录入', roles: [603] }
   }, {
-    path: 'complete', meta: { title: '生产入库', roles: [604] }
+    path: 'complete', meta: { title: '入库录入', roles: [604] }
   }, {
-    path: 'loss', meta: { title: '生产损耗', roles: [605] }
+    path: 'loss', meta: { title: '损耗录入', roles: [605] }
   }]
 }, {
   path: '/agreement', meta: { title: '履约管理', roles: [200] },

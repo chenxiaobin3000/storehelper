@@ -41,6 +41,14 @@ export function getCloudList(data) {
   })
 }
 
+export function getTodayCloudList(data) {
+  return request({
+    url: `${path}/getTodayCloudList`,
+    method: 'post',
+    data
+  })
+}
+
 export function getCloudDay(data) {
   return request({
     url: `${path}/getCloudDay`,

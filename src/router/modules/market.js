@@ -9,6 +9,12 @@ export default {
     roles: [500]
   },
   children: [{
+    path: 'stockReport', component: () => import('@/views/market/stockReport'),
+    name: 'storage_stockReport', meta: { title: '库存总览', roles: [505] }
+  }, {
+    path: 'stock', component: () => import('@/views/market/stock'),
+    name: 'storage_stock', meta: { title: '库存明细', roles: [506] }
+  }, {
     path: 'report', component: () => import('@/views/market/report'),
     name: 'market_report', meta: { title: '销售总览', roles: [501] }
   }, {

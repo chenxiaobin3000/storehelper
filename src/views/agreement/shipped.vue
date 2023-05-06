@@ -17,7 +17,7 @@
           <span>{{ row.ccode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" fixed="left" width="200px" align="center">
+      <el-table-column label="名称" fixed="left" align="center">
         <template slot-scope="{row}">
           <span>{{ row.cname }}</span>
         </template>
@@ -72,12 +72,12 @@
       <span class="filter-item">----------  履约发货单信息  ----------</span>
     </div>
     <el-table v-if="temp.list.length>0" v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="商品" width="120px" align="center">
+      <el-table-column label="编号" fixed="left" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.ccode }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" align="center">
+      <el-table-column label="名称" fixed="left" align="center">
         <template slot-scope="{row}">
           <span>{{ row.cname }}</span>
         </template>
@@ -133,17 +133,19 @@
           <span>{{ temp.storage }}</span>
         </el-form-item>
         <el-form-item label="账号" prop="account">
-          <span>{{ temp.account }}</span>
+          <el-select v-model="listQuery.aid" class="filter-item" @change="getAccountCommodityList">
+            <el-option v-for="item in aoptionsAll" :key="item.id" :label="item.label" :value="item.id" />
+          </el-select>
         </el-form-item>
         <el-table v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
           <el-table-column label="编号" width="120px" align="center">
             <template slot-scope="{row}">
-              <span>{{ row.code }}</span>
+              <span>{{ row.ccode }}</span>
             </template>
           </el-table-column>
           <el-table-column label="名称" align="center">
             <template slot-scope="{row}">
-              <span>{{ row.name }}</span>
+              <span>{{ row.cname }}</span>
             </template>
           </el-table-column>
           <el-table-column label="总价" width="110px" align="center">
@@ -193,7 +195,7 @@
         <el-form-item label="一键审核" prop="autoReview">
           <el-switch v-model="temp.autoReview" />
         </el-form-item>
-        <el-form-item label="一键入库" prop="autoStorage">
+        <el-form-item label="一键出库" prop="autoStorage">
           <el-switch v-model="temp.autoStorage" />
         </el-form-item>
       </el-form>
@@ -425,7 +427,7 @@ export default {
       row.norm = row.inorm
       row.value = row.ivalue
       this.temp.list.map((v, i) => {
-        if (v.id === row.id) {
+        if (v.cid === row.cid) {
           this.temp.list.splice(i, 1)
         }
       })
@@ -433,7 +435,7 @@ export default {
     },
     handleDeleteCommodity(row) {
       this.temp.list.map((v, i) => {
-        if (v.id === row.id) {
+        if (v.cid === row.cid) {
           this.temp.list.splice(i, 1)
         }
       })
@@ -451,7 +453,7 @@ export default {
       })
       this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')
       this.temp.list.forEach(v => {
-        this.temp.commoditys.push(v.id)
+        this.temp.commoditys.push(v.cid)
         this.temp.prices.push(v.price)
         this.temp.weights.push(v.weight * 1000)
         this.temp.norms.push(v.norm)

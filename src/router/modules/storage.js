@@ -12,8 +12,8 @@ export default {
     path: 'stockReport', component: () => import('@/views/storage/stockReport'),
     name: 'storage_stockReport', meta: { title: '库存总览', roles: [801] }
   }, {
-    path: 'stockList', component: () => import('@/views/storage/stockList'),
-    name: 'storage_stockList', meta: { title: '库存明细', roles: [802] }
+    path: 'stock', component: () => import('@/views/storage/stock'),
+    name: 'storage_stock', meta: { title: '库存明细', roles: [802] }
   }, {
     path: 'report', component: () => import('@/views/storage/report'),
     name: 'storage_report', meta: { title: '订单总览', roles: [803] }
