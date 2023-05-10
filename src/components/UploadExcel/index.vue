@@ -1,7 +1,7 @@
 <template>
   <div>
     <input ref="excel-upload-input" class="excel-upload-input" type="file" accept=".xlsx, .xls" @change="handleClick">
-    <div class="drop" style="width:100%;line-height:50px;height:60px" @drop="handleDrop" @dragover="handleDragover" @dragenter="handleDragover">
+    <div class="drop" :style="{width:width,lineHeight:lineHeight,height:height}" @drop="handleDrop" @dragover="handleDragover" @dragenter="handleDragover">
       <span>拖拽excel文件到这里</span>
       <el-button :loading="loading" style="margin-left:16px" size="mini" type="primary" @click="handleUpload">
         浏览本地
@@ -15,6 +15,18 @@ import XLSX from 'xlsx'
 
 export default {
   props: {
+    width: {
+      type: String,
+      default: '100%'
+    },
+    lineHeight: {
+      type: String,
+      default: '50px'
+    },
+    height: {
+      type: String,
+      default: '60px'
+    },
     beforeUpload: Function, // eslint-disable-line
     onSuccess: Function // eslint-disable-line
   },

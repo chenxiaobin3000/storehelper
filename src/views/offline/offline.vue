@@ -335,7 +335,7 @@ export default {
             v.iprice = v.sprice
             v.sweight = v.sweight / 1000
             v.iweight = v.sweight
-            v.inorm = ''
+            v.inorm = v.snorm
             v.ivalue = v.svalue
 
             // 品类

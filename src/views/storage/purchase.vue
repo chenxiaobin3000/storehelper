@@ -7,21 +7,21 @@
       <el-select v-model="listQuery.sid" class="filter-item" @change="handleSelect">
         <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <el-select v-if="otype!==18" v-model="listQuery.review" class="filter-item" style="width:100px" @change="handleSelect">
+      <el-select v-if="otype!==100" v-model="listQuery.review" class="filter-item" style="width:100px" @change="handleSelect">
         <el-option v-for="item in reviewList" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <el-select v-if="otype!==18" v-model="listQuery.complete" class="filter-item" style="width:100px" @change="handleSelect">
+      <el-select v-if="otype!==100" v-model="listQuery.complete" class="filter-item" style="width:100px" @change="handleSelect">
         <el-option v-for="item in completeList" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
-      <el-select v-if="otype===18" v-model="itype" class="filter-item" style="width:100px" @change="handleIOSelect">
+      <el-select v-if="otype===100" v-model="itype" class="filter-item" style="width:100px" @change="handleIOSelect">
         <el-option v-for="item in ioptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <span v-if="otype===18" class="filter-item" style="color:#606266">{{ ioremark }}</span>
+      <span v-if="otype===100" class="filter-item" style="color:#606266">{{ ioremark }}</span>
       <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>
     </div>
 
-    <el-table v-if="otype===10||otype===12||otype===14||otype===16" ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
+    <el-table v-if="otype===10||otype===12||otype===14||otype===16||otype===18" ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="批次" fixed="left" width="180px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.batch }} </span>
@@ -80,7 +80,7 @@
       </el-table-column>
     </el-table>
 
-    <el-table v-if="otype===18" ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
+    <el-table v-if="otype===100" ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="编号" fixed="left" width="120px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.code }}</span>
@@ -178,7 +178,7 @@
 
     <el-dialog :title="oname" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item v-if="otype!==18" label="单号" prop="ccode">
+        <el-form-item v-if="otype!==100" label="单号" prop="ccode">
           <span>{{ temp.batch }}</span>
         </el-form-item>
         <el-form-item label="制单日期" prop="cname">
@@ -227,7 +227,7 @@
         </el-form-item>
 
         <!-- 物流 -->
-        <div v-if="otype===18">
+        <div v-if="otype===18 || otype===100">
           <el-form-item label="物流" prop="ship">
             <el-input v-model="tempOrder.ship" />
           </el-form-item>
@@ -368,7 +368,7 @@ import ImageSrc from '@/utils/image-src'
 import { getGroupCategoryList } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 import { getStorageCommodity } from '@/api/commodity'
-import { addOrderRemark, getPurchaseOrder, getProductOrder, getAgreementOrder, getOfflineOrder } from '@/api/order'
+import { addOrderRemark, getPurchaseOrder, getProductOrder, getAgreementOrder, getOfflineOrder, getStorageOrder } from '@/api/order'
 import { sin, dispatchIn, getGroupAllStorage } from '@/api/storage'
 import { addOrderFare } from '@/api/transport'
 
@@ -390,6 +390,8 @@ export default {
         id: 16, label: '销售单'
       }, {
         id: 18, label: '仓储单'
+      }, {
+        id: 100, label: '手工单'
       }],
       oname: '',
       itype: 1,
@@ -565,7 +567,16 @@ export default {
             Promise.reject(error)
           })
           break
-        case 18:
+        case 18: // 仓储
+          this.listQuery.type = 19
+          getStorageOrder(this.listQuery).then(response => {
+            this.handleRet(response)
+          }).catch(error => {
+            this.loading = false
+            Promise.reject(error)
+          })
+          break
+        case 100:
           getStorageCommodity(this.listQuery).then(response => {
             const data = response.data.data
             this.total = data.total
@@ -573,10 +584,10 @@ export default {
             if (data.list && data.list.length > 0) {
               data.list.forEach(v => {
                 // 初始化数据
-                v.iprice = v.svalue ? (v.sprice / v.svalue).toFixed(2) : 0
-                v.iweight = v.svalue ? (v.sweight / v.svalue / 1000).toFixed(2) : 0
-                v.inorm = v.snorm
-                v.ivalue = v.svalue
+                v.iprice = ''
+                v.iweight = ''
+                v.inorm = ''
+                v.ivalue = ''
 
                 // 品类
                 this.categoryList.forEach(c => {
@@ -616,6 +627,10 @@ export default {
                 v.commList = v.commList + c.name + ','
               }
             })
+          }
+
+          if (this.otype === 18) {
+            v.curPrice = v.price
           }
         })
       }
@@ -741,7 +756,7 @@ export default {
         values: this.temp.values,
         attrs: []
       }
-      if (this.otype === 18) {
+      if (this.otype === 18 || this.otype === 100) {
         dispatchIn(
           data
         ).then(response => {

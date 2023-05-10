@@ -335,7 +335,7 @@ export default {
             v.iprice = v.sprice
             v.sweight = v.sweight / 1000
             v.iweight = v.sweight
-            v.inorm = ''
+            v.inorm = v.snorm
             v.ivalue = v.svalue
 
             // 品类
@@ -446,6 +446,7 @@ export default {
       this.temp.weights = []
       this.temp.norms = []
       this.temp.values = []
+      this.tempOrder.sremark = ''
       this.storages.forEach(v => {
         if (v.id === this.listQuery.sid) {
           this.temp.storage = v.label

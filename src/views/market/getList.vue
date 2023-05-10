@@ -10,31 +10,17 @@
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
     </div>
 
-    <el-table v-loading="loading" :data="list" style="width: 100%" border fit highlight-current-row>
-      <el-table-column v-if="listQuery.type===31" label="类型" align="center">
+    <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
+      <el-table-column label="批次" fixed="left" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.type }} </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="批次" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.batch }} </span>
+          <span v-if="listQuery.type===51">{{ row.stype }}: {{ row.batch }} </span>
+          <span v-else>{{ row.batch }} </span>
           <el-button icon="el-icon-tickets" size="mini" circle @click="handleDetail(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="仓库" width="100px" align="center">
+      <el-table-column label="账号" fixed="left" width="120px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.sname }} </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="账号" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.msaccount && row.msaccount.length > 0 ? row.msaccount : row.maccount }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.msaccount && row.msaccount.length > 0 ? row.msremark : row.mremark }}</span>
+          <span>{{ row.maccount }}</span>
         </template>
       </el-table-column>
       <el-table-column label="商品" align="center">
@@ -42,23 +28,19 @@
           <span>{{ row.commList }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总价" align="center">
+      <el-table-column label="总价" width="140px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.price }}</span>
+          <span v-if="listQuery.type===51 && row.fine!==0">{{ row.price }} / 罚款: {{ row.fine }}</span>
+          <span v-else>{{ row.price }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="listQuery.type===31" label="罚款" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.fine }} </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="应收" align="center">
+      <el-table-column label="应收" width="140px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.price - row.pay }} </span>
           <el-button icon="el-icon-edit" size="mini" circle @click="handlePay(row)" />
         </template>
       </el-table-column>
-      <el-table-column label="申请人" width="65px" align="center">
+      <el-table-column label="申请人" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.applyName }}</span>
         </template>
@@ -68,7 +50,7 @@
           <span>{{ row.applyTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核人" width="65px" align="center">
+      <el-table-column label="审核人" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.reviewName }}</span>
         </template>
@@ -78,7 +60,7 @@
           <span>{{ row.reviewTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" fixed="right" width="180" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-if="row.review>0" type="primary" size="mini" @click="handleRevoke(row)">撤销审核</el-button>
           <el-button v-else type="primary" size="mini" @click="handleReview(row)">审核</el-button>
@@ -94,11 +76,8 @@
         <el-form-item label="批次" prop="batch">
           <span>{{ temp.batch }}</span>
         </el-form-item>
-        <el-form-item label="仓库" prop="sname">
-          <span>{{ temp.sname }}</span>
-        </el-form-item>
         <el-form-item label="账号" prop="account">
-          <span>{{ temp.maccount }}({{ temp.mremark }})</span>
+          <span>{{ temp.maccount }}</span>
         </el-form-item>
 
         <!-- 商品列表 -->
@@ -114,12 +93,17 @@
                 <span>{{ row.name }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="价格" width="70px" align="center">
+            <el-table-column label="成本价" width="80px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.sprice }}元</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="价格" width="80px" align="center">
               <template slot-scope="{row}">
                 <span>{{ row.price }}元</span>
               </template>
             </el-table-column>
-            <el-table-column label="份数" width="70px" align="center">
+            <el-table-column label="份数" width="80px" align="center">
               <template slot-scope="{row}">
                 <span>{{ row.value }}件</span>
               </template>
@@ -204,22 +188,22 @@ export default {
   components: { Pagination },
   data() {
     return {
+      tableHeight: 600,
       userdata: {},
       business: 5, // 业务类型
       orders: [{
-        id: 30, label: '平台销售单'
+        id: 50, label: '销售单'
       }, {
-        id: 31, label: '平台损耗单'
+        id: 51, label: '损耗单'
       }],
       date: new Date(),
       list: null,
       total: 0,
-      supplierList: [],
       reviewList: reviewType,
       loading: false,
       listQuery: {
         id: 0,
-        type: 30, // 平台销售
+        type: 50, // 平台销售
         page: 1,
         limit: 10,
         review: 1, // 全部
@@ -229,7 +213,7 @@ export default {
       temp: {
         id: 0,
         batch: '',
-        sname: '',
+        maccount: '',
         comms: [],
         attrs: [],
         imageList: [],
@@ -257,6 +241,11 @@ export default {
     create() {
       this.$message({ type: 'error', message: '不支持新建!' })
     }
+  },
+  mounted: function() {
+    setTimeout(() => {
+      this.tableHeight = window.innerHeight - this.$refs.table.$el.offsetTop - 78
+    }, 1000)
   },
   created() {
     this.userdata = this.$store.getters.userdata
@@ -374,13 +363,13 @@ export default {
           oid: row.id
         }
         switch (this.listQuery.type) {
-          case 30:
+          case 50:
             reviewSale(data).then(() => {
               this.$message({ type: 'success', message: '审核成功!' })
               this.getOrderList()
             })
             break
-          case 31:
+          case 51:
             reviewLoss(data).then(() => {
               this.$message({ type: 'success', message: '审核成功!' })
               this.getOrderList()
@@ -402,13 +391,13 @@ export default {
           oid: row.id
         }
         switch (this.listQuery.type) {
-          case 30:
+          case 50:
             revokeSale(data).then(() => {
               this.$message({ type: 'success', message: '撤销成功!' })
               this.getOrderList()
             })
             break
-          case 31:
+          case 51:
             revokeLoss(data).then(() => {
               this.$message({ type: 'success', message: '撤销成功!' })
               this.getOrderList()
@@ -430,13 +419,13 @@ export default {
           oid: row.id
         }
         switch (this.listQuery.type) {
-          case 30:
+          case 50:
             delSale(data).then(() => {
               this.$message({ type: 'success', message: '删除成功!' })
               this.getOrderList()
             })
             break
-          case 31:
+          case 51:
             delLoss(data).then(() => {
               this.$message({ type: 'success', message: '删除成功!' })
               this.getOrderList()

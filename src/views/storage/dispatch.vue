@@ -178,7 +178,7 @@
 
     <el-dialog :title="oname" :visible.sync="dialogVisible">
       <el-form :model="temp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item v-if="otype!==18" label="单号" prop="ccode">
+        <el-form-item v-if="otype!==19" label="单号" prop="ccode">
           <span>{{ temp.batch }}</span>
         </el-form-item>
         <el-form-item label="制单日期" prop="cname">
@@ -703,7 +703,11 @@ export default {
       }
       this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')
       this.temp.list.forEach(v => {
-        this.temp.commoditys.push(v.cid)
+        if (this.otype === 19) {
+          this.temp.commoditys.push(v.id)
+        } else {
+          this.temp.commoditys.push(v.cid)
+        }
         this.temp.prices.push(v.price)
         this.temp.weights.push(v.weight * 1000)
         this.temp.norms.push(v.norm)

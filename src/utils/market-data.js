@@ -13,7 +13,17 @@ export const marketData = [{
   meta: { title: '淘菜菜', roles: [5] }, path: '/taocaicai'
 }]
 
-export const marketArr = ['', '拼多多', '美团', '快驴', '美莱', '淘菜菜']
+export const marketArr = [{
+  id: 1, label: '拼多多'
+}, {
+  id: 2, label: '美团'
+}, {
+  id: 3, label: '快驴'
+}, {
+  id: 4, label: '美莱'
+}, {
+  id: 5, label: '淘菜菜'
+}]
 
 /**
  * 筛选平台标签

@@ -1,16 +1,16 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="listQuery.aid" class="filter-item" @change="getAccountCommodityList">
-        <el-option v-for="item in aoptionsAll" :key="item.id" :label="item.label" :value="item.id" />
+      <el-select v-model="listQuery.aid" class="filter-item" @change="handleSelect">
+        <el-option v-for="item in aoptions" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
+      <el-select v-model="mid" class="filter-item" style="width:120px" disabled>
+        <el-option v-for="item in marketArr" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
-      <span class="filter-item" style="color:#606266">{{ mname }}平台</span>
-      <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>
+      <el-button type="primary" size="normal" style="float:right;width:100px;margin-left:20px" @click="handleApply()">提交</el-button>
+      <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleExcel()">批量导入</el-button>
     </div>
-
-    <upload-excel-component :on-success="handleSuccess" />
-    <br>
 
     <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
       <el-table-column label="编号" fixed="left" width="120px" align="center">
@@ -28,15 +28,15 @@
           <span>{{ row.cremark }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="平台编号" width="160px" align="center">
+      <el-table-column label="平台编号" width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.mcode }}</span>
+          <span>{{ row.mcode }} </span>
+          <el-button icon="el-icon-document-copy" size="mini" circle @click="handleCopy(row)" />
         </template>
       </el-table-column>
       <el-table-column label="平台名称" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.mname }} </span>
-          <el-button icon="el-icon-document-copy" size="mini" circle @click="handleCopy(row)" />
+          <span>{{ row.mname }}</span>
         </template>
       </el-table-column>
       <el-table-column label="平台备注" width="80px" align="center">
@@ -51,12 +51,12 @@
       </el-table-column>
       <el-table-column label="成本价" width="100px" align="center">
         <template slot-scope="{row}">
-          <el-input v-model="row.mprice" />
+          <span>{{ row.sprice }}</span>
         </template>
       </el-table-column>
       <el-table-column label="库存" width="100px" align="center">
         <template slot-scope="{row}">
-          <el-input v-model="row.mvalue" />
+          <span>{{ row.svalue }}</span>
         </template>
       </el-table-column>
       <el-table-column label="平台价" width="100px" align="center">
@@ -69,7 +69,7 @@
           <el-input v-model="row.mvalue" />
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" fixed="right" width="180" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">更新</el-button>
           <el-button type="danger" size="mini" @click="handleDelete(row)">删除</el-button>
@@ -85,15 +85,17 @@
           <span>{{ temp.date }}</span>
         </el-form-item>
         <el-form-item label="账号" prop="account">
-          <span>{{ temp.account }}</span>
+          <el-select v-model="listQuery.aid" class="filter-item" disabled>
+            <el-option v-for="item in aoptions" :key="item.id" :label="item.label" :value="item.id" />
+          </el-select>
         </el-form-item>
         <el-table v-loading="loading" :data="temp.list" style="width: 100%" border fit highlight-current-row>
-          <el-table-column label="编号" width="120px" align="center">
+          <el-table-column label="编号" fixed="left" width="120px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.code }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="名称" align="center">
+          <el-table-column label="名称" fixed="left" align="center">
             <template slot-scope="{row}">
               <span>{{ row.name }}</span>
             </template>
@@ -103,27 +105,37 @@
               <span>{{ row.remark }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="总价 / 单价" width="120px" align="center">
+          <el-table-column label="单价" width="120px" align="center">
             <template slot-scope="{row}">
-              <span>{{ row.all }} / {{ row.price }}</span>
+              <span>{{ row.price }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="核销" width="80px" align="center">
+          <el-table-column label="销量" width="100px" align="center">
             <template slot-scope="{row}">
-              <span>{{ row.real }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="销量 / 存量" width="100px" align="center">
-            <template slot-scope="{row}">
-              <span>{{ row.value }} / {{ row.stock }}</span>
+              <span>{{ row.value }}</span>
             </template>
           </el-table-column>
         </el-table>
+
+        <el-form-item />
+        <el-form-item label="订单备注" prop="sremark">
+          <el-input v-model="tempOrder.sremark" />
+        </el-form-item>
+
+        <el-form-item />
+        <el-form-item label="一键审核" prop="autoReview">
+          <el-switch v-model="temp.autoReview" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
         <el-button type="primary" @click="applyData()">确定</el-button>
       </div>
+    </el-dialog>
+
+    <el-dialog title="导入Excel" :visible.sync="dialogExcelVisible">
+      <upload-excel-component :on-success="handleSuccess" width="90%" line-height="290px" height="300px" />
+      <br>
     </el-dialog>
   </div>
 </template>
@@ -131,10 +143,11 @@
 <script>
 import { mapState } from 'vuex'
 import { parseTime } from '@/utils'
+import { marketArr } from '@/utils/market-data'
 import Pagination from '@/components/Pagination'
 import UploadExcelComponent from '@/components/UploadExcel'
-import { setMarketCommList, setMarketCommDetail, delMarketCommDetail, getMarketCommDetail, getMarketSaleDetail } from '@/api/market'
-import { getAgreementOrder } from '@/api/order'
+import { getMarketAllAccount, setMarketCommList, setMarketCommDetail, delMarketCommDetail, getMarketCommDetail, getMarketSaleDetail } from '@/api/market'
+import { addOrderRemark } from '@/api/order'
 import { sale } from '@/api/sale'
 
 export default {
@@ -143,8 +156,10 @@ export default {
     return {
       tableHeight: 600,
       userdata: {},
-      asoptions: [],
-      mname: '',
+      business: 5, // 业务类型
+      aoptions: [],
+      mid: 0,
+      marketArr: marketArr,
       date: new Date(),
       list: null,
       total: 0,
@@ -159,13 +174,15 @@ export default {
         search: null
       },
       temp: {
-        row: null,
-        storage: '',
-        account: '',
         date: null,
-        list: []
+        list: [],
+        autoReview: false
       },
-      dialogVisible: false
+      tempOrder: {
+        sremark: ''
+      },
+      dialogVisible: false,
+      dialogExcelVisible: false
     }
   },
   computed: {
@@ -193,29 +210,19 @@ export default {
     this.listQuery.id = this.userdata.user.id
     this.listQuery.gid = this.userdata.group.id
     this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
-    this.listAgree.id = this.userdata.user.id
+    this.getMarketAllAccount()
   },
   methods: {
     handleSelect() {
       this.listQuery.page = 1
       this.listQuery.limit = 10
       this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
+      this.aoptions.forEach(v => {
+        if (v.id === this.listQuery.aid) {
+          this.mid = v.mid
+        }
+      })
       this.getCommodityList()
-    },
-    handleStorageSelect() {
-      this.listQuery.page = 1
-      this.listQuery.limit = 10
-      this.getCommodityList()
-    },
-    handleAgreeSelect() {
-      this.listAgree.aid = this.listQuery.aid
-      this.listAgree.page = 1
-      this.listAgree.limit = 20
-      this.listAgree.date = parseTime(this.agreeDate, '{y}-{m}-{d}')
-      this.getAgreementList()
-    },
-    handleSelectOrder(row) {
-      this.temp.row = Object.assign({}, row)
     },
     handleSuccess({ results, header }) {
       const commoditys = []
@@ -268,6 +275,24 @@ export default {
       }).then(response => {
         this.$message({ type: 'success', message: '更新成功!' })
         this.getCommodityList()
+        this.dialogExcelVisible = false
+      })
+    },
+    getMarketAllAccount() {
+      getMarketAllAccount({
+        id: this.listQuery.id,
+        gid: this.listQuery.gid
+      }).then(response => {
+        const list = response.data.data.list
+        if (list.length > 0) {
+          list.forEach(v => {
+            const data = { id: v.id, label: v.account, mid: v.mid }
+            this.aoptions.push(data)
+          })
+          this.listQuery.aid = this.aoptions[0].id
+          this.mid = this.aoptions[0].mid
+          this.getCommodityList()
+        }
       })
     },
     getCommodityList() {
@@ -277,37 +302,17 @@ export default {
       ).then(response => {
         this.total = response.data.data.total
         this.list = response.data.data.list
-        this.loading = false
-      }).catch(error => {
-        this.loading = false
-        Promise.reject(error)
-      })
-    },
-    getAgreementList() {
-      this.agreeLoading = true
-      getAgreementOrder(
-        this.listAgree
-      ).then(response => {
-        this.agreeTotal = response.data.data.total
-        this.agrees = response.data.data.list
-        this.agrees.forEach(v => {
-          v.commList = ''
-          if (v.comms && v.comms.length > 0) {
-            v.comms.forEach(c => {
-              if (v.commList.length < 20) {
-                v.commList = v.commList + c.name + ','
-              }
-            })
-          }
+        this.list.forEach(v => {
+          v.sprice = v.svalue === 0 ? 0 : (v.sprice / v.svalue).toFixed(2)
         })
-        this.agreeLoading = false
+        this.loading = false
       }).catch(error => {
-        this.agreeLoading = false
+        this.loading = false
         Promise.reject(error)
       })
     },
     handleCopy(row) {
-      const temp = {
+      setMarketCommDetail({
         id: this.listQuery.id,
         gid: this.userdata.group.id,
         aid: this.listQuery.aid,
@@ -316,8 +321,7 @@ export default {
         value: row.mvalue,
         price: row.mprice,
         date: this.listQuery.date
-      }
-      setMarketCommDetail(temp).then(response => {
+      }).then(response => {
         this.$message({ type: 'success', message: '复制成功!' })
         this.getCommodityList()
       })
@@ -331,7 +335,7 @@ export default {
         this.$message({ type: 'error', message: '请填写销量!' })
         return
       }
-      const temp = {
+      setMarketCommDetail({
         id: this.listQuery.id,
         gid: this.userdata.group.id,
         aid: this.listQuery.aid,
@@ -340,8 +344,7 @@ export default {
         value: row.mvalue,
         price: row.mprice,
         date: this.listQuery.date
-      }
-      setMarketCommDetail(temp).then(response => {
+      }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
         this.getCommodityList()
       })
@@ -352,22 +355,18 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        const temp = {
+        delMarketCommDetail({
           id: this.listQuery.id,
           gid: this.userdata.group.id,
           did: row.id
-        }
-        delMarketCommDetail(temp).then(response => {
+        }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
           this.getCommodityList()
         })
       })
     },
     handleApply() {
-      if (!this.temp.row) {
-        this.$message({ type: 'error', message: '请选择履约发货单!' })
-        return
-      }
+      this.tempOrder.sremark = ''
       getMarketSaleDetail(
         this.listQuery
       ).then(response => {
@@ -377,32 +376,6 @@ export default {
           return
         }
         this.temp.date = parseTime(this.date, '{y}-{m}-{d}') + parseTime(new Date(), ' {h}:{i}:{s}')
-
-        // 校验履约单商品数量
-        const total = this.temp.row.comms.length
-        const comms = this.temp.row.comms
-        this.temp.list.forEach(v => {
-          let find = false
-          for (let i = 0; i < total; i++) {
-            const c = comms[i]
-            if (c.cid === v.cid) {
-              if (c.curValue < v.value) {
-                v.real = c.curValue
-              } else {
-                v.real = v.value
-              }
-              v.all = v.price * v.real
-              v.stock = c.curValue
-              find = true
-              break
-            }
-          }
-          if (!find) {
-            v.all = '-'
-            v.real = '-'
-            v.stock = '-'
-          }
-        })
         this.dialogVisible = true
       })
     },
@@ -410,12 +383,26 @@ export default {
       sale({
         id: this.userdata.user.id,
         gid: this.userdata.group.id,
-        pid: this.temp.row.id,
-        date: this.temp.date
+        aid: this.listQuery.aid,
+        date: this.temp.date,
+        review: this.temp.autoReview ? 1 : 0
       }).then(response => {
+        const id = response.data.data.id
+        if (this.tempOrder.sremark.length > 0) {
+          addOrderRemark({
+            id: this.userdata.user.id,
+            otype: this.business,
+            oid: id,
+            remark: this.tempOrder.sremark
+          })
+        }
         this.$message({ type: 'success', message: '申请成功!' })
+        this.temp.list = []
         this.dialogVisible = false
       })
+    },
+    handleExcel() {
+      this.dialogExcelVisible = true
     }
   }
 }

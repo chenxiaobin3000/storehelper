@@ -1,6 +1,14 @@
 import request from '@/utils/request'
 const path = '/stock'
 
+export function setStockList(data) {
+  return request({
+    url: `${path}/setStockList`,
+    method: 'post',
+    data
+  })
+}
+
 export function getStockList(data) {
   return request({
     url: `${path}/getStockList`,

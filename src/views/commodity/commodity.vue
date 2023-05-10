@@ -2,11 +2,13 @@
   <div class="app-container">
     <div class="filter-container">
       <el-select v-model="listQuery.sid" class="filter-item" @change="getStorageCommodityList">
-        <el-option v-for="item in storagesAll" :key="item.id" :label="item.label" :value="item.id" />
+        <el-option v-for="item in storages" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-select v-model="listQuery.aid" class="filter-item" @change="getAccountCommodityList">
         <el-option v-for="item in aoptionsAll" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
+      <el-button type="primary" size="normal" style="float:right;width:100px;margin-left:20px" @click="handleExcel()">批量导入</el-button>
+      <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleDownload()">模板下载</el-button>
     </div>
 
     <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
@@ -140,11 +142,11 @@
 
     <el-dialog title="设置关联账号" :visible.sync="dialogAccountVisible">
       <el-form :model="tempAccount" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="编号" prop="ccode">
-          <span>{{ tempAccount.ccode }}</span>
+        <el-form-item label="编号" prop="code">
+          <span>{{ tempAccount.code }}</span>
         </el-form-item>
-        <el-form-item label="名称" prop="cname">
-          <span>{{ tempAccount.cname }}</span>
+        <el-form-item label="名称" prop="name">
+          <span>{{ tempAccount.name }}</span>
         </el-form-item>
         <el-form-item label="账号" prop="aid">
           <el-select v-model="listQuery.aid" class="filter-item" @change="handleAidSelect">
@@ -169,28 +171,33 @@
         <el-button type="primary" @click="updateAccountData()">设置</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="导入Excel" :visible.sync="dialogExcelVisible">
+      <upload-excel-component :on-success="handleSuccess" width="90%" line-height="290px" height="300px" />
+      <br>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
+import UploadExcelComponent from '@/components/UploadExcel'
 import { treeGenerate } from '@/utils/tree'
-import { getGroupCommodity, addCommodity, setCommodity, delCommodity, setCommodityOriginal, getStorageCommodity, setCommodityStorage } from '@/api/commodity'
+import { getGroupCommodity, addCommodityList, addCommodity, setCommodity, delCommodity, setCommodityOriginal, getStorageCommodity, setCommodityStorage } from '@/api/commodity'
 import { getMarketAllAccount, getMarketCommodity, setMarketCommodity, delMarketCommodity, getMarketCommodityList } from '@/api/market'
 import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryTree } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
 
 export default {
-  components: { Pagination },
+  components: { Pagination, UploadExcelComponent },
   data() {
     return {
       tableHeight: 600,
       userdata: {},
-      storagesAll: [], // 仅列表查询
+      storages: [],
       aoptionsAll: [], // 仅列表查询
-      storages: [], // 仅对话框使用
       aoptions: [], // 仅对话框使用
       routes: [],
       data: [],
@@ -198,7 +205,6 @@ export default {
       total: 0,
       categoryList: [],
       templateList: {},
-      storageList: [],
       loading: false,
       listQuery: {
         id: 0,
@@ -214,8 +220,6 @@ export default {
       tempStorage: {},
       tempAccount: {
         id: 0,
-        ccode: '',
-        cname: '',
         mcode: '',
         mname: '',
         mremark: '',
@@ -234,7 +238,8 @@ export default {
       },
       dialogOriVisible: false,
       dialogStorageVisible: false,
-      dialogAccountVisible: false
+      dialogAccountVisible: false,
+      dialogExcelVisible: false
     }
   },
   computed: {
@@ -285,6 +290,117 @@ export default {
           this.temp.holders.push(v)
         })
       }
+    },
+    handleSuccess({ results, header }) {
+      const codes = []
+      const names = []
+      const cids = []
+      const remarks = []
+      const storages = []
+      const attr1 = []
+      const attr2 = []
+      const attr3 = []
+      const attr4 = []
+      const attr5 = []
+      const attr6 = []
+      const attr7 = []
+      const attr8 = []
+      const idName = '编号'
+      const commName = '商品名称'
+      const cName = '品类'
+      const remarkName = '备注'
+      const storageName = '仓库'
+      const attrName = '属性'
+      let attrNum = 8
+
+      // 计算属性数量
+      const tmp = results[0]
+      for (let i = 2; i < 9; i++) {
+        if (tmp[attrName + i] && tmp[attrName + i].length > 0) {
+          continue
+        }
+        attrNum = i - 1
+        break
+      }
+
+      results.forEach(v => {
+        if (v[idName] && v[idName] > 0) {
+          codes.push(v[idName])
+          names.push(v[commName])
+
+          // 品类
+          const cateName = v[cName]
+          this.categoryList.forEach(c => {
+            if (cateName === c.label) {
+              cids.push(c.id)
+            }
+          })
+
+          // 仓库
+          const sids = []
+          for (let i = 1; i < 9; i++) {
+            let find = false
+            const sName = v[storageName + i]
+            this.storages.forEach(s => {
+              if (sName === s.label) {
+                sids.push(s.id)
+                find = true
+              }
+            })
+            if (!find) {
+              break
+            }
+          }
+
+          remarks.push(v[remarkName])
+          storages.push(sids.join(','))
+          attr1.push(v[attrName + 1])
+          if (attrNum > 1) {
+            attr2.push(v[attrName + 2])
+          }
+          if (attrNum > 2) {
+            attr3.push(v[attrName + 3])
+          }
+          if (attrNum > 3) {
+            attr4.push(v[attrName + 4])
+          }
+          if (attrNum > 4) {
+            attr5.push(v[attrName + 5])
+          }
+          if (attrNum > 5) {
+            attr6.push(v[attrName + 6])
+          }
+          if (attrNum > 6) {
+            attr7.push(v[attrName + 7])
+          }
+          if (attrNum > 7) {
+            attr8.push(v[attrName + 8])
+          }
+        }
+      })
+
+      addCommodityList({
+        id: this.listQuery.id,
+        gid: this.listQuery.gid,
+        codes: codes,
+        names: names,
+        cids: cids,
+        remarks: remarks,
+        storages: storages,
+        attr: attrNum,
+        attr1: attr1,
+        attr2: attr2,
+        attr3: attr3,
+        attr4: attr4,
+        attr5: attr5,
+        attr6: attr6,
+        attr7: attr7,
+        attr8: attr8
+      }).then(response => {
+        this.$message({ type: 'success', message: '更新成功!' })
+        this.getStockList()
+        this.dialogExcelVisible = false
+      })
     },
     getStorageCommodityList() {
       this.listQuery.aid = 0
@@ -350,6 +466,7 @@ export default {
         const list = response.data.data.list
         if (list && list.length > 0) {
           list.forEach(v => {
+            v.id = v.cid
             v.code = v.ccode
             v.name = v.cname
             v.cid = v.cate
@@ -422,9 +539,9 @@ export default {
       getGroupAllStorage({
         id: this.userdata.user.id
       }).then(response => {
-        this.storagesAll = [{ id: 0, label: '全部仓库' }]
+        this.storages = [{ id: 0, label: '全部仓库' }]
         response.data.data.list.forEach(v => {
-          this.storagesAll.push({ id: v.id, label: v.name })
+          this.storages.push({ id: v.id, label: v.name })
           this.data.push({ path: '/' + v.id, meta: { title: v.name, roles: [v.id] }})
         })
         this.routes = treeGenerate.generateRoutes(this.data)
@@ -480,7 +597,6 @@ export default {
         remark: row.remark
       }
       let idx = 0
-      console.log(this.templateList)
       this.templateList.forEach(v => {
         this.temp.attributes.push(row.attrs[idx++])
         this.temp.holders.push(v)
@@ -593,15 +709,10 @@ export default {
       })
     },
     handleSelectAccount(row) {
-      this.tempAccount.id = row.id
-      this.tempAccount.ccode = row.code
-      this.tempAccount.cname = row.name
-      this.tempAccount.cremark = row.remark
-      this.tempAccount.mcode = ''
-      this.tempAccount.mname = ''
-      this.tempAccount.mremark = ''
-      this.tempAccount.alarm = ''
-      this.handleAidSelect()
+      this.tempAccount = Object.assign({}, row)
+      if (this.listQuery.aid === 0) {
+        this.listQuery.aid = this.aoptions[0].id
+      }
       this.dialogAccountVisible = true
     },
     updateAccountData() {
@@ -634,6 +745,15 @@ export default {
         this.tempAccount.alarm = ''
         this.getCommodityList()
       })
+    },
+    handleDownload() {
+      const atag = document.createElement('a')
+      atag.href = 'http://' + process.env.VUE_APP_BASE_API
+      atag.href = atag.href.substring(0, atag.href.length - 4) + '商品模板.xlsx'
+      atag.click()
+    },
+    handleExcel() {
+      this.dialogExcelVisible = true
     }
   }
 }

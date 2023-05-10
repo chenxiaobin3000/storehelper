@@ -43,11 +43,6 @@
           <span>{{ row.curPrice }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="应付" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.curPrice - row.pay }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="状态" align="center">
         <template slot-scope="{row}">
           <span>{{ row.complete == 0 ? '未完成' : '已完成' }}</span>

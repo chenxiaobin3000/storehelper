@@ -25,11 +25,6 @@
           <span>{{ row.sname }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="otype===0||otype===12" label="入库" width="100px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.sname2 }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="商品" width="260px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.commList }}</span>
@@ -42,10 +37,10 @@
       </el-table-column>
       <el-table-column label="总重量" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.weight }}</span>
+          <span>{{ row.unit / 1000 }}kg</span>
         </template>
       </el-table-column>
-      <el-table-column label="总件数" align="center">
+      <el-table-column label="总份数" align="center">
         <template slot-scope="{row}">
           <span>{{ row.value }}</span>
         </template>

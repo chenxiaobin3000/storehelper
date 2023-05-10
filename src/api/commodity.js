@@ -1,6 +1,14 @@
 import request from '@/utils/request'
 const path = '/commodity'
 
+export function addCommodityList(data) {
+  return request({
+    url: `${path}/addCommodityList`,
+    method: 'post',
+    data
+  })
+}
+
 export function addCommodity(data) {
   return request({
     url: `${path}/addCommodity`,
