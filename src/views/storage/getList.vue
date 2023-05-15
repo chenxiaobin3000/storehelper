@@ -349,15 +349,17 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        const data = {
+          id: this.userdata.user.id,
+          type: this.otype,
+          oid: row.id
+        }
         switch (this.otype) {
           case 10:
           case 12:
           case 14:
           case 16:
-            reviewIn({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
+            reviewIn(data).then(() => {
               this.$message({ type: 'success', message: '审核成功!' })
               this.getOrderList()
             })
@@ -366,37 +368,25 @@ export default {
           case 13:
           case 15:
           case 17:
-            reviewOut({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
+            reviewOut(data).then(() => {
               this.$message({ type: 'success', message: '审核成功!' })
               this.getOrderList()
             })
             break
           case 18:
-            reviewDispatchIn({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
+            reviewDispatchIn(data).then(() => {
               this.$message({ type: 'success', message: '审核成功!' })
               this.getOrderList()
             })
             break
           case 19:
-            reviewDispatchOut({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
+            reviewDispatchOut(data).then(() => {
               this.$message({ type: 'success', message: '审核成功!' })
               this.getOrderList()
             })
             break
           case 20:
-            reviewLoss({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
+            reviewLoss(data).then(() => {
               this.$message({ type: 'success', message: '审核成功!' })
               this.getOrderList()
             })
@@ -412,15 +402,17 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        const data = {
+          id: this.userdata.user.id,
+          type: this.otype,
+          oid: row.id
+        }
         switch (this.otype) {
           case 10:
           case 12:
           case 14:
           case 16:
-            revokeIn({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
+            revokeIn(data).then(() => {
               this.$message({ type: 'success', message: '撤销成功!' })
               this.getOrderList()
             })
@@ -429,37 +421,25 @@ export default {
           case 13:
           case 15:
           case 17:
-            revokeOut({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
+            revokeOut(data).then(() => {
               this.$message({ type: 'success', message: '撤销成功!' })
               this.getOrderList()
             })
             break
           case 18:
-            revokeDispatchIn({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
+            revokeDispatchIn(data).then(() => {
               this.$message({ type: 'success', message: '撤销成功!' })
               this.getOrderList()
             })
             break
           case 19:
-            revokeDispatchOut({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
+            revokeDispatchOut(data).then(() => {
               this.$message({ type: 'success', message: '撤销成功!' })
               this.getOrderList()
             })
             break
           case 20:
-            revokeLoss({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
+            revokeLoss(data).then(() => {
               this.$message({ type: 'success', message: '撤销成功!' })
               this.getOrderList()
             })
@@ -475,15 +455,17 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        const data = {
+          id: this.userdata.user.id,
+          type: this.otype,
+          oid: row.id
+        }
         switch (this.otype) {
           case 10:
           case 12:
           case 14:
           case 16:
-            delIn({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
+            delIn(data).then(() => {
               this.$message({ type: 'success', message: '删除成功!' })
               this.getOrderList()
             })
@@ -492,37 +474,25 @@ export default {
           case 13:
           case 15:
           case 17:
-            delOut({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
+            delOut(data).then(() => {
               this.$message({ type: 'success', message: '删除成功!' })
               this.getOrderList()
             })
             break
           case 18:
-            delDispatchIn({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
+            delDispatchIn(data).then(() => {
               this.$message({ type: 'success', message: '删除成功!' })
               this.getOrderList()
             })
             break
           case 19:
-            delDispatchOut({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
+            delDispatchOut(data).then(() => {
               this.$message({ type: 'success', message: '删除成功!' })
               this.getOrderList()
             })
             break
           case 20:
-            delLoss({
-              id: this.userdata.user.id,
-              oid: row.id
-            }).then(() => {
+            delLoss(data).then(() => {
               this.$message({ type: 'success', message: '删除成功!' })
               this.getOrderList()
             })

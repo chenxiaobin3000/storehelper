@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
     <el-table ref="table" v-loading="loading" :data="list" :height="tableHeight" style="width: 100%" border fit highlight-current-row>
-      <el-table-column label="仓库名称" width="200px" align="center">
+      <el-table-column label="仓库名称" fixed="left" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="地区" width="180px" align="center">
+      <el-table-column label="地区" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.areaName }}</span>
         </template>
@@ -21,12 +21,12 @@
           <span>{{ row.phone }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="地址" width="180px" align="center">
+      <el-table-column label="地址" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.address }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" width="180px" align="center">
+      <el-table-column label="备注" align="center">
         <template slot-scope="{row}">
           <span>{{ row.remark }}</span>
         </template>

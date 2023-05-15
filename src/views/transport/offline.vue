@@ -190,7 +190,7 @@ import { mapState } from 'vuex'
 import { parseTime, reviewType, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
-import { setOrderFare, delOrderFare, getStorageFareList } from '@/api/transport'
+import { setOrderFare, delOrderFare, getOfflineFareList } from '@/api/transport'
 
 export default {
   components: { Pagination },
@@ -198,11 +198,11 @@ export default {
     return {
       tableHeight: 600,
       userdata: {},
-      business: 2, // 业务类型
+      business: 6, // 业务类型
       orders: [{
-        id: 19, label: '出库单'
+        id: 60, label: '销售单'
       }, {
-        id: 18, label: '入库单'
+        id: 61, label: '退货单'
       }],
       date: new Date(),
       list: null,
@@ -213,7 +213,7 @@ export default {
       listQuery: {
         id: 0,
         gid: 0,
-        type: 19, // 仓储出库
+        type: 60, // 线下销售
         page: 1,
         limit: 10,
         review: 1, // 全部
@@ -279,7 +279,7 @@ export default {
     },
     getOrderList() {
       this.loading = true
-      getStorageFareList(
+      getOfflineFareList(
         this.listQuery
       ).then(response => {
         this.total = response.data.data.total

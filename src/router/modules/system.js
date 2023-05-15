@@ -31,6 +31,6 @@ export default {
     name: 'system_roleList', meta: { title: '角色管理', roles: [1104] }
   }, {
     path: 'mpRoleList', component: () => import('@/views/system/mpRoleList'),
-    name: 'system_mpRoleList', meta: { title: '微信管理', roles: [1105] }
+    name: 'system_mpRoleList', meta: { title: '审核管理', roles: [1105] }
   }]
 }

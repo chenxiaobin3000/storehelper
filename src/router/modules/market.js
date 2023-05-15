@@ -9,14 +9,8 @@ export default {
     roles: [500]
   },
   children: [{
-    path: 'stockReport', component: () => import('@/views/market/stockReport'),
-    name: 'market_stockReport', meta: { title: '库存总览', roles: [505] }
-  }, {
     path: 'stock', component: () => import('@/views/market/stock'),
-    name: 'market_stock', meta: { title: '库存明细', roles: [506] }
-  }, {
-    path: 'report', component: () => import('@/views/market/report'),
-    name: 'market_report', meta: { title: '销售总览', roles: [501] }
+    name: 'market_stock', meta: { title: '库存明细', roles: [501] }
   }, {
     path: 'getList', component: () => import('@/views/market/getList'),
     name: 'market_getList', meta: { title: '销售明细', roles: [502] }

@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
     <el-table v-loading="loading" :data="list" style="width: 100%;" border highlight-current-row>
-      <el-table-column align="center" label="微信角色名称" width="220">
+      <el-table-column align="center" label="审核角色名称" width="220">
         <template slot-scope="scope">
           {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="微信角色描述">
+      <el-table-column align="center" label="审核角色描述">
         <template slot-scope="scope">
           {{ scope.row.description }}
         </template>
@@ -67,8 +67,8 @@ export default {
       dialogVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '修改微信角色信息',
-        create: '新建微信角色'
+        update: '修改审核角色信息',
+        create: '新建审核角色'
       }
     }
   },

@@ -183,7 +183,7 @@ $cursor: #fff;
 .login-container {
   .el-input {
     display: inline-block;
-    height: 47px;
+    height: 48px;
     width: 85%;
 
     input {

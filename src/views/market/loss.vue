@@ -1,14 +1,14 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-select v-model="tid" class="filter-item" style="width:120px" @change="handleOrderSelect">
-        <el-option v-for="item in orders" :key="item.id" :label="item.label" :value="item.id" />
+      <el-select v-model="mid" class="filter-item" style="width:120px" disabled>
+        <el-option v-for="item in marketArr" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-select v-model="listQuery.aid" class="filter-item" @change="handleSelect">
         <el-option v-for="item in aoptions" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <el-select v-model="mid" class="filter-item" style="width:120px" disabled>
-        <el-option v-for="item in marketArr" :key="item.id" :label="item.label" :value="item.id" />
+      <el-select v-model="tid" class="filter-item" style="width:120px" @change="handleOrderSelect">
+        <el-option v-for="item in orders" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-date-picker v-model="date" type="date" class="filter-item" style="width: 150px;" @change="handleSelect" />
       <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleApply()">提交</el-button>

@@ -16,9 +16,9 @@ export default {
     name: 'commodity_commodity', meta: { title: '商品列表', roles: [302] }
   }, {
     path: 'category', component: () => import('@/views/commodity/category'),
-    name: 'commodity_category', meta: { title: '品类管理', roles: [304] }
+    name: 'commodity_category', meta: { title: '品类管理', roles: [303] }
   }, {
     path: 'attribute', component: () => import('@/views/commodity/attribute'),
-    name: 'commodity_attribute', meta: { title: '属性管理', roles: [305] }
+    name: 'commodity_attribute', meta: { title: '属性管理', roles: [304] }
   }]
 }

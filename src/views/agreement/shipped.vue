@@ -310,7 +310,7 @@ export default {
       this.getCommodityList()
     },
     getGroupAllStorage() {
-      this.storages = [{ id: 0, label: '未选择仓库' }]
+      this.storages = []
       getGroupAllStorage({
         id: this.userdata.user.id
       }).then(response => {
@@ -318,6 +318,7 @@ export default {
           response.data.data.list.forEach(v => {
             this.storages.push({ id: v.id, label: v.name })
           })
+          this.listQuery.sid = this.storages[0].id
         }
       })
     },
