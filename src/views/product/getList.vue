@@ -30,14 +30,9 @@
           <span>{{ row.commList }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总价" align="center">
+      <el-table-column label="现价 / 总价" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.price }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="现价" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.curPrice }}</span>
+          <span>{{ row.curPrice }} / {{ row.price }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center">
@@ -98,30 +93,50 @@
                 <span>{{ row.name }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="价格" width="70px" align="center">
+            <el-table-column label="价格" width="80px" align="center">
               <template slot-scope="{row}">
-                <span>{{ row.price }}元</span>
+                <el-input v-if="isEdit" v-model="row.price" />
+                <span v-else>{{ row.price }}元</span>
               </template>
             </el-table-column>
-            <el-table-column label="重量" width="70px" align="center">
+            <el-table-column label="重量" width="80px" align="center">
               <template slot-scope="{row}">
-                <span>{{ row.weight / 1000 }}kg</span>
+                <el-input v-if="isEdit" v-model="row.weight" />
+                <span v-else>{{ row.weight }}kg</span>
               </template>
             </el-table-column>
-            <el-table-column label="箱规" width="70px" align="center">
+            <el-table-column label="箱规" width="80px" align="center">
               <template slot-scope="{row}">
-                <span>{{ row.norm }}</span>
+                <el-input v-if="isEdit" v-model="row.norm" />
+                <span v-else>{{ row.norm }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="份数" width="70px" align="center">
+            <el-table-column label="份数" width="80px" align="center">
               <template slot-scope="{row}">
-                <span>{{ row.value }}件</span>
+                <el-input v-if="isEdit" v-model="row.value" />
+                <span v-else>{{ row.value }}件</span>
+              </template>
+            </el-table-column>
+            <el-table-column v-if="isEdit" label="操作" width="90px" align="center">
+              <template slot-scope="{row}">
+                <el-button type="primary" @click="delCommodity(row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-form-item>
         <el-form-item v-else label="商品列表" prop="remarks">
           <span>没有商品</span>
+        </el-form-item>
+        <el-form-item v-if="isEdit">
+          <div align="center">
+            <el-button type="danger" @click="changeEdit(false)">退出</el-button>
+            <el-button type="primary" @click="updateCommodity()">确定</el-button>
+          </div>
+        </el-form-item>
+        <el-form-item v-else>
+          <div align="center">
+            <el-button type="primary" @click="changeEdit(true)">修改</el-button>
+          </div>
         </el-form-item>
 
         <!-- 附件列表 -->
@@ -181,7 +196,7 @@ import { parseTime, reviewType, completeType } from '@/utils'
 import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
 import { getProductOrder } from '@/api/order'
-import { reviewProcess, revokeProcess, delProcess, reviewComplete, revokeComplete, delComplete, reviewLoss, revokeLoss, delLoss } from '@/api/product'
+import { setProcess, reviewProcess, revokeProcess, delProcess, setComplete, reviewComplete, revokeComplete, delComplete, setLoss, reviewLoss, revokeLoss, delLoss } from '@/api/product'
 import { addOrderRemark, delOrderRemark } from '@/api/order'
 
 export default {
@@ -223,7 +238,8 @@ export default {
         imageList: [],
         remark: ''
       },
-      dialogVisible: false
+      dialogVisible: false,
+      isEdit: false
     }
   },
   computed: {
@@ -272,6 +288,7 @@ export default {
           v.commList = ''
           if (v.comms && v.comms.length > 0) {
             v.comms.forEach(c => {
+              c.weight = c.weight / 1000
               if (v.commList.length < 20) {
                 v.commList = v.commList + c.name + ','
               }
@@ -301,6 +318,64 @@ export default {
         })
       }
       this.dialogVisible = true
+    },
+    changeEdit(edit) {
+      this.isEdit = edit
+    },
+    delCommodity(row) {
+      this.temp.comms.map((v, i) => {
+        if (v.id === row.id) {
+          this.temp.comms.splice(i, 1)
+        }
+      })
+    },
+    updateCommodity() {
+      this.temp.commoditys = []
+      this.temp.prices = []
+      this.temp.weights = []
+      this.temp.norms = []
+      this.temp.values = []
+      this.temp.comms.forEach(v => {
+        this.temp.commoditys.push(v.cid)
+        this.temp.prices.push(v.price)
+        this.temp.weights.push(v.weight * 1000)
+        this.temp.norms.push(v.norm)
+        this.temp.values.push(v.value)
+      })
+      const data = {
+        id: this.userdata.user.id,
+        oid: this.temp.id,
+        commoditys: this.temp.commoditys,
+        prices: this.temp.prices,
+        weights: this.temp.weights,
+        norms: this.temp.norms,
+        values: this.temp.values
+      }
+      switch (this.listQuery.type) {
+        case 30:
+          setProcess(data).then(() => {
+            this.temp.remark = ''
+            this.$message({ type: 'success', message: '更新成功!' })
+            this.getOrderList()
+          })
+          break
+        case 31:
+          setComplete(data).then(() => {
+            this.temp.remark = ''
+            this.$message({ type: 'success', message: '更新成功!' })
+            this.getOrderList()
+          })
+          break
+        case 32:
+          setLoss(data).then(() => {
+            this.temp.remark = ''
+            this.$message({ type: 'success', message: '更新成功!' })
+            this.getOrderList()
+          })
+          break
+        default:
+          break
+      }
     },
     handleAddRemark() {
       addOrderRemark({

@@ -9,6 +9,14 @@ export function purchase(data) {
   })
 }
 
+export function setPurchase(data) {
+  return request({
+    url: `${path}/setPurchase`,
+    method: 'post',
+    data
+  })
+}
+
 export function reviewPurchase(data) {
   return request({
     url: `${path}/reviewPurchase`,
@@ -52,6 +60,14 @@ export function setPurchaseSupplier(data) {
 export function returnc(data) {
   return request({
     url: `${path}/returnc`,
+    method: 'post',
+    data
+  })
+}
+
+export function setReturn(data) {
+  return request({
+    url: `${path}/setReturn`,
     method: 'post',
     data
   })

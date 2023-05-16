@@ -98,30 +98,50 @@
                 <span>{{ row.name }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="价格" width="70px" align="center">
+            <el-table-column label="价格" width="80px" align="center">
               <template slot-scope="{row}">
-                <span>{{ row.price }}元</span>
+                <el-input v-if="isEdit" v-model="row.price" />
+                <span v-else>{{ row.price }}元</span>
               </template>
             </el-table-column>
-            <el-table-column label="重量" width="70px" align="center">
+            <el-table-column label="重量" width="80px" align="center">
               <template slot-scope="{row}">
-                <span>{{ row.weight / 1000 }}kg</span>
+                <el-input v-if="isEdit" v-model="row.weight" />
+                <span v-else>{{ row.weight }}kg</span>
               </template>
             </el-table-column>
-            <el-table-column label="箱规" width="70px" align="center">
+            <el-table-column label="箱规" width="80px" align="center">
               <template slot-scope="{row}">
-                <span>{{ row.norm }}</span>
+                <el-input v-if="isEdit" v-model="row.norm" />
+                <span v-else>{{ row.norm }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="份数" width="70px" align="center">
+            <el-table-column label="份数" width="80px" align="center">
               <template slot-scope="{row}">
-                <span>{{ row.value }}件</span>
+                <el-input v-if="isEdit" v-model="row.value" />
+                <span v-else>{{ row.value }}件</span>
+              </template>
+            </el-table-column>
+            <el-table-column v-if="isEdit" label="操作" width="90px" align="center">
+              <template slot-scope="{row}">
+                <el-button type="primary" @click="delCommodity(row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-form-item>
         <el-form-item v-else label="商品列表" prop="remarks">
           <span>没有商品</span>
+        </el-form-item>
+        <el-form-item v-if="isEdit">
+          <div align="center">
+            <el-button type="danger" @click="changeEdit(false)">退出</el-button>
+            <el-button type="primary" @click="updateCommodity()">确定</el-button>
+          </div>
+        </el-form-item>
+        <el-form-item v-else>
+          <div align="center">
+            <el-button type="primary" @click="changeEdit(true)">修改</el-button>
+          </div>
         </el-form-item>
 
         <!-- 运费列表 -->
@@ -188,10 +208,10 @@ import Pagination from '@/components/Pagination'
 import ImageSrc from '@/utils/image-src'
 import { getStorageOrder } from '@/api/order'
 import {
-  reviewIn, revokeIn, delIn, reviewOut, revokeOut, delOut,
-  reviewDispatchIn, revokeDispatchIn, delDispatchIn,
-  reviewDispatchOut, revokeDispatchOut, delDispatchOut,
-  reviewLoss, revokeLoss, delLoss
+  setIn, reviewIn, revokeIn, delIn, setOut, reviewOut, revokeOut, delOut,
+  setDispatchIn, reviewDispatchIn, revokeDispatchIn, delDispatchIn,
+  setDispatchOut, reviewDispatchOut, revokeDispatchOut, delDispatchOut,
+  setLoss, reviewLoss, revokeLoss, delLoss
 } from '@/api/storage'
 
 export default {
@@ -239,7 +259,8 @@ export default {
         attrs: [],
         imageList: []
       },
-      dialogVisible: false
+      dialogVisible: false,
+      isEdit: false
     }
   },
   computed: {
@@ -321,6 +342,7 @@ export default {
           v.commList = ''
           if (v.comms && v.comms.length > 0) {
             v.comms.forEach(c => {
+              c.weight = c.weight / 1000
               if (v.commList.length < 20) {
                 v.commList = v.commList + c.name + ','
               }
@@ -342,6 +364,85 @@ export default {
         })
       }
       this.dialogVisible = true
+    },
+    changeEdit(edit) {
+      this.isEdit = edit
+    },
+    delCommodity(row) {
+      this.temp.comms.map((v, i) => {
+        if (v.id === row.id) {
+          this.temp.comms.splice(i, 1)
+        }
+      })
+    },
+    updateCommodity() {
+      this.temp.commoditys = []
+      this.temp.prices = []
+      this.temp.weights = []
+      this.temp.norms = []
+      this.temp.values = []
+      this.temp.comms.forEach(v => {
+        this.temp.commoditys.push(v.cid)
+        this.temp.prices.push(v.price)
+        this.temp.weights.push(v.weight * 1000)
+        this.temp.norms.push(v.norm)
+        this.temp.values.push(v.value)
+      })
+      const data = {
+        id: this.userdata.user.id,
+        type: this.otype,
+        oid: this.temp.id,
+        commoditys: this.temp.commoditys,
+        prices: this.temp.prices,
+        weights: this.temp.weights,
+        norms: this.temp.norms,
+        values: this.temp.values
+      }
+      switch (this.listQuery.type) {
+        case 10:
+        case 12:
+        case 14:
+        case 16:
+          setIn(data).then(() => {
+            this.temp.remark = ''
+            this.$message({ type: 'success', message: '更新成功!' })
+            this.getOrderList()
+          })
+          break
+        case 18:
+          setDispatchIn(data).then(() => {
+            this.temp.remark = ''
+            this.$message({ type: 'success', message: '更新成功!' })
+            this.getOrderList()
+          })
+          break
+        case 11:
+        case 13:
+        case 15:
+        case 17:
+          setOut(data).then(() => {
+            this.temp.remark = ''
+            this.$message({ type: 'success', message: '更新成功!' })
+            this.getOrderList()
+          })
+          break
+        case 19:
+          setDispatchOut(data).then(() => {
+            this.temp.remark = ''
+            this.$message({ type: 'success', message: '更新成功!' })
+            this.getOrderList()
+          })
+          break
+        case 20:
+          setLoss(data).then(() => {
+            this.temp.remark = ''
+            this.$message({ type: 'success', message: '更新成功!' })
+            this.getOrderList()
+          })
+          break
+        default:
+          break
+      }
     },
     handleReview(row) {
       this.$confirm('确定要通过吗?', '提示', {

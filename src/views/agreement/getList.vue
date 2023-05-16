@@ -25,7 +25,7 @@
           <span>{{ row.maccount }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="仓库" width="140px" align="center">
+      <el-table-column label="仓库" width="180px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.sname }} </span>
           <el-button icon="el-icon-edit" size="mini" circle @click="handleFare(row)" />
@@ -51,7 +51,7 @@
           <span>{{ row.complete == 0 ? '未完成' : '已完成' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="申请人" width="65px" align="center">
+      <el-table-column label="申请人" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.applyName }}</span>
         </template>
@@ -61,7 +61,7 @@
           <span>{{ row.applyTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核人" width="65px" align="center">
+      <el-table-column label="审核人" width="80px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.reviewName }}</span>
         </template>
@@ -117,14 +117,14 @@
                 <span>{{ row.weight / 1000 }}kg</span>
               </template>
             </el-table-column>
+            <el-table-column label="箱规" width="70px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.norm }}</span>
+              </template>
+            </el-table-column>
             <el-table-column label="份数" width="70px" align="center">
               <template slot-scope="{row}">
                 <span>{{ row.value }}件</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="存量" width="70px" align="center">
-              <template slot-scope="{row}">
-                <span>{{ row.curValue }}件</span>
               </template>
             </el-table-column>
           </el-table>

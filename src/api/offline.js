@@ -9,17 +9,17 @@ export function offline(data) {
   })
 }
 
-export function delOffline(data) {
+export function setOffline(data) {
   return request({
-    url: `${path}/delOffline`,
+    url: `${path}/setOffline`,
     method: 'post',
     data
   })
 }
 
-export function setOffline(data) {
+export function delOffline(data) {
   return request({
-    url: `${path}/setOffline`,
+    url: `${path}/delOffline`,
     method: 'post',
     data
   })
