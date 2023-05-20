@@ -394,16 +394,14 @@ export default {
   created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
-    this.listQuery.date = parseTime(this.date, '{y}{m}{d}')
-    this.listQuery.date = this.listQuery.date.substr(2, this.listQuery.date.length - 2)
+    this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
     this.getGroupAllStorage()
   },
   methods: {
     handleSelect() {
       this.listQuery.page = 1
       this.listQuery.limit = 10
-      this.listQuery.date = parseTime(this.date, '{y}{m}{d}')
-      this.listQuery.date = this.listQuery.date.substr(2, this.listQuery.date.length - 2)
+      this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
       this.getCommodityList()
     },
     handleDetail(row) {
