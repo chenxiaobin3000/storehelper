@@ -209,6 +209,7 @@ export default {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
     this.listQuery.gid = this.userdata.group.id
+    this.listQuery.mid = this.marketArr[0].id
     this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
     this.getMarketAllAccount()
   },
@@ -252,6 +253,9 @@ export default {
           break
         case 5: // 淘菜菜
           this.$message({ type: 'error', message: '暂不支持导入淘菜菜平台数据!' })
+          return
+        case 6: // 特目
+          this.$message({ type: 'error', message: '暂不支持导入特目平台数据!' })
           return
         default:
           this.$message({ type: 'error', message: '请选择要导入的平台!' })

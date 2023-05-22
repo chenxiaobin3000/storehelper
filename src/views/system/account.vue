@@ -115,7 +115,7 @@ export default {
     this.moptions = filterMarket(this.userdata.market, false)
     this.listQuery.id = this.userdata.user.id
     this.listQuery.gid = this.userdata.group.id
-    this.listQuery.mid = 1
+    this.listQuery.mid = this.moptions[0].id
     this.resetTemp()
     this.getMarketAccountList()
   },

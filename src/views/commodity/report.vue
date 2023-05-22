@@ -120,6 +120,7 @@ export default {
     this.userdata = this.$store.getters.userdata
     this.moptions = filterMarket(this.userdata.market, true)
     this.listQuery.id = this.userdata.user.id
+    this.listQuery.mid = this.moptions[0].id
     this.getCategoryList()
   },
   methods: {

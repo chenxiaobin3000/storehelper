@@ -11,6 +11,8 @@ export const marketData = [{
   meta: { title: '美莱', roles: [4] }, path: '/meilai'
 }, {
   meta: { title: '淘菜菜', roles: [5] }, path: '/taocaicai'
+}, {
+  meta: { title: '特目', roles: [6] }, path: '/temu'
 }]
 
 export const marketArr = [{
@@ -23,6 +25,8 @@ export const marketArr = [{
   id: 4, label: '美莱'
 }, {
   id: 5, label: '淘菜菜'
+}, {
+  id: 6, label: '特目'
 }]
 
 /**
@@ -47,6 +51,9 @@ export function filterMarket(roles, all) {
   }
   if (roles.includes(5)) {
     ret.push({ id: 5, label: '淘菜菜' })
+  }
+  if (roles.includes(6)) {
+    ret.push({ id: 6, label: '特目' })
   }
   return ret
 }

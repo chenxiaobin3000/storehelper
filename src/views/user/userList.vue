@@ -21,7 +21,7 @@
           <span>{{ row.role.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="小程序角色" width="160px" align="center">
+      <el-table-column label="审核权限" width="160px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.rolemp.name }} </span>
           <el-button icon="el-icon-edit" size="mini" circle @click="handleUpdateMp(row)" />
@@ -69,8 +69,8 @@
       </div>
     </el-dialog>
 
-    <!-- 小程序权限编辑 -->
-    <el-dialog title="修改小程序角色" :visible.sync="dialogMpVisible">
+    <!-- 审核角色编辑 -->
+    <el-dialog title="修改审核角色" :visible.sync="dialogMpVisible">
       <el-form :model="tempMp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
         <el-form-item label="用户名" prop="name">
           <el-input v-model="tempMp.name" />
@@ -103,7 +103,7 @@ export default {
     return {
       tableHeight: 600,
       grouproles: null, // 本公司所有角色列表
-      grouproleMps: null, // 本公司所有小程序角色列表
+      grouproleMps: null, // 本公司所有审核角色列表
       list: null,
       total: 0,
       loading: false,

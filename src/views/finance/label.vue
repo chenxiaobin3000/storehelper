@@ -134,7 +134,7 @@ export default {
         level: this.temp.level
       }).then(response => {
         this.$message({ type: 'success', message: '新增成功!' })
-        this.getLabelList()
+        this.getGroupLabelTree()
         this.dialogVisible = false
       })
     },
@@ -171,7 +171,7 @@ export default {
         level: this.temp.level
       }).then(response => {
         this.$message({ type: 'success', message: '修改成功!' })
-        this.getLabelList()
+        this.getGroupLabelTree()
         this.dialogVisible = false
       })
     },
@@ -186,7 +186,7 @@ export default {
           cid: row.data.id
         }).then(response => {
           this.$message({ type: 'success', message: '删除成功!' })
-          this.getLabelList()
+          this.getGroupLabelTree()
         })
       })
     }

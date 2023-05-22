@@ -1,6 +1,4 @@
 export default [{
-  meta: { title: '报表', roles: [10] }, path: '/report'
-}, {
   meta: { title: '采购权限', roles: [11] }, path: '/purchase',
   children: [{
     meta: { title: '采购进货权限', roles: [12] }, path: '/purchase'

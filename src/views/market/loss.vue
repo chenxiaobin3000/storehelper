@@ -265,6 +265,7 @@ export default {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
     this.listQuery.gid = this.userdata.group.id
+    this.listQuery.mid = this.marketArr[0].id
     this.listQuery.date = parseTime(this.date, '{y}-{m}-{d}')
     this.getSaleType()
     this.getMarketAllAccount()

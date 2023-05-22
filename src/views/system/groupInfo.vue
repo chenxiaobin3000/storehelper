@@ -67,7 +67,7 @@ export default {
         this.area = response.data.data.area
         this.address = response.data.data.address
         this.contact = response.data.data.contact
-        this.money = response.data.data.money + '元'
+        this.money = '0元'
 
         const temp = []
         temp.push(this.area.slice(0, 6))
