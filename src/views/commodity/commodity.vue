@@ -17,7 +17,7 @@
           <span>{{ row.code }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="名称" fixed="left" width="200px" align="center">
+      <el-table-column label="名称" fixed="left" width="240px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
@@ -324,8 +324,12 @@ export default {
       }
 
       results.forEach(v => {
-        if (v[idName] && v[idName] > 0) {
-          codes.push(v[idName])
+        let code = v[idName]
+        if (code && Number.isFinite(code)) {
+          code = '' + code
+        }
+        if (code && code.length > 0) {
+          codes.push(code)
           names.push(v[commName])
 
           // 品类
