@@ -78,17 +78,21 @@ export const MyRoleData = [{
 }, {
   path: '/report', meta: { title: '报表管理', roles: [700] },
   children: [{
-    path: 'market', meta: { title: '销售报表', roles: [701] }
+    path: 'market', meta: { title: '平台报表', roles: [701] }
   }, {
-    path: 'stock', meta: { title: '库存报表', roles: [706] }
+    path: 'marketStock', meta: { title: '平台库存', roles: [702] }
   }, {
-    path: 'purchase', meta: { title: '采购报表', roles: [702] }
+    path: 'offline', meta: { title: '线下报表', roles: [703] }
   }, {
-    path: 'storage', meta: { title: '仓储报表', roles: [705] }
+    path: 'stockReport', meta: { title: '仓储库存', roles: [704] }
   }, {
-    path: 'product', meta: { title: '生产报表', roles: [704] }
+    path: 'purchase', meta: { title: '采购报表', roles: [705] }
   }, {
-    path: 'agreement', meta: { title: '履约报表', roles: [703] }
+    path: 'storage', meta: { title: '仓储报表', roles: [706] }
+  }, {
+    path: 'product', meta: { title: '生产报表', roles: [707] }
+  }, {
+    path: 'agreement', meta: { title: '履约报表', roles: [708] }
   }]
 }, {
   path: '/commodity', meta: { title: '商品管理', roles: [300] },

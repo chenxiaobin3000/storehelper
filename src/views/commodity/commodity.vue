@@ -535,7 +535,6 @@ export default {
             this.aoptionsAll.push(data)
             this.aoptions.push(data)
           })
-          this.listQuery.aid = this.aoptions[0].id
         }
       })
     },
