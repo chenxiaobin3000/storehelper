@@ -7,7 +7,8 @@
       <el-select v-model="listQuery.aid" class="filter-item" @change="getAccountCommodityList">
         <el-option v-for="item in aoptionsAll" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
-      <el-button type="primary" size="normal" style="float:right;width:100px;margin-left:20px" @click="handleExcel()">批量导入</el-button>
+      <el-button type="primary" size="normal" style="float:right;width:100px;margin-left:20px" @click="handleExcel()">导入商品</el-button>
+      <el-button type="primary" size="normal" style="float:right;width:100px;margin-left:20px" @click="exportExcel()">导出商品</el-button>
       <el-button type="primary" size="normal" style="float:right;width:100px" @click="handleDownload()">模板下载</el-button>
     </div>
 
@@ -149,7 +150,7 @@
           <span>{{ tempAccount.name }}</span>
         </el-form-item>
         <el-form-item label="账号" prop="aid">
-          <el-select v-model="listQuery.aid" class="filter-item" @change="handleAidSelect">
+          <el-select v-model="tempAccount.aid" class="filter-item" @change="handleAidSelect">
             <el-option v-for="item in aoptions" :key="item.id" :label="item.label" :value="item.id" />
           </el-select>
         </el-form-item>
@@ -183,9 +184,10 @@
 import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
 import UploadExcelComponent from '@/components/UploadExcel'
+import { export_json_to_excel } from '@/vendor/Export2Excel'
 import { treeGenerate } from '@/utils/tree'
 import { getGroupCommodity, addCommodityList, addCommodity, setCommodity, delCommodity, setCommodityOriginal, getStorageCommodity, setCommodityStorage } from '@/api/commodity'
-import { getMarketAllAccount, getMarketCommodity, setMarketCommodity, delMarketCommodity, getMarketCommodityList } from '@/api/market'
+import { getMarketAllAccount, getMarketCommodity, setMarketCommodity, delMarketCommodity, getMarketCommodityList, setAccountCommodity } from '@/api/market'
 import { getGroupAllStorage } from '@/api/storage'
 import { getGroupCategoryTree } from '@/api/category'
 import { getGroupAttrTemp } from '@/api/attribute'
@@ -220,6 +222,7 @@ export default {
       tempStorage: {},
       tempAccount: {
         id: 0,
+        aid: 0,
         mcode: '',
         mname: '',
         mremark: '',
@@ -292,6 +295,13 @@ export default {
       }
     },
     handleSuccess({ results, header }) {
+      if (this.listQuery.aid === 0) {
+        this.handleCommodity(results)
+      } else {
+        this.handleMarket(results)
+      }
+    },
+    handleCommodity(results) {
       const codes = []
       const names = []
       const cids = []
@@ -400,6 +410,44 @@ export default {
         attr6: attr6,
         attr7: attr7,
         attr8: attr8
+      }).then(response => {
+        this.$message({ type: 'success', message: '更新成功!' })
+        this.getStockList()
+        this.dialogExcelVisible = false
+      })
+    },
+    handleMarket(results) {
+      const ids = []
+      const codes = []
+      const names = []
+      const remarks = []
+      const alarms = []
+      const idName = 'id'
+      const codeName = '平台编号'
+      const commName = '平台名称'
+      const remarkName = '备注'
+      const alarmName = '预警价格'
+
+      results.forEach(v => {
+        const id = v[idName]
+        if (id && Number.isFinite(id) && id > 0) {
+          ids.push(id)
+          codes.push(v[codeName])
+          names.push(v[commName])
+          remarks.push(v[remarkName] ? v[remarkName] : '')
+          alarms.push(v[alarmName])
+        }
+      })
+
+      setAccountCommodity({
+        id: this.listQuery.id,
+        gid: this.listQuery.gid,
+        aid: this.listQuery.aid,
+        commoditys: ids,
+        codes: codes,
+        names: names,
+        remarks: remarks,
+        alarms: alarms
       }).then(response => {
         this.$message({ type: 'success', message: '更新成功!' })
         this.getStockList()
@@ -712,9 +760,15 @@ export default {
       })
     },
     handleSelectAccount(row) {
-      this.tempAccount = Object.assign({}, row)
-      if (this.listQuery.aid === 0) {
-        this.listQuery.aid = this.aoptions[0].id
+      this.tempAccount = {
+        id: row.id,
+        aid: this.listQuery.aid === 0 ? this.aoptions[0].id : this.listQuery.aid,
+        code: row.code,
+        name: row.name,
+        mcode: row.mcode,
+        mname: row.mname ? row.mname : row.name,
+        mremark: row.mremark,
+        alarm: row.alarm
       }
       this.dialogAccountVisible = true
     },
@@ -723,7 +777,7 @@ export default {
       setMarketCommodity({
         id: this.listQuery.id,
         gid: this.listQuery.gid,
-        aid: this.listQuery.aid,
+        aid: this.tempAccount.aid,
         cid: this.tempAccount.id,
         code: this.tempAccount.mcode,
         name: this.tempAccount.mname,
@@ -755,8 +809,26 @@ export default {
       atag.href = atag.href.substring(0, atag.href.length - 4) + '商品模板.xlsx'
       atag.click()
     },
+    exportExcel() {
+      if (this.listQuery.aid === 0) {
+        export_json_to_excel({
+          header: ['id', '编号', '名字', '平台编号', '平台名称', '备注', '预警价格'],
+          data: this.formatJson(['id', 'code', 'name', 'mcode', 'mname', 'mremark', 'alarm'], this.list),
+          filename: '账号模板'
+        })
+      } else {
+        export_json_to_excel({
+          header: ['id', '编号', '名字', '平台编号', '平台名称', '备注', '预警价格'],
+          data: this.formatJson(['id', 'code', 'name', 'mcode', 'mname', 'mremark', 'alarm'], this.list),
+          filename: '账号模板'
+        })
+      }
+    },
     handleExcel() {
       this.dialogExcelVisible = true
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => { return v[j] }))
     }
   }
 }

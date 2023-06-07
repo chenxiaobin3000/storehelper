@@ -49,6 +49,14 @@ export function setMarketCommodity(data) {
   })
 }
 
+export function setAccountCommodity(data) {
+  return request({
+    url: `${path}/setAccountCommodity`,
+    method: 'post',
+    data
+  })
+}
+
 export function delMarketCommodity(data) {
   return request({
     url: `${path}/delMarketCommodity`,
