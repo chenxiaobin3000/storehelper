@@ -128,11 +128,10 @@ export default {
     createData() {
       addDepartment({
         id: this.userdata.user.id,
-        gid: this.userdata.group.id,
         name: this.temp.label,
         parent: this.temp.parent,
         level: this.temp.level
-      }).then(response => {
+      }).then(() => {
         this.$message({ type: 'success', message: '新增成功!' })
         this.getDepartmentList()
         this.dialogVisible = false
@@ -142,6 +141,8 @@ export default {
       this.departmentList.forEach(v => {
         if (v.id === id) {
           this.temp.level = v.level + 1
+        } else {
+          this.temp.level = 1
         }
       })
     },
@@ -164,12 +165,11 @@ export default {
     updateData() {
       setDepartment({
         id: this.userdata.user.id,
-        gid: this.userdata.group.id,
         pid: this.temp.id,
         name: this.temp.label,
         parent: this.temp.parent,
         level: this.temp.level
-      }).then(response => {
+      }).then(() => {
         this.$message({ type: 'success', message: '修改成功!' })
         this.getDepartmentList()
         this.dialogVisible = false
@@ -184,7 +184,7 @@ export default {
         delDepartment({
           id: this.userdata.user.id,
           pid: row.data.id
-        }).then(response => {
+        }).then(() => {
           this.$message({ type: 'success', message: '删除成功!' })
           this.getDepartmentList()
         })

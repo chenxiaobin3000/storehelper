@@ -3,7 +3,7 @@ const path = '/user'
 
 export function addUser(data) {
   return request({
-    url: `${path}/addUser`,
+    url: `${path}/add`,
     method: 'post',
     data
   })
@@ -11,7 +11,7 @@ export function addUser(data) {
 
 export function setUser(data) {
   return request({
-    url: `${path}/setUser`,
+    url: `${path}/set`,
     method: 'post',
     data
   })
@@ -19,7 +19,7 @@ export function setUser(data) {
 
 export function delUser(data) {
   return request({
-    url: `${path}/delUser`,
+    url: `${path}/del`,
     method: 'post',
     data
   })
@@ -27,7 +27,7 @@ export function delUser(data) {
 
 export function getUser(data) {
   return request({
-    url: `${path}/getUser`,
+    url: `${path}/get`,
     method: 'post',
     data
   })
@@ -35,7 +35,7 @@ export function getUser(data) {
 
 export function getUserByPhone(data) {
   return request({
-    url: `${path}/getUserByPhone`,
+    url: `${path}/getByPhone`,
     method: 'post',
     data
   })
@@ -43,7 +43,7 @@ export function getUserByPhone(data) {
 
 export function getUserList(data) {
   return request({
-    url: `${path}/getUserList`,
+    url: `${path}/getList`,
     method: 'post',
     data
   })

@@ -6,11 +6,6 @@
           {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="角色描述">
-        <template slot-scope="scope">
-          {{ scope.row.description }}
-        </template>
-      </el-table-column>
       <el-table-column align="center" label="操作" width="220">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="handleUpdate(scope)">编辑</el-button>
@@ -23,9 +18,6 @@
       <el-form :model="temp" label-width="80px" label-position="left">
         <el-form-item label="角色名称">
           <el-input v-model="temp.name" />
-        </el-form-item>
-        <el-form-item label="角色描述">
-          <el-input v-model="temp.description" />
         </el-form-item>
         <el-form-item label="权限">
           <el-tree ref="tree" :check-strictly="checkStrictly" :data="routes" :props="defaultProps" show-checkbox node-key="path" class="permission-tree" />
@@ -42,7 +34,7 @@
 <script>
 import { mapState } from 'vuex'
 import { deepClone } from '@/utils'
-import { MyRoleData, AdminRoleData } from '@/utils/role-data'
+import { MyRoleData } from '@/utils/role-data'
 import { treeGenerate } from '@/utils/tree'
 import { getRoleList, addRole, delRole, setRole, getRole } from '@/api/role'
 
@@ -95,19 +87,14 @@ export default {
   created() {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
-    this.listQuery.gid = this.userdata.group.id
-    this.routes = treeGenerate.generateRoutes(this.fixRoutes())
+    this.routes = treeGenerate.generateRoutes(MyRoleData)
     this.getRoles()
   },
   methods: {
-    fixRoutes() {
-      return this.userdata.admin ? AdminRoleData : MyRoleData
-    },
     resetTemp() {
       this.temp = {
         id: 0,
         name: '',
-        description: '',
         routes: []
       }
     },
@@ -129,14 +116,12 @@ export default {
     },
     createData() {
       const checkedKeys = this.$refs.tree.getCheckedKeys()
-      this.temp.routes = treeGenerate.generateTree(this.fixRoutes(), '/', checkedKeys)
+      this.temp.routes = treeGenerate.generateTree(MyRoleData, '/', checkedKeys)
       addRole({
         id: this.userdata.user.id,
-        gid: this.userdata.group.id,
         name: this.temp.name,
-        desc: this.temp.description,
         permissions: this.temp.routes
-      }).then(response => {
+      }).then(() => {
         this.$message({ type: 'success', message: '新增成功!' })
         this.getRoles()
         this.dialogVisible = false
@@ -149,7 +134,7 @@ export default {
       if (this.temp.routes) {
         this.checkStrictly = true // 保护父子节点不相互影响
         this.$nextTick(() => {
-          const routes = treeGenerate.filterAsyncRoutes(this.fixRoutes(), this.temp.routes)
+          const routes = treeGenerate.filterAsyncRoutes(MyRoleData, this.temp.routes)
           this.$refs.tree.setCheckedNodes(treeGenerate.generateArr(routes))
           this.checkStrictly = false
         })
@@ -162,7 +147,7 @@ export default {
           scope.row.routes = this.temp.routes
           this.checkStrictly = true // 保护父子节点不相互影响
           this.$nextTick(() => {
-            const routes = treeGenerate.filterAsyncRoutes(this.fixRoutes(), this.temp.routes)
+            const routes = treeGenerate.filterAsyncRoutes(MyRoleData, this.temp.routes)
             this.$refs.tree.setCheckedNodes(treeGenerate.generateArr(routes))
             this.checkStrictly = false
           })
@@ -171,15 +156,13 @@ export default {
     },
     updateData() {
       const checkedKeys = this.$refs.tree.getCheckedKeys()
-      this.temp.routes = treeGenerate.generateTree(this.fixRoutes(), '/', checkedKeys)
+      this.temp.routes = treeGenerate.generateTree(MyRoleData, '/', checkedKeys)
       setRole({
         id: this.userdata.user.id,
         rid: this.temp.id,
-        gid: this.userdata.group.id,
         name: this.temp.name,
-        desc: this.temp.description,
         permissions: this.temp.routes
-      }).then(response => {
+      }).then(() => {
         this.$message({ type: 'success', message: '修改成功!' })
         this.getRoles()
         this.dialogVisible = false
@@ -200,7 +183,7 @@ export default {
         delRole({
           id: this.userdata.user.id,
           rid: row.id
-        }).then(response => {
+        }).then(() => {
           this.$message({ type: 'success', message: '删除成功!' })
           this.getRoles()
         })

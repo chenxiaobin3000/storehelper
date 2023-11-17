@@ -21,12 +21,6 @@
           <span>{{ row.role.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核权限" width="160px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.rolemp.name }} </span>
-          <el-button icon="el-icon-edit" size="mini" circle @click="handleUpdateMp(row)" />
-        </template>
-      </el-table-column>
       <el-table-column label="操作" align="center" fixed="right" width="160" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">编辑</el-button>
@@ -68,24 +62,6 @@
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确定</el-button>
       </div>
     </el-dialog>
-
-    <!-- 审核角色编辑 -->
-    <el-dialog title="修改审核角色" :visible.sync="dialogMpVisible">
-      <el-form :model="tempMp" label-position="left" label-width="70px" style="width: 100%; padding: 0 4% 0 4%;">
-        <el-form-item label="用户名" prop="name">
-          <el-input v-model="tempMp.name" />
-        </el-form-item>
-        <el-form-item label="角色" prop="role">
-          <el-select v-model="tempMp.role.id" class="filter-item" placeholder="请选择角色">
-            <el-option v-for="item in grouproleMps" :key="item.id" :label="item.name" :value="item.id" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="updateDataMp()">确定</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -94,8 +70,7 @@ import { mapState } from 'vuex'
 import Pagination from '@/components/Pagination'
 import { getUserList, addUser, setUser, delUser } from '@/api/user'
 import { getGroupDepartmentTree, setUserDepartment } from '@/api/department'
-import { getGroupRole, setUserRole } from '@/api/role'
-import { getGroupRoleMp, setUserRoleMp } from '@/api/rolemp'
+import { getRoleList, setUserRole } from '@/api/role'
 
 export default {
   components: { Pagination },
@@ -103,7 +78,6 @@ export default {
     return {
       tableHeight: 600,
       grouproles: null, // 本公司所有角色列表
-      grouproleMps: null, // 本公司所有审核角色列表
       list: null,
       total: 0,
       loading: false,
@@ -116,14 +90,12 @@ export default {
         search: null
       },
       temp: {},
-      tempMp: {},
       dialogVisible: false,
       dialogStatus: '',
       textMap: {
         update: '修改用户信息',
         create: '新增用户'
-      },
-      dialogMpVisible: false
+      }
     }
   },
   computed: {
@@ -139,7 +111,6 @@ export default {
     },
     create() {
       this.resetTemp()
-      this.resetTempMp()
       this.dialogStatus = 'create'
       this.dialogVisible = true
     }
@@ -153,7 +124,6 @@ export default {
     this.userdata = this.$store.getters.userdata
     this.listQuery.id = this.userdata.user.id
     this.resetTemp()
-    this.resetTempMp()
     this.getDepartmentList()
   },
   methods: {
@@ -162,14 +132,6 @@ export default {
         id: 0,
         name: '',
         phone: '',
-        depart: { id: null, name: '' },
-        role: { id: null, name: '' }
-      }
-    },
-    resetTempMp() {
-      this.tempMp = {
-        id: 0,
-        name: '',
         depart: { id: null, name: '' },
         role: { id: null, name: '' }
       }
@@ -185,9 +147,6 @@ export default {
           if (v.role == null) {
             v.role = { id: 0, name: '无' }
           }
-          if (v.rolemp == null) {
-            v.rolemp = { id: 0, name: '无' }
-          }
         })
         this.loading = false
       }).catch(error => {
@@ -200,7 +159,7 @@ export default {
         id: this.userdata.user.id
       }).then(response => {
         this.generator(response.data.data.list)
-        this.getGroupRoleMp()
+        this.getRoleList()
       })
     },
     generator(tree) {
@@ -211,28 +170,12 @@ export default {
         }
       })
     },
-    getGroupRole() {
-      getGroupRole({
+    getRoleList() {
+      getRoleList({
         id: this.userdata.user.id
       }).then(response => {
-        this.grouproles = response.data.data.list
+        this.grouproles = response.data.data.roles
         this.getUserList()
-      })
-    },
-    getGroupRoleMp() {
-      getGroupRoleMp({
-        id: this.userdata.user.id
-      }).then(response => {
-        this.grouproleMps = response.data.data.list
-        if (this.grouproleMps.length > 0) {
-          this.grouproleMps.unshift({
-            id: 0,
-            gid: this.grouproleMps[0].gid,
-            name: '不分配角色',
-            description: ''
-          })
-        }
-        this.getGroupRole()
       })
     },
     createData() {
@@ -245,9 +188,8 @@ export default {
         setUserDepartment({
           id: this.userdata.user.id,
           uid: response.data.data.id,
-          gid: this.userdata.group.id,
           did: this.temp.depart.id
-        }).then(response => {})
+        }).then(() => {})
         this.$message({ type: 'success', message: '新增成功!' })
         this.getUserList()
         this.dialogVisible = false
@@ -268,7 +210,7 @@ export default {
           id: this.userdata.user.id,
           uid: this.temp.id,
           rid: this.temp.role.id
-        }).then(response => {
+        }).then(() => {
           this.setUser()
         })
       } else {
@@ -282,7 +224,7 @@ export default {
         uid: this.temp.id,
         name: this.temp.name,
         phone: this.temp.phone
-      }).then(response => {
+      }).then(() => {
         this.$message({ type: 'success', message: '修改成功!' })
         this.getUserList()
         this.dialogVisible = false
@@ -292,9 +234,8 @@ export default {
       setUserDepartment({
         id: this.userdata.user.id,
         uid: this.temp.id,
-        gid: this.userdata.group.id,
         did: this.temp.depart.id
-      }).then(response => {})
+      }).then(() => {})
     },
     handleDelete(row) {
       this.$confirm('确定要删除吗?', '提示', {
@@ -305,29 +246,10 @@ export default {
         delUser({
           id: this.userdata.user.id,
           uid: row.id
-        }).then(response => {
+        }).then(() => {
           this.$message({ type: 'success', message: '删除成功!' })
           this.getUserList()
         })
-      })
-    },
-    handleUpdateMp(row) {
-      this.tempMp = {
-        id: row.id,
-        name: row.name,
-        role: { id: row.rolemp.id, name: row.rolemp.name }
-      }
-      this.dialogMpVisible = true
-    },
-    updateDataMp() {
-      setUserRoleMp({
-        id: this.userdata.user.id,
-        uid: this.tempMp.id,
-        rid: this.tempMp.role.id
-      }).then(response => {
-        this.$message({ type: 'success', message: '修改成功!' })
-        this.getUserList()
-        this.dialogMpVisible = false
       })
     }
   }

@@ -7,19 +7,18 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 /* Router Modules */
-import agreementRouter from './modules/agreement'
-import commodityRouter from './modules/commodity'
-import financeRouter from './modules/finance'
-import marketRouter from './modules/market'
-import offlineRouter from './modules/offline'
-import productRouter from './modules/product'
-import purchaseRouter from './modules/purchase'
-import reportRouter from './modules/report'
-import storageRouter from './modules/storage'
-import superRouter from './modules/super'
+//import agreementRouter from './modules/agreement'
+//import commodityRouter from './modules/commodity'
+//import financeRouter from './modules/finance'
+//import marketRouter from './modules/market'
+//import offlineRouter from './modules/offline'
+//import productRouter from './modules/product'
+//import purchaseRouter from './modules/purchase'
+//import reportRouter from './modules/report'
+//import storageRouter from './modules/storage'
+//import superRouter from './modules/super'
 import systemRouter from './modules/system'
-import transportRouter from './modules/transport'
-import userRouter from './modules/user'
+//import transportRouter from './modules/transport'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -70,7 +69,7 @@ export const asyncRoutes = [
   },
 
   /** when your routing map is too long, you can split it into small modules **/
-  marketRouter,
+  /*marketRouter,
   offlineRouter,
   purchaseRouter,
   storageRouter,
@@ -80,9 +79,8 @@ export const asyncRoutes = [
   reportRouter,
   commodityRouter,
   financeRouter,
-  userRouter,
+  userRouter,*/
   systemRouter,
-  superRouter,
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

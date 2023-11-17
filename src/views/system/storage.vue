@@ -11,24 +11,9 @@
           <span>{{ row.areaName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="联系人" width="80px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.contact }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="联系电话" width="120px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.phone }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="地址" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.address }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.remark }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" fixed="right" width="160" class-name="small-padding fixed-width">
@@ -46,20 +31,11 @@
         <el-form-item label="名称" prop="name">
           <el-input v-model="temp.name" />
         </el-form-item>
-        <el-form-item label="联系人" prop="contact">
-          <el-input v-model="temp.contact" />
-        </el-form-item>
-        <el-form-item label="电话" prop="phone">
-          <el-input v-model="temp.phone" />
-        </el-form-item>
         <el-form-item label="地区" prop="code">
           <el-cascader v-model="temp.region" size="large" style="width: 80%;" :options="regionOptions" />
         </el-form-item>
         <el-form-item label="地址" prop="address">
           <el-input v-model="temp.address" />
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="temp.remark" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -135,10 +111,7 @@ export default {
         id: 0,
         name: '',
         region: [],
-        contact: '',
-        phone: '',
-        address: '',
-        remark: ''
+        address: ''
       }
     },
     getGroupStorage() {
@@ -172,11 +145,8 @@ export default {
         gid: this.userdata.group.id,
         area: this.temp.region.join(''),
         name: this.temp.name,
-        contact: this.temp.contact,
-        phone: this.temp.phone,
-        address: this.temp.address,
-        remark: this.temp.remark
-      }).then(response => {
+        address: this.temp.address
+      }).then(() => {
         this.$message({ type: 'success', message: '新增成功!' })
         this.getGroupStorage()
         this.dialogVisible = false
@@ -203,11 +173,8 @@ export default {
         sid: this.temp.id,
         area: this.temp.region.join(''),
         name: this.temp.name,
-        contact: this.temp.contact,
-        phone: this.temp.phone,
-        address: this.temp.address,
-        remark: this.temp.remark
-      }).then(response => {
+        address: this.temp.address
+      }).then(() => {
         this.$message({ type: 'success', message: '修改成功!' })
         this.getGroupStorage()
         this.dialogVisible = false
@@ -223,7 +190,7 @@ export default {
           id: this.listQuery.id,
           gid: this.userdata.group.id,
           sid: row.id
-        }).then(response => {
+        }).then(() => {
           this.$message({ type: 'success', message: '删除成功!' })
           this.getGroupStorage()
         })

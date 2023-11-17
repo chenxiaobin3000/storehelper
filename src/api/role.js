@@ -3,7 +3,7 @@ const path = '/role'
 
 export function addRole(data) {
   return request({
-    url: `${path}/addRole`,
+    url: `${path}/add`,
     method: 'post',
     data
   })
@@ -11,7 +11,7 @@ export function addRole(data) {
 
 export function setRole(data) {
   return request({
-    url: `${path}/setRole`,
+    url: `${path}/set`,
     method: 'post',
     data
   })
@@ -19,7 +19,7 @@ export function setRole(data) {
 
 export function delRole(data) {
   return request({
-    url: `${path}/delRole`,
+    url: `${path}/del`,
     method: 'post',
     data
   })
@@ -27,7 +27,7 @@ export function delRole(data) {
 
 export function getRole(data) {
   return request({
-    url: `${path}/getRole`,
+    url: `${path}/get`,
     method: 'post',
     data
   })
@@ -35,7 +35,7 @@ export function getRole(data) {
 
 export function getRoleList(data) {
   return request({
-    url: `${path}/getRoleList`,
+    url: `${path}/getList`,
     method: 'post',
     data
   })
@@ -52,14 +52,6 @@ export function getUserRole(data) {
 export function setUserRole(data) {
   return request({
     url: `${path}/setUserRole`,
-    method: 'post',
-    data
-  })
-}
-
-export function getGroupRole(data) {
-  return request({
-    url: `${path}/getGroupRole`,
     method: 'post',
     data
   })

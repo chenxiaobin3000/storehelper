@@ -13,7 +13,7 @@
       </el-table-column>
       <el-table-column label="部门" width="200px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.part.name }}</span>
+          <span>{{ row.depart.name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="角色" width="200px" align="center">
@@ -81,8 +81,8 @@ export default {
         this.total = response.data.data.total
         this.list = response.data.data.list
         this.list.forEach(v => {
-          if (v.part == null) {
-            v.part = {
+          if (v.depart == null) {
+            v.depart = {
               name: ''
             }
           }
@@ -108,7 +108,7 @@ export default {
         resetPwd({
           id: this.listQuery.id,
           uid: row.id
-        }).then(response => {
+        }).then(() => {
           this.$message({ type: 'success', message: '重置成功!' })
         })
       })

@@ -3,7 +3,7 @@ const path = '/department'
 
 export function addDepartment(data) {
   return request({
-    url: `${path}/addDepartment`,
+    url: `${path}/add`,
     method: 'post',
     data
   })
@@ -11,7 +11,7 @@ export function addDepartment(data) {
 
 export function setDepartment(data) {
   return request({
-    url: `${path}/setDepartment`,
+    url: `${path}/set`,
     method: 'post',
     data
   })
@@ -19,7 +19,7 @@ export function setDepartment(data) {
 
 export function delDepartment(data) {
   return request({
-    url: `${path}/delDepartment`,
+    url: `${path}/del`,
     method: 'post',
     data
   })
@@ -27,7 +27,7 @@ export function delDepartment(data) {
 
 export function getGroupDepartmentList(data) {
   return request({
-    url: `${path}/getGroupDepartmentList`,
+    url: `${path}/getList`,
     method: 'post',
     data
   })
@@ -35,7 +35,7 @@ export function getGroupDepartmentList(data) {
 
 export function getGroupDepartmentTree(data) {
   return request({
-    url: `${path}/getGroupDepartmentTree`,
+    url: `${path}/getTree`,
     method: 'post',
     data
   })
